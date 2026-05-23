@@ -1,0 +1,213 @@
+/* —— Unified site atmosphere (fixed, continuous while scrolling) —— */
+.site-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.site-background__base {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      180deg,
+      #020208 0%,
+      #06040f 12%,
+      #0a0618 28%,
+      #080512 42%,
+      #0b071a 58%,
+      #07040f 72%,
+      #06040f 88%,
+      #020208 100%
+    );
+}
+
+.site-background__mesh {
+  position: absolute;
+  inset: 0;
+  opacity: 0.35;
+  background:
+    radial-gradient(ellipse 90% 50% at 50% -5%, rgba(148, 0, 255, 0.1) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 45% at 20% 38%, rgba(25, 40, 120, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse 65% 40% at 82% 52%, rgba(60, 80, 160, 0.06) 0%, transparent 48%),
+    radial-gradient(ellipse 80% 50% at 50% 78%, rgba(148, 0, 255, 0.07) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 35% at 50% 95%, rgba(20, 10, 60, 0.1) 0%, transparent 50%);
+}
+
+.site-background__grid {
+  position: absolute;
+  inset: -10%;
+  opacity: 0.028;
+  background-image:
+    linear-gradient(rgba(148, 0, 255, 0.45) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 0, 255, 0.45) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(ellipse 95% 90% at 50% 45%, black 25%, transparent 78%);
+}
+
+.site-background__grid--fine {
+  opacity: 0.018;
+  background-size: 24px 24px;
+  background-image:
+    linear-gradient(rgba(174, 210, 255, 0.35) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(174, 210, 255, 0.35) 1px, transparent 1px);
+}
+
+.site-background__glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  will-change: opacity;
+}
+
+/* Hero — strongest ambient (viewport-relative; reads as hero focus at top) */
+.site-background__glow--hero {
+  width: min(70vw, 720px);
+  height: min(55vh, 520px);
+  top: -8%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(148, 0, 255, 0.09);
+  animation: site-bg-glow-pulse 14s ease-in-out infinite;
+}
+
+.site-background__glow--mid-a {
+  width: min(55vw, 560px);
+  height: min(40vh, 380px);
+  top: 32%;
+  left: -8%;
+  background: rgba(40, 60, 140, 0.06);
+}
+
+.site-background__glow--mid-b {
+  width: min(50vw, 500px);
+  height: min(38vh, 360px);
+  top: 48%;
+  right: -10%;
+  background: rgba(148, 0, 255, 0.05);
+}
+
+.site-background__glow--lower {
+  width: min(65vw, 640px);
+  height: min(42vh, 400px);
+  bottom: -5%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(80, 40, 160, 0.06);
+}
+
+@keyframes site-bg-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.site-background__streak {
+  position: absolute;
+  height: 1px;
+  opacity: 0.35;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(148, 0, 255, 0.15) 35%,
+    rgba(174, 210, 255, 0.12) 50%,
+    rgba(148, 0, 255, 0.15) 65%,
+    transparent
+  );
+}
+
+.site-background__streak--1 {
+  top: 28%;
+  left: -15%;
+  width: 130%;
+  animation: site-bg-streak 20s ease-in-out infinite;
+}
+
+.site-background__streak--2 {
+  top: 62%;
+  left: -10%;
+  width: 120%;
+  animation: site-bg-streak 26s ease-in-out infinite reverse;
+  opacity: 0.25;
+}
+
+@keyframes site-bg-streak {
+  0%,
+  100% {
+    transform: translateX(-3%);
+    opacity: 0.2;
+  }
+  50% {
+    transform: translateX(3%);
+    opacity: 0.45;
+  }
+}
+
+.site-background__vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 92% 88% at 50% 48%,
+    transparent 42%,
+    rgba(0, 0, 0, 0.35) 100%
+  );
+}
+
+.site-background__particle {
+  position: absolute;
+  border-radius: 50%;
+  background: #aed2ff;
+  box-shadow: 0 0 6px rgba(148, 0, 255, 0.35);
+  opacity: 0;
+  animation: site-bg-float linear infinite;
+}
+
+@keyframes site-bg-float {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(1);
+  }
+  18% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-120px) scale(0.7);
+  }
+}
+
+/* —— Page shell: content floats above unified bg —— */
+.site-shell {
+  position: relative;
+  min-height: 100vh;
+  color: #e4f1ff;
+  background: transparent;
+}
+
+.site-shell > *:not(.site-background) {
+  position: relative;
+  z-index: 1;
+}
+
+.site-shell main {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: transparent;
+}
+
+/* Sections share one environment — no block backgrounds */
+.site-shell section,
+.site-shell footer {
+  background: transparent !important;
+}
+
+.site-shell section:not(.hero-section) {
+  margin-top: 0;
+}

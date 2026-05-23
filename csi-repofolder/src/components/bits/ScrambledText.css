@@ -1,0 +1,12 @@
+.text-block {
+  margin: 2rem 0;
+  max-width: 800px;
+  font-family: monospace;
+  font-size: clamp(14px, 4vw, 24px);
+  color: #e4f1ff;
+}
+
+.char {
+  will-change: transform;
+  display: inline-block;
+}
