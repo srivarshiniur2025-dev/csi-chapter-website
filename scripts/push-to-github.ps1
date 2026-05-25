@@ -7,8 +7,14 @@ param(
 )
 
 $git = "C:\Program Files\Git\bin\git.exe"
-$root = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+# Repo root is the parent of /scripts (csi-student-web-master)
+$root = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 Set-Location $root
+
+if (-not (Test-Path (Join-Path $root ".git"))) {
+  Write-Error "No .git folder here. Run from csi-student-web-master, not the parent 'csi website' folder."
+  exit 1
+}
 
 & $git remote remove origin 2>$null
 & $git remote add origin $RepoUrl

@@ -1,0 +1,182 @@
+/* —— Contact CTA banner —— */
+.contact-cta-section {
+  position: relative;
+  padding: 2.5rem 0 3.5rem;
+  overflow: visible;
+  background: transparent;
+}
+
+.contact-cta-container {
+  position: relative;
+  z-index: 1;
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 4vw, 2rem);
+}
+
+.contact-cta-panel {
+  position: relative;
+  padding: clamp(2rem, 4vw, 2.75rem) clamp(1.5rem, 4vw, 3rem);
+  border-radius: 22px;
+  background: linear-gradient(
+    145deg,
+    rgba(22, 14, 48, 0.8) 0%,
+    rgba(10, 8, 28, 0.72) 50%,
+    rgba(6, 5, 20, 0.88) 100%
+  );
+  border: 1px solid rgba(148, 0, 255, 0.25);
+  backdrop-filter: blur(24px) saturate(1.2);
+  -webkit-backdrop-filter: blur(24px) saturate(1.2);
+  box-shadow:
+    0 4px 0 rgba(148, 0, 255, 0.08),
+    0 24px 60px rgba(0, 0, 0, 0.45),
+    0 0 48px rgba(148, 0, 255, 0.12);
+  text-align: center;
+  overflow: hidden;
+}
+
+.contact-cta-panel__glow {
+  position: absolute;
+  inset: -50%;
+  background: radial-gradient(circle at 50% 0%, rgba(148, 0, 255, 0.15) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.contact-cta-panel__edge {
+  position: absolute;
+  inset: -1px;
+  border-radius: 23px;
+  padding: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(148, 0, 255, 0.3),
+    rgba(174, 210, 255, 0.4),
+    rgba(107, 140, 255, 0.35),
+    rgba(148, 0, 255, 0.3)
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.contact-cta-panel__shine {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(174, 210, 255, 0.35), transparent);
+  pointer-events: none;
+}
+
+.contact-cta-content {
+  position: relative;
+  z-index: 1;
+}
+
+.contact-cta-title {
+  font-family: 'Orbitron', 'Inter', system-ui, sans-serif;
+  font-size: clamp(1.5rem, 4vw, 2.15rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+  color: #eef6ff;
+  margin-bottom: 0.85rem;
+  text-shadow: 0 0 40px rgba(148, 0, 255, 0.2);
+}
+
+.contact-cta-title__accent {
+  background: linear-gradient(90deg, #c77dff, #6b8cff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.contact-cta-subtitle {
+  max-width: 32rem;
+  margin: 0 auto 1.75rem;
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: rgba(174, 210, 255, 0.62);
+}
+
+.contact-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+}
+
+.contact-cta-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.85rem 1.5rem;
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 12px;
+  transition:
+    box-shadow 0.4s ease,
+    border-color 0.35s ease;
+  overflow: hidden;
+}
+
+.contact-cta-btn--primary {
+  color: #fff;
+  border: 1px solid rgba(174, 210, 255, 0.25);
+  background: linear-gradient(135deg, #9400ff 0%, #6b00c7 50%, #3d5afe 100%);
+  box-shadow:
+    0 4px 0 rgba(148, 0, 255, 0.2),
+    0 0 28px rgba(148, 0, 255, 0.3);
+}
+
+.contact-cta-btn__glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.contact-cta-btn--primary:hover {
+  box-shadow:
+    0 6px 0 rgba(148, 0, 255, 0.25),
+    0 0 44px rgba(148, 0, 255, 0.5);
+}
+
+.contact-cta-btn--secondary {
+  color: #e4f1ff;
+  border: 1px solid rgba(148, 0, 255, 0.35);
+  background: rgba(148, 0, 255, 0.12);
+  backdrop-filter: blur(12px);
+}
+
+.contact-cta-btn--secondary:hover {
+  background: rgba(148, 0, 255, 0.22);
+  border-color: rgba(148, 0, 255, 0.55);
+  box-shadow: 0 0 28px rgba(148, 0, 255, 0.25);
+}
+
+@media (max-width: 480px) {
+  .contact-cta-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .contact-cta-btn {
+    width: 100%;
+  }
+}

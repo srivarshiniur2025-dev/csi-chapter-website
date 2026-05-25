@@ -1,0 +1,196 @@
+/* VIT Chennai logo — glass frame + ambient glow (logo asset unchanged) */
+.vit-logo {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.vit-logo__glow {
+  position: absolute;
+  inset: -35%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(148, 0, 255, 0.22) 0%, rgba(60, 80, 200, 0.08) 45%, transparent 70%);
+  opacity: 0.55;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.vit-logo__shine {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    transparent 42%,
+    transparent 58%,
+    rgba(148, 0, 255, 0.06) 100%
+  );
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.vit-logo__img {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 12px rgba(46, 49, 145, 0.35))
+    drop-shadow(0 0 20px rgba(148, 0, 255, 0.15));
+  transition:
+    filter 0.35s ease,
+    transform 0.35s ease;
+}
+
+.vit-logo--framed {
+  padding: 0.35rem 0.45rem;
+  border-radius: 12px;
+  background: rgba(8, 10, 28, 0.45);
+  border: 1px solid rgba(148, 0, 255, 0.22);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 0 28px rgba(148, 0, 255, 0.1);
+  transition:
+    border-color 0.35s ease,
+    box-shadow 0.35s ease,
+    transform 0.35s ease;
+}
+
+.vit-logo--framed:hover .vit-logo__glow,
+.vit-logo--framed:focus-within .vit-logo__glow {
+  opacity: 1;
+}
+
+.vit-logo--framed:hover,
+.vit-logo--framed:focus-within {
+  border-color: rgba(148, 0, 255, 0.45);
+  box-shadow:
+    0 6px 28px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 0 36px rgba(148, 0, 255, 0.22);
+}
+
+.vit-logo--framed:hover .vit-logo__img,
+.vit-logo--framed:focus-within .vit-logo__img {
+  filter: drop-shadow(0 2px 14px rgba(46, 49, 145, 0.45))
+    drop-shadow(0 0 28px rgba(148, 0, 255, 0.28));
+  transform: scale(1.02);
+}
+
+/* —— Sizes —— */
+.vit-logo--nav {
+  height: 2.5rem;
+}
+
+.vit-logo--nav .vit-logo__img {
+  height: 2rem;
+  width: auto;
+}
+
+.vit-logo--footer {
+  height: 1.75rem;
+  padding: 0.2rem 0.35rem;
+  border-radius: 8px;
+}
+
+.vit-logo--footer .vit-logo__img {
+  height: 1.35rem;
+}
+
+.vit-logo--footer .vit-logo__glow {
+  inset: -25%;
+  opacity: 0.4;
+}
+
+.vit-logo--inline {
+  height: 2rem;
+}
+
+.vit-logo--inline .vit-logo__img {
+  height: 1.65rem;
+}
+
+.vit-logo--hero {
+  position: absolute;
+  right: clamp(0.5rem, 4vw, 3rem);
+  bottom: clamp(1.5rem, 8vh, 4rem);
+  z-index: 0;
+  height: min(42vh, 320px);
+  width: min(38vh, 300px);
+  pointer-events: none;
+  opacity: 0.045;
+  mix-blend-mode: screen;
+}
+
+.vit-logo--hero .vit-logo__glow,
+.vit-logo--hero .vit-logo__shine {
+  display: none;
+}
+
+.vit-logo--hero .vit-logo__img {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 40px rgba(148, 0, 255, 0.2));
+}
+
+.vit-logo--wordmark.vit-logo--nav {
+  height: 2.25rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.vit-logo--wordmark.vit-logo--nav .vit-logo__img {
+  height: 1.5rem;
+  width: auto;
+  max-width: 5.5rem;
+}
+
+/* —— Label (navbar) —— */
+.vit-logo__label {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  line-height: 1.1;
+}
+
+.vit-logo__label-title {
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #e4f1ff;
+}
+
+.vit-logo__label-sub {
+  font-size: 0.5rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(174, 210, 255, 0.55);
+}
+
+@media (max-width: 900px) {
+  .vit-logo__label {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .vit-logo--nav {
+    height: 2.15rem;
+    padding: 0.28rem 0.38rem;
+  }
+
+  .vit-logo--nav .vit-logo__img {
+    height: 1.65rem;
+  }
+}
