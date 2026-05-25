@@ -1,0 +1,244 @@
+.team-accordion-wrapper {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  padding: 4rem 0;
+}
+
+.team-accordion {
+  display: flex;
+  gap: 1.5rem;
+  width: max-content;
+  height: 600px;
+  padding: 0 2rem;
+  touch-action: none;
+}
+
+.team-item {
+  position: relative;
+  height: 100%;
+  border-radius: 32px;
+  overflow: hidden;
+  cursor: grab;
+  background: #1a0040;
+  border: 1px solid rgba(148, 0, 255, 0.2);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  user-select: none;
+}
+
+.team-item:active {
+  cursor: grabbing;
+}
+
+.team-item.collapsed {
+  width: 100px;
+}
+
+.team-item.expanded {
+  width: 800px;
+  border-color: rgba(148, 0, 255, 0.5);
+  box-shadow: 0 20px 40px rgba(39, 0, 93, 0.6);
+}
+
+.drag-hint {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 3rem;
+  justify-content: center;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.drag-hint span {
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.4em;
+  color: #aed2ff;
+}
+
+.hint-line {
+  width: 60px;
+  height: 1px;
+  background: #9400ff;
+}
+
+.team-item-content {
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+
+.image-container {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: width 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.team-item.expanded .image-container {
+  width: 45%;
+}
+
+.member-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(60%) brightness(0.85);
+  transition: all 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.team-item.expanded .member-image,
+.team-item:hover .member-image {
+  filter: grayscale(0%) brightness(1);
+  transform: scale(1.05);
+}
+
+.image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, transparent 60%, rgba(39, 0, 93, 0.85));
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.team-item.expanded .image-overlay {
+  opacity: 1;
+}
+
+.collapsed-info {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 40%, rgba(39, 0, 93, 0.7));
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 3rem;
+}
+
+.vertical-name {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  color: #e4f1ff;
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.35;
+  transition: opacity 0.3s ease;
+}
+
+.team-item:hover .vertical-name {
+  opacity: 0.9;
+}
+
+.pc-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(148, 0, 255, 0.25) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.team-item:hover .pc-glow {
+  opacity: 1;
+}
+
+.member-details {
+  flex: 1;
+  padding: 4rem;
+  display: flex;
+  align-items: center;
+  background: #1a0040;
+}
+
+.details-inner {
+  max-width: 400px;
+}
+
+.member-quote {
+  font-size: 1.75rem;
+  line-height: 1.4;
+  color: #e4f1ff;
+  margin-bottom: 3rem;
+  font-family: serif;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: -0.01em;
+}
+
+.info-line {
+  width: 40px;
+  height: 2px;
+  background: #9400ff;
+  margin-bottom: 1.5rem;
+}
+
+.member-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #e4f1ff;
+  margin-bottom: 0.5rem;
+}
+
+.member-role {
+  font-size: 0.875rem;
+  color: #aed2ff;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-weight: 600;
+}
+
+@media (max-width: 1024px) {
+  .team-item.expanded {
+    width: 600px;
+  }
+}
+
+@media (max-width: 768px) {
+  .team-accordion {
+    height: 500px;
+    gap: 1rem;
+    padding: 0 1rem;
+  }
+
+  .team-item.expanded {
+    width: 85vw;
+    max-width: 400px;
+  }
+
+  .team-item.collapsed {
+    width: 60px;
+  }
+
+  .member-details {
+    padding: 2rem;
+  }
+
+  .member-quote {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+  }
+
+  .member-name {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .team-item.expanded {
+    width: 80vw;
+  }
+
+  .team-item.collapsed {
+    width: 50px;
+  }
+
+  .team-item.expanded .image-container {
+    width: 0;
+  }
+}
