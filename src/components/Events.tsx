@@ -2,10 +2,9 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { LucideIcon } from 'lucide-react';
 import {
-  X,
   Calendar,
   MapPin,
-  ArrowRight,
+  Ticket,
   ChevronLeft,
   ChevronRight,
   Brain,
@@ -18,6 +17,7 @@ import {
   Cpu,
 } from 'lucide-react';
 import { useMediaQuery } from '../lib/useMediaQuery';
+import EventRegistrationModal from './EventRegistrationModal';
 import './Events.css';
 
 export interface ChapterEvent {
@@ -30,6 +30,8 @@ export interface ChapterEvent {
   imageAlt: string;
   shortDescription: string;
   fullDescription: string;
+  startISO: string;
+  totalSeats: number;
   speaker: { name: string; role: string };
   techIcons: LucideIcon[];
 }
@@ -48,6 +50,8 @@ const eventsData: ChapterEvent[] = [
       'Hands-on exploration of machine learning pipelines, intelligent agents, and real-world AI deployment.',
     fullDescription:
       'A guided workshop covering ML pipelines, practical AI tooling, and deploying intelligent features. Includes live labs, mentor feedback, and a closing demo session for all participants.',
+    startISO: '2026-03-18T09:30:00+05:30',
+    totalSeats: 80,
     speaker: { name: 'Dr. Priya Nair', role: 'AI Research Mentor · CSI VITC' },
     techIcons: [Brain, Star, Cpu, Layers],
   },
@@ -64,6 +68,8 @@ const eventsData: ChapterEvent[] = [
       'A 24-hour innovation sprint building impactful products in neon-lit collaborative workspaces.',
     fullDescription:
       'Teams tackle real-world tracks overnight with mentor support, pitch coaching, and industry judging. Prizes and internship referrals for standout projects.',
+    startISO: '2026-04-02T18:00:00+05:30',
+    totalSeats: 120,
     speaker: { name: 'Alex Johnson', role: 'Events Head · CSI VITC' },
     techIcons: [Code2, Globe, Terminal, Layers],
   },
@@ -80,6 +86,8 @@ const eventsData: ChapterEvent[] = [
       'Master modern frontends, motion design, and immersive web experiences with production-grade UI.',
     fullDescription:
       'Two days on component architecture, responsive UI, motion, and shipping polished apps. Ideal for members leveling up their frontend skills.',
+    startISO: '2026-02-22T10:00:00+05:30',
+    totalSeats: 60,
     speaker: { name: 'Sarah Williams', role: 'Technical Lead · CSI VITC' },
     techIcons: [Globe, Code2, Layers],
   },
@@ -96,6 +104,8 @@ const eventsData: ChapterEvent[] = [
       'Design autonomous systems with sensors, intelligent control, and competition-grade robotics labs.',
     fullDescription:
       'Build autonomous bots with sensor integration, motor control workshops, and competition heats in a fully equipped robotics lab.',
+    startISO: '2026-05-08T09:00:00+05:30',
+    totalSeats: 50,
     speaker: { name: 'Michael Brown', role: 'Robotics Coordinator' },
     techIcons: [Bot, Cpu, Terminal],
   },
@@ -112,6 +122,8 @@ const eventsData: ChapterEvent[] = [
       'Level up algorithmic thinking through high-intensity contests in a cinematic coding arena.',
     fullDescription:
       'Rated contest rounds across DS&A topics with editorial walkthroughs. Perfect preparation for technical interviews and competitive programming platforms.',
+    startISO: '2026-01-30T14:00:00+05:30',
+    totalSeats: 70,
     speaker: { name: 'Jane Smith', role: 'Chairperson · CSI VITC' },
     techIcons: [Terminal, Code2, Brain],
   },
@@ -179,95 +191,6 @@ function getCardMotion(
     zIndex: isActive ? 30 : 12 - abs,
   };
 }
-
-const EventModal = ({ event, onClose }: { event: ChapterEvent; onClose: () => void }) => {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-    document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', onKey);
-    return () => {
-      document.body.style.overflow = '';
-      window.removeEventListener('keydown', onKey);
-    };
-  }, [onClose]);
-
-  const initials = event.speaker.name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .slice(0, 2);
-
-  return (
-    <motion.div
-      className="event-modal-backdrop"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.28 }}
-      onClick={onClose}
-    >
-      <motion.div
-        className="event-modal-panel"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="event-modal-title"
-        initial={{ opacity: 0, scale: 0.94, y: 14 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.96, y: 8 }}
-        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="event-modal-panel__holo" aria-hidden />
-        <button type="button" className="event-modal-close" onClick={onClose} aria-label="Close">
-          <X size={16} />
-        </button>
-
-        <div className="event-modal-banner">
-          <img src={event.image} alt={event.imageAlt} />
-          <div className="event-modal-banner__overlay" />
-        </div>
-
-        <div className="event-modal-content">
-          <span className="event-modal-label">{event.label}</span>
-          <h2 id="event-modal-title" className="event-modal-title">
-            {event.title}
-          </h2>
-          <div className="event-modal-meta">
-            <span>
-              <Calendar size={14} strokeWidth={1.5} /> {event.date}
-            </span>
-            <span>
-              <MapPin size={14} strokeWidth={1.5} /> {event.venue}
-            </span>
-          </div>
-          <p className="event-modal-desc">{event.fullDescription}</p>
-
-          <p className="event-modal-section-title">Speaker / Mentor</p>
-          <div className="event-modal-speaker">
-            <div className="event-modal-speaker__avatar">{initials}</div>
-            <div>
-              <div className="event-modal-speaker__name">{event.speaker.name}</div>
-              <div className="event-modal-speaker__role">{event.speaker.role}</div>
-            </div>
-          </div>
-
-          <p className="event-modal-section-title">Technologies</p>
-          <div className="event-modal-tech">
-            {event.techIcons.map((Icon, i) => (
-              <span key={i} className="event-modal-tech__icon">
-                <Icon size={17} strokeWidth={1.5} />
-              </span>
-            ))}
-          </div>
-
-          <a href="#contact" className="event-modal-register" onClick={onClose}>
-            Register Now
-          </a>
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-};
 
 const Events = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -495,8 +418,8 @@ const Events = () => {
                                 ))}
                               </div>
                               <span className="events-carousel__action">
-                                View Details
-                                <ArrowRight size={15} strokeWidth={2} />
+                                Register
+                                <Ticket size={15} strokeWidth={2} />
                               </span>
                             </div>
                           </>
@@ -547,7 +470,7 @@ const Events = () => {
       </div>
 
       <AnimatePresence>
-        {selected && <EventModal event={selected} onClose={closeModal} />}
+        {selected && <EventRegistrationModal event={selected} onClose={closeModal} />}
       </AnimatePresence>
     </section>
   );

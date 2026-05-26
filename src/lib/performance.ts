@@ -21,3 +21,14 @@ export function isLowPowerDevice(): boolean {
     !window.matchMedia('(min-width: 768px)').matches
   );
 }
+
+/** Smaller globe mesh on phones — still WebGL, not the CSS fallback. */
+export function isLiteGlobeDevice(): boolean {
+  if (typeof window === 'undefined') return false;
+  return !window.matchMedia('(min-width: 768px)').matches;
+}
+
+/** CSS orb only when user prefers reduced motion. */
+export function shouldUseStaticGlobe(): boolean {
+  return prefersReducedMotion();
+}

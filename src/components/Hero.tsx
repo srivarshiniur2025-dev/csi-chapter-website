@@ -1,9 +1,8 @@
-import { useRef, useCallback, lazy, Suspense } from 'react';
+import { useRef, useCallback } from 'react';
 import { ChevronRight } from 'lucide-react';
 import HeroAtmosphere from './HeroAtmosphere';
+import HeroGlobe from './HeroGlobe';
 import './Hero.css';
-
-const HeroGlobe = lazy(() => import('./HeroGlobe'));
 
 const Hero = () => {
   const mouseRef = useRef({ x: 0, y: 0 });
@@ -26,12 +25,10 @@ const Hero = () => {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="hero-globe-layer">
-        <Suspense fallback={<div className="hero-globe-canvas hero-globe-canvas--static" aria-hidden><div className="hero-globe-canvas__orb" /></div>}>
-          <HeroGlobe mouse={mouseRef} />
-        </Suspense>
-      </div>
       <HeroAtmosphere />
+      <div className="hero-globe-layer" aria-hidden>
+        <HeroGlobe mouse={mouseRef} />
+      </div>
 
       <div className="hero-content">
         <div className="hero-badge">
