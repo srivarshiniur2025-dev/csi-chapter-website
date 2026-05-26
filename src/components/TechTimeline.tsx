@@ -105,7 +105,7 @@ const timelineEntries: TimelineEntry[] = [
     phase: 'Projects',
     tags: ['Demo Day', 'Engineering', 'Showcase'],
     image:
-      'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&auto=format&fit=crop&q=80',
     imageAlt: 'Students presenting technical projects',
     icon: Sparkles,
   },
@@ -119,7 +119,7 @@ const timelineEntries: TimelineEntry[] = [
     phase: 'Technical Sessions',
     tags: ['Security', 'CTF', 'Networks'],
     image:
-      'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=800&auto=format&fit=crop&q=80',
     imageAlt: 'Cybersecurity operations dashboard',
     icon: Monitor,
   },
@@ -133,7 +133,7 @@ const timelineEntries: TimelineEntry[] = [
     phase: 'Community Events',
     tags: ['Networking', 'Talks', 'Community'],
     image:
-      'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&auto=format&fit=crop&q=80',
     imageAlt: 'Community tech event gathering',
     icon: Users,
   },
@@ -147,8 +147,8 @@ const timelineEntries: TimelineEntry[] = [
     phase: 'Achievements',
     tags: ['Award', 'National', 'Excellence'],
     image:
-      'https://images.unsplash.com/photo-1567427017947-545c5f8d16cf?w=800&auto=format&fit=crop&q=80',
-    imageAlt: 'Achievement celebration with trophy lighting',
+      'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=800&auto=format&fit=crop&q=80',
+    imageAlt: 'Golden trophy award achievement celebration',
     icon: Trophy,
   },
 ];
