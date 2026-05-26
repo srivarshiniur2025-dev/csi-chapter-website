@@ -35,6 +35,7 @@
 
 html {
   scroll-behavior: auto;
+  overflow-x: clip;
 }
 
 body {
@@ -43,6 +44,11 @@ body {
   min-height: 100vh;
   background-color: #030308;
   color: var(--csi-pale);
+  overflow-x: clip;
+}
+
+.site-shell {
+  overflow-x: clip;
 }
 
 section {
@@ -71,10 +77,12 @@ section {
   background: var(--csi-light);
 }
 
-/* Defer off-screen section layout/paint */
-.site-shell main > section:not(.hero-section) {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 520px;
+/* Defer off-screen section layout/paint (desktop only — can glitch on mobile scroll) */
+@media (min-width: 768px) {
+  .site-shell main > section:not(.hero-section) {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 520px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

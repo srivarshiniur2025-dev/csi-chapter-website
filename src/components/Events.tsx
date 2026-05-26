@@ -17,6 +17,7 @@ import {
   Star,
   Cpu,
 } from 'lucide-react';
+import { useMediaQuery } from '../lib/useMediaQuery';
 import './Events.css';
 
 export interface ChapterEvent {
@@ -127,9 +128,28 @@ function getCardSpread() {
 
 const CINEMATIC_EASE = [0.22, 1, 0.36, 1] as const;
 
-function getCardMotion(index: number, activeIndex: number, cardSpread: number) {
+function getCardMotion(
+  index: number,
+  activeIndex: number,
+  cardSpread: number,
+  flatCarousel: boolean
+) {
   const diff = index - activeIndex;
   const abs = Math.abs(diff);
+  const isActive = diff === 0;
+
+  if (flatCarousel) {
+    return {
+      x: 0,
+      z: 0,
+      scale: 1,
+      rotateY: 0,
+      rotateX: 0,
+      opacity: isActive ? 1 : 0,
+      filter: 'none',
+      zIndex: isActive ? 30 : 0,
+    };
+  }
 
   if (abs > 2) {
     return {
@@ -143,8 +163,6 @@ function getCardMotion(index: number, activeIndex: number, cardSpread: number) {
       zIndex: 0,
     };
   }
-
-  const isActive = diff === 0;
 
   return {
     x: diff * cardSpread,
@@ -255,6 +273,8 @@ const Events = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [selected, setSelected] = useState<ChapterEvent | null>(null);
   const [cardSpread, setCardSpread] = useState(getCardSpread);
+  const isMobileCarousel = useMediaQuery('(max-width: 767px)');
+  const isTouch = useMediaQuery('(pointer: coarse)');
   const stageRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const bannerMediaRef = useRef<HTMLDivElement>(null);
@@ -366,15 +386,20 @@ const Events = () => {
           <div
             ref={stageRef}
             className="events-carousel__viewport"
-            onMouseMove={handleStageMove}
-            onMouseLeave={handleStageLeave}
+            onMouseMove={isTouch ? undefined : handleStageMove}
+            onMouseLeave={isTouch ? undefined : handleStageLeave}
           >
           <div className="events-carousel__stage">
             <div className="events-carousel__floor" aria-hidden />
             <div className="events-carousel__center-beam" aria-hidden />
             <div ref={trackRef} className="events-carousel__track">
               {eventsData.map((event, index) => {
-                const cardMotion = getCardMotion(index, activeIndex, cardSpread);
+                const cardMotion = getCardMotion(
+                  index,
+                  activeIndex,
+                  cardSpread,
+                  isMobileCarousel
+                );
                 const isActive = index === activeIndex;
 
                 return (
@@ -400,13 +425,15 @@ const Events = () => {
                     }}
                     onClick={() => (isActive ? setSelected(event) : setActiveIndex(index))}
                     whileHover={
-                      isActive
+                      !isTouch && isActive
                         ? { y: -5, scale: 1.01, transition: { duration: 0.35, ease: CINEMATIC_EASE } }
-                        : {
-                            scale: cardMotion.scale * 1.02,
-                            opacity: Math.min(cardMotion.opacity + 0.08, 0.62),
-                            transition: { duration: 0.3 },
-                          }
+                        : !isTouch
+                          ? {
+                              scale: cardMotion.scale * 1.02,
+                              opacity: Math.min(cardMotion.opacity + 0.08, 0.62),
+                              transition: { duration: 0.3 },
+                            }
+                          : undefined
                     }
                   >
                     <div className="events-carousel__card-shell" aria-hidden>
@@ -527,5 +554,3 @@ const Events = () => {
 };
 
 export default Events;
-
-
