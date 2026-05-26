@@ -3,6 +3,7 @@ import SiteBackground from './components/SiteBackground';
 import Hero from './components/Hero';
 import About from './components/About';
 import Events from './components/Events';
+import TechTimeline from './components/TechTimeline';
 import Team from './components/Team';
 import Contact from './components/Contact';
 import ContactCTA from './components/ContactCTA';
@@ -18,6 +19,7 @@ function App() {
         <About />
 
         <Events />
+        <TechTimeline />
         <Team />
         <Contact />
       </main>
