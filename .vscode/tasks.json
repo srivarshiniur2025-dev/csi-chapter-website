@@ -1,0 +1,24 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "dev: CSI site",
+      "type": "npm",
+      "script": "dev",
+      "problemMatcher": [],
+      "isBackground": true,
+      "presentation": { "reveal": "silent", "panel": "dedicated" }
+    },
+    {
+      "label": "preview: Simple Browser",
+      "dependsOn": ["dev: CSI site"],
+      "type": "shell",
+      "command": "cursor",
+      "args": [
+        "--open-url",
+        "vscode://vscode.simple-browser/show?url=http://localhost:5173/"
+      ],
+      "problemMatcher": []
+    }
+  ]
+}
