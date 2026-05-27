@@ -1,9 +1,8 @@
-/** Prefer native scroll on touch / reduced-motion devices (Lenis adds constant RAF work). */
+/** Lenis on desktop; mobile uses native smooth scroll (better touch performance). */
 export function shouldUseSmoothScroll(): boolean {
   if (typeof window === 'undefined') return false;
   return (
     !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
-    !window.matchMedia('(pointer: coarse)').matches &&
     window.matchMedia('(min-width: 768px)').matches
   );
 }

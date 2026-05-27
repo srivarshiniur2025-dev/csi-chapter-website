@@ -8,6 +8,7 @@ import Team from './components/Team';
 import Contact from './components/Contact';
 import ContactCTA from './components/ContactCTA';
 import Footer from './components/Footer';
+import AIAssistant from './components/AIAssistant';
 function App() {
   return (
     <div className="site-shell selection:bg-csi-accent selection:text-csi-pale">
@@ -25,6 +26,7 @@ function App() {
       </main>
       <ContactCTA />
       <Footer />
+      <AIAssistant />
     </div>
   );
 }
