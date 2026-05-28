@@ -177,7 +177,11 @@ export default function MemberDashboard() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={closeDashboard}
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              closeDashboard();
+            }}
             aria-hidden
           />
           <div className="pdash-stage__center">

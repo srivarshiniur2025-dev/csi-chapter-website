@@ -3,7 +3,8 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 200;
+  z-index: 10200;
+  isolation: isolate;
   padding: 0 1.5rem;
   background: linear-gradient(
     180deg,
@@ -191,6 +192,8 @@
 
 /* —— Right: actions —— */
 .csi-navbar-actions {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -267,6 +270,8 @@
 }
 
 .csi-navbar-user {
+  position: relative;
+  z-index: 3;
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
@@ -275,7 +280,15 @@
   border: 1px solid rgba(148, 0, 255, 0.35);
   background: rgba(10, 14, 39, 0.5);
   cursor: pointer;
+  pointer-events: auto;
+  font: inherit;
+  color: inherit;
   transition: border-color 0.22s, box-shadow 0.22s, transform 0.2s;
+}
+
+.csi-navbar-user:focus-visible {
+  outline: 2px solid rgba(167, 139, 250, 0.8);
+  outline-offset: 2px;
 }
 
 .csi-navbar-user:hover {
@@ -362,8 +375,7 @@
     font-size: 0.65rem;
   }
 
-  .csi-navbar-btn-ghost--desktop,
-  .csi-navbar-user--desktop {
+  .csi-navbar-btn-ghost--desktop {
     display: none;
   }
 }

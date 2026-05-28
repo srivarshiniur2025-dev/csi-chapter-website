@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, type MouseEvent } from 'react';
 import { Menu, X } from 'lucide-react';
 import VitChennaiLogo from './VitChennaiLogo';
 import { useAuth } from '../contexts/AuthContext';
@@ -30,6 +30,16 @@ const Navbar = () => {
   const handleNavClick = useCallback(() => {
     closeMenu();
   }, [closeMenu]);
+
+  const handleOpenDashboard = useCallback(
+    (e: MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      closeMenu();
+      window.setTimeout(() => openDashboard(), 0);
+    },
+    [closeMenu, openDashboard]
+  );
 
   const initials =
     (profile?.displayName || user?.displayName || user?.email || 'U')
@@ -136,10 +146,7 @@ const Navbar = () => {
             <button
               type="button"
               className="csi-navbar-drawer__user"
-              onClick={() => {
-                closeMenu();
-                openDashboard();
-              }}
+              onClick={handleOpenDashboard}
             >
               <span className="csi-navbar-user__avatar">{initials}</span>
               Member Dashboard

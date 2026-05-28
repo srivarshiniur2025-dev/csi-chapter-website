@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
@@ -141,6 +142,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [authTab, setAuthTab] = useState<AuthTab>('login');
   const [dashboardOpen, setDashboardOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
+  const dashboardIgnoreCloseRef = useRef(false);
 
   const firebaseReady = isFirebaseConfigured();
   const apiReady = isApiConfigured();
@@ -241,8 +243,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const closeAuth = useCallback(() => setAuthOpen(false), []);
-  const openDashboard = useCallback(() => setDashboardOpen(true), []);
-  const closeDashboard = useCallback(() => setDashboardOpen(false), []);
+
+  const openDashboard = useCallback(() => {
+    dashboardIgnoreCloseRef.current = true;
+    setDashboardOpen(true);
+    window.setTimeout(() => {
+      dashboardIgnoreCloseRef.current = false;
+    }, 400);
+  }, []);
+
+  const closeDashboard = useCallback(() => {
+    if (dashboardIgnoreCloseRef.current) return;
+    setDashboardOpen(false);
+  }, []);
+
+  useEffect(() => {
+    const onOpenDashboard = () => openDashboard();
+    window.addEventListener('csi-open-dashboard', onOpenDashboard);
+    return () => window.removeEventListener('csi-open-dashboard', onOpenDashboard);
+  }, [openDashboard]);
   const openAdmin = useCallback(() => {
     setDashboardOpen(false);
     setAdminOpen(true);
@@ -456,4 +475,8 @@ export function useAuth(): AuthContextValue {
 
 export function dispatchOpenNova(): void {
   window.dispatchEvent(new CustomEvent('csi-open-nova'));
+}
+
+export function dispatchOpenDashboard(): void {
+  window.dispatchEvent(new CustomEvent('csi-open-dashboard'));
 }
