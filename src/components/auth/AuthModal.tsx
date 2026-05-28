@@ -47,15 +47,15 @@ function getErrorMessage(err: unknown): string {
 function AuthParticles() {
   return (
     <div className="auth-stage__particles" aria-hidden>
-      {Array.from({ length: 18 }, (_, i) => (
+      {Array.from({ length: 6 }, (_, i) => (
         <span
           key={i}
           className="auth-particle"
           style={
             {
               '--i': i,
-              left: `${8 + ((i * 17) % 84)}%`,
-              top: `${12 + ((i * 13) % 76)}%`,
+              left: `${15 + i * 14}%`,
+              top: `${20 + (i % 3) * 22}%`,
             } as CSSProperties
           }
         />
@@ -261,62 +261,63 @@ export default function AuthModal() {
                 <span className="auth-panel__sheen" />
               </div>
 
+              <div className="auth-panel__inner">
               <header className="auth-panel__header">
                 <div className="auth-panel__brand">
                   <span className="auth-panel__icon">
-                    <LayoutDashboard size={16} strokeWidth={2} />
+                    <LayoutDashboard size={15} strokeWidth={2} />
                   </span>
-                  <div>
-                    <p className="auth-panel__title">CSI Member Platform</p>
-                    <p className="auth-panel__subtitle">
-                      Dashboard · event reminders · registrations · admin tools
-                    </p>
+                  <div className="auth-panel__brand-text">
+                    <p className="auth-panel__title">CSI Platform</p>
+                    <p className="auth-panel__subtitle">Member hub · events · Nova AI</p>
                   </div>
                 </div>
                 <button type="button" className="auth-panel__close" onClick={closeAuth} aria-label="Close">
-                  <X size={16} strokeWidth={2} />
+                  <X size={15} strokeWidth={2} />
                 </button>
               </header>
 
-              <div className="auth-panel__tabs" role="tablist" aria-label="Authentication mode">
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={tab === 'login'}
-                  className={`auth-panel__tab${tab === 'login' ? ' auth-panel__tab--active' : ''}`}
-                  onClick={() => switchTab('login')}
-                >
-                  Login
-                </button>
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={tab === 'signup'}
-                  className={`auth-panel__tab${tab === 'signup' ? ' auth-panel__tab--active' : ''}`}
-                  onClick={() => switchTab('signup')}
-                >
-                  Sign Up
-                </button>
-              </div>
-
-              {tab === 'login' && (
-                <div className="auth-portal-toggle" role="group" aria-label="Login as">
+              <div className="auth-panel__controls">
+                <div className="auth-panel__tabs" role="tablist" aria-label="Authentication mode">
                   <button
                     type="button"
-                    className={`auth-portal-toggle__btn${authPortal === 'user' ? ' auth-portal-toggle__btn--active' : ''}`}
-                    onClick={() => setAuthPortal('user')}
+                    role="tab"
+                    aria-selected={tab === 'login'}
+                    className={`auth-panel__tab${tab === 'login' ? ' auth-panel__tab--active' : ''}`}
+                    onClick={() => switchTab('login')}
                   >
-                    Member
+                    Login
                   </button>
                   <button
                     type="button"
-                    className={`auth-portal-toggle__btn${authPortal === 'admin' ? ' auth-portal-toggle__btn--active' : ''}`}
-                    onClick={() => setAuthPortal('admin' as AuthPortal)}
+                    role="tab"
+                    aria-selected={tab === 'signup'}
+                    className={`auth-panel__tab${tab === 'signup' ? ' auth-panel__tab--active' : ''}`}
+                    onClick={() => switchTab('signup')}
                   >
-                    Admin
+                    Sign Up
                   </button>
                 </div>
-              )}
+
+                {tab === 'login' && (
+                  <div className="auth-portal-toggle" role="group" aria-label="Login as">
+                    <button
+                      type="button"
+                      className={`auth-portal-toggle__btn${authPortal === 'user' ? ' auth-portal-toggle__btn--active' : ''}`}
+                      onClick={() => setAuthPortal('user')}
+                    >
+                      Member
+                    </button>
+                    <button
+                      type="button"
+                      className={`auth-portal-toggle__btn${authPortal === 'admin' ? ' auth-portal-toggle__btn--active' : ''}`}
+                      onClick={() => setAuthPortal('admin' as AuthPortal)}
+                    >
+                      Admin
+                    </button>
+                  </div>
+                )}
+              </div>
 
               <div className="auth-panel__body">
                 <AnimatePresence mode="wait">
@@ -328,23 +329,26 @@ export default function AuthModal() {
                     exit={{ opacity: 0, y: -4 }}
                     transition={{ duration: 0.22, ease: CINEMATIC_EASE }}
                   >
-                    <p className="auth-panel__features">
-                      Sign in to unlock your personalized member hub, registered events, reminders,
-                      bookmarks, and CSI Nova assistant. Admins can manage events from the admin console.
+                    <p className="auth-panel__lead">
+                      {tab === 'login'
+                        ? 'Sign in to your dashboard, events, and CSI Nova.'
+                        : 'Create your chapter account in seconds.'}
                     </p>
 
-                    {authMode === 'local' && (
-                      <div className="auth-alert auth-alert--info">
-                        Demo mode: accounts are saved on this browser. Dummy admin — choose{' '}
-                        <strong>Admin</strong> on login, then use <code>{DEMO_ADMIN_EMAIL}</code> /{' '}
-                        <code>{DEMO_ADMIN_PASSWORD}</code>. For cloud sync, set <code>VITE_API_URL</code>{' '}
-                        or Firebase in <code>.env</code>.
-                      </div>
+                    {authMode === 'local' && tab === 'login' && authPortal === 'admin' && (
+                      <p className="auth-panel__hint">
+                        Demo admin: <code>{DEMO_ADMIN_EMAIL}</code> · <code>{DEMO_ADMIN_PASSWORD}</code>
+                      </p>
+                    )}
+                    {authMode === 'local' && !(tab === 'login' && authPortal === 'admin') && (
+                      <p className="auth-panel__hint auth-panel__hint--muted">
+                        Demo mode — data stays in this browser.
+                      </p>
                     )}
                     {authMode === 'api' && (
-                      <div className="auth-alert auth-alert--info auth-alert--compact">
-                        Connected to CSI cloud API — registrations sync across devices.
-                      </div>
+                      <p className="auth-panel__hint auth-panel__hint--muted">
+                        Synced with CSI cloud API.
+                      </p>
                     )}
 
                     {error ? <div className="auth-alert">{error}</div> : null}
@@ -356,7 +360,7 @@ export default function AuthModal() {
                       onClick={onGoogle}
                       disabled={busy || !firebaseReady}
                     >
-                      <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden>
+                      <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden>
                         <path
                           fill="#4285F4"
                           d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -374,7 +378,7 @@ export default function AuthModal() {
                           d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                         />
                       </svg>
-                      Continue with Google
+                      Google
                     </button>
 
                     <div className="auth-panel__divider">
@@ -507,6 +511,7 @@ export default function AuthModal() {
                     )}
                   </motion.div>
                 </AnimatePresence>
+              </div>
               </div>
             </motion.article>
           </div>
