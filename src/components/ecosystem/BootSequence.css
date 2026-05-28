@@ -150,6 +150,20 @@
 
 .csi-app-root {
   min-height: 100vh;
+  /* No transform/filter here — keeps position:fixed navbar relative to the viewport */
+}
+
+.csi-app-root--entering {
+  animation: csi-app-fade-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+}
+
+@keyframes csi-app-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -277,9 +277,31 @@
   background: transparent;
 }
 
-.site-shell > *:not(.site-background) {
+/* Only stack page content — never override fixed chrome (navbar, cursor glow, 3D layer) */
+.site-shell > main,
+.site-shell > footer,
+.site-shell > .contact-cta-section {
   position: relative;
   z-index: 1;
+}
+
+.site-shell > .csi-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10200;
+}
+
+.site-shell > .immersive-cursor-glow {
+  position: fixed;
+  z-index: 0;
+}
+
+.site-shell > .ambient-network-3d {
+  position: fixed;
+  z-index: 1;
+  pointer-events: none;
 }
 
 .site-shell main {

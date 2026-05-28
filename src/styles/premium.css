@@ -85,15 +85,13 @@ html {
   transform: translateY(-3px);
 }
 
-/* Page load fade */
+/* Page load fade — opacity only so fixed navbar is not trapped in a transform layer */
 @keyframes csi-page-enter {
   from {
     opacity: 0;
-    transform: translateY(8px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 

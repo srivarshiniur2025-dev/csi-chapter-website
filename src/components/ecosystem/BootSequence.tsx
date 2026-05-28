@@ -86,14 +86,9 @@ export default function BootSequence({ children }: BootSequenceProps) {
         )}
       </AnimatePresence>
 
-      <motion.div
-        className="csi-app-root"
-        initial={phase === 'boot' ? { opacity: 0 } : false}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.7, ease: CINEMATIC, delay: phase === 'boot' ? 0.15 : 0 }}
-      >
+      <div className={`csi-app-root${phase === 'boot' ? ' csi-app-root--entering' : ''}`}>
         {children}
-      </motion.div>
+      </div>
     </>
   );
 }
