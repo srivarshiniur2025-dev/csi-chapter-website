@@ -1,46 +1,26 @@
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
-import { useImmersiveMotion } from './hooks/useImmersiveMotion';
-import ImmersiveCursorGlow from './components/immersive/ImmersiveCursorGlow';
 import AuthModal from './components/auth/AuthModal';
 import MemberDashboard from './components/auth/MemberDashboard';
-import AdminPanel from './components/auth/AdminPanel';
-import Navbar from './components/Navbar';
-import SiteBackground from './components/SiteBackground';
-import Hero from './components/Hero';
-import About from './components/About';
-import Events from './components/Events';
-import TechTimeline from './components/TechTimeline';
-import Team from './components/Team';
-import Contact from './components/Contact';
-import ContactCTA from './components/ContactCTA';
-import Footer from './components/Footer';
+import AdminDashboard from './components/auth/AdminDashboard';
 import AIAssistant from './components/AIAssistant';
-function App() {
-  useImmersiveMotion();
+import LandingPage from './pages/LandingPage';
+import GalleryPage from './pages/GalleryPage';
 
+function App() {
   return (
     <AuthProvider>
-      <div className="site-shell selection:bg-csi-accent selection:text-csi-pale">
-        <ImmersiveCursorGlow />
-        <SiteBackground />
-        <Navbar />
-        <main>
-          <Hero />
-
-          <About />
-
-          <Events />
-          <TechTimeline />
-          <Team />
-          <Contact />
-        </main>
-        <ContactCTA />
-        <Footer />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/gallery" element={<GalleryPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
         <AIAssistant />
         <AuthModal />
         <MemberDashboard />
-        <AdminPanel />
-      </div>
+        <AdminDashboard />
+      </BrowserRouter>
     </AuthProvider>
   );
 }

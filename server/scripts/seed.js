@@ -11,6 +11,7 @@ import { User } from '../src/models/User.js';
 import { Event } from '../src/models/Event.js';
 import { Resource } from '../src/models/Resource.js';
 import { Announcement } from '../src/models/Announcement.js';
+import { GalleryItem } from '../src/models/GalleryItem.js';
 
 const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/csi_platform';
 
@@ -184,6 +185,42 @@ async function seed() {
     },
     { upsert: true }
   );
+
+  const gallerySeed = [
+    {
+      title: 'AI Nexus Workshop',
+      category: 'Workshops',
+      imageUrl:
+        'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=900&auto=format&fit=crop&q=80',
+      caption: 'Hands-on ML labs',
+      sortOrder: 1,
+    },
+    {
+      title: 'CodeStorm Hackathon',
+      category: 'Hackathons',
+      imageUrl:
+        'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=900&auto=format&fit=crop&q=80',
+      caption: '24-hour innovation sprint',
+      sortOrder: 2,
+    },
+    {
+      title: 'CSI Core Team',
+      category: 'Team',
+      imageUrl:
+        'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=900&auto=format&fit=crop&q=80',
+      caption: 'Chapter leadership',
+      sortOrder: 3,
+    },
+  ];
+
+  for (const g of gallerySeed) {
+    await GalleryItem.findOneAndUpdate(
+      { title: g.title },
+      { ...g, isPublished: true, createdBy: admin._id },
+      { upsert: true }
+    );
+  }
+  console.log(`Seeded ${gallerySeed.length} gallery items`);
 
   console.log('Seed complete');
   await mongoose.disconnect();

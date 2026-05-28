@@ -166,7 +166,95 @@ export const api = {
       body: JSON.stringify({ message }),
     }, false);
   },
+
+  gallery(category?: string) {
+    const q = category && category !== 'All' ? `?category=${encodeURIComponent(category)}` : '';
+    return request<{ items: GalleryApiItem[] }>(`/api/gallery${q}`, {}, false);
+  },
+
+  adminUsers() {
+    return request<{ users: ApiUser[] }>('/api/admin/users');
+  },
+
+  adminRegistrations() {
+    return request<{ registrations: AdminRegistration[] }>('/api/admin/registrations');
+  },
+
+  adminAnnouncements() {
+    return request<{ announcements: AnnouncementItem[] }>('/api/admin/announcements');
+  },
+
+  adminCreateAnnouncement(body: { title: string; body: string; audience?: string }) {
+    return request<{ announcement: AnnouncementItem }>('/api/admin/announcements', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+  },
+
+  adminDeleteAnnouncement(id: string) {
+    return request(`/api/admin/announcements/${id}`, { method: 'DELETE' });
+  },
+
+  adminCreateEvent(body: Record<string, unknown>) {
+    return request<{ event: ApiEvent }>('/api/events', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+  },
+
+  adminUpdateEvent(slug: string, body: Record<string, unknown>) {
+    return request<{ event: ApiEvent }>(`/api/events/${slug}`, {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+    });
+  },
+
+  adminDeleteEvent(slug: string) {
+    return request(`/api/events/${slug}`, { method: 'DELETE' });
+  },
+
+  adminGallery(all = true) {
+    return request<{ items: GalleryApiItem[] }>(`/api/gallery?all=${all ? '1' : '0'}`);
+  },
+
+  adminCreateGalleryItem(body: {
+    title: string;
+    category: string;
+    imageUrl: string;
+    caption?: string;
+  }) {
+    return request<{ item: GalleryApiItem }>('/api/gallery', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+  },
+
+  adminDeleteGalleryItem(id: string) {
+    return request(`/api/gallery/${id}`, { method: 'DELETE' });
+  },
 };
+
+export interface GalleryApiItem {
+  id: string;
+  title: string;
+  category: string;
+  imageUrl: string;
+  caption: string;
+}
+
+export interface AnnouncementItem {
+  _id: string;
+  title: string;
+  body: string;
+  isPublished?: boolean;
+}
+
+export interface AdminRegistration {
+  registrationId?: string;
+  user?: { name?: string; email?: string };
+  event?: { title?: string; slug?: string };
+  createdAt?: string;
+}
 
 export function apiUserToProfile(user: ApiUser, extra?: Partial<UserProfile>): UserProfile {
   return {

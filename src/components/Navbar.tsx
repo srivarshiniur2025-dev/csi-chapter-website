@@ -1,16 +1,18 @@
 import { useState, useCallback, type MouseEvent } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import VitChennaiLogo from './VitChennaiLogo';
 import { useAuth } from '../contexts/AuthContext';
 import './Navbar.css';
 
 const navLinks = [
-  { label: 'Home', to: 'home' },
-  { label: 'About', to: 'about' },
-  { label: 'Events', to: 'events' },
-  { label: 'Journey', to: 'journey' },
-  { label: 'Team', to: 'team' },
-  { label: 'Contact Us', to: 'contact' },
+  { label: 'Home', to: 'home', route: false },
+  { label: 'About', to: 'about', route: false },
+  { label: 'Events', to: 'events', route: false },
+  { label: 'Gallery', to: '/gallery', route: true },
+  { label: 'Journey', to: 'journey', route: false },
+  { label: 'Team', to: 'team', route: false },
+  { label: 'Contact Us', to: 'contact', route: false },
 ];
 
 const CodeLogo = () => (
@@ -23,7 +25,9 @@ const CodeLogo = () => (
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { user, profile, loading, openAuth, openDashboard } = useAuth();
+  const location = useLocation();
+  const { user, profile, loading, openAuth, openDashboard, openAdmin } = useAuth();
+  const isAdmin = user?.role === 'admin';
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
@@ -49,11 +53,13 @@ const Navbar = () => {
       .slice(0, 2)
       .toUpperCase() || 'U';
 
+  const sectionHref = (id: string) => (location.pathname === '/' ? `#${id}` : `/#${id}`);
+
   return (
     <header className="csi-navbar">
       <div className="csi-navbar-inner">
         <div className="csi-navbar-left">
-          <a href="#home" className="csi-navbar-brand-cluster" onClick={handleNavClick}>
+          <Link to="/" className="csi-navbar-brand-cluster" onClick={handleNavClick}>
             <span className="csi-navbar-brand">
               <CodeLogo />
               <span className="csi-navbar-brand-text">
@@ -63,18 +69,30 @@ const Navbar = () => {
             </span>
             <span className="csi-navbar-brand-divider" aria-hidden />
             <VitChennaiLogo variant="seal" size="nav" showLabel framed />
-          </a>
+          </Link>
 
           <ul className="csi-navbar-links csi-navbar-links--desktop" role="menubar">
-            {navLinks.map(({ label, to }) => (
+            {navLinks.map(({ label, to, route }) => (
               <li key={label} role="none">
-                <a
-                  href={`#${to}`}
-                  className={`csi-navbar-link${label === 'Home' ? ' is-active' : ''}`}
-                  role="menuitem"
-                >
-                  {label}
-                </a>
+                {route ? (
+                  <Link
+                    to={to}
+                    className={`csi-navbar-link${location.pathname === to ? ' is-active' : ''}`}
+                    role="menuitem"
+                    onClick={handleNavClick}
+                  >
+                    {label}
+                  </Link>
+                ) : (
+                  <a
+                    href={sectionHref(to)}
+                    className={`csi-navbar-link${label === 'Home' && location.pathname === '/' ? ' is-active' : ''}`}
+                    role="menuitem"
+                    onClick={handleNavClick}
+                  >
+                    {label}
+                  </a>
+                )}
               </li>
             ))}
           </ul>
@@ -82,17 +100,28 @@ const Navbar = () => {
 
         <div className="csi-navbar-actions">
           {!loading && user ? (
-            <button
-              type="button"
-              className="csi-navbar-user csi-navbar-user--desktop"
-              onClick={() => openDashboard()}
-              aria-label="Open member dashboard"
-            >
-              <span className="csi-navbar-user__avatar">{initials}</span>
-              <span className="csi-navbar-user__name">
-                {profile?.displayName?.split(' ')[0] || 'Member'}
-              </span>
-            </button>
+            <>
+              {isAdmin && (
+                <button
+                  type="button"
+                  className="csi-navbar-btn-ghost csi-navbar-btn-ghost--desktop"
+                  onClick={() => openAdmin()}
+                >
+                  Admin
+                </button>
+              )}
+              <button
+                type="button"
+                className="csi-navbar-user csi-navbar-user--desktop"
+                onClick={() => openDashboard()}
+                aria-label="Open member dashboard"
+              >
+                <span className="csi-navbar-user__avatar">{initials}</span>
+                <span className="csi-navbar-user__name">
+                  {profile?.displayName?.split(' ')[0] || 'Member'}
+                </span>
+              </button>
+            </>
           ) : (
             <>
               <button
@@ -131,26 +160,51 @@ const Navbar = () => {
         aria-hidden={!menuOpen}
       >
         <nav className="csi-navbar-drawer__nav" aria-label="Mobile">
-          {navLinks.map(({ label, to }) => (
-            <a
-              key={label}
-              href={`#${to}`}
-              className={`csi-navbar-drawer__link${label === 'Home' ? ' is-active' : ''}`}
-              onClick={handleNavClick}
-            >
-              {label}
-            </a>
-          ))}
+          {navLinks.map(({ label, to, route }) =>
+            route ? (
+              <Link
+                key={label}
+                to={to}
+                className={`csi-navbar-drawer__link${location.pathname === to ? ' is-active' : ''}`}
+                onClick={handleNavClick}
+              >
+                {label}
+              </Link>
+            ) : (
+              <a
+                key={label}
+                href={sectionHref(to)}
+                className={`csi-navbar-drawer__link${label === 'Home' && location.pathname === '/' ? ' is-active' : ''}`}
+                onClick={handleNavClick}
+              >
+                {label}
+              </a>
+            )
+          )}
 
           {!loading && user ? (
-            <button
-              type="button"
-              className="csi-navbar-drawer__user"
-              onClick={handleOpenDashboard}
-            >
-              <span className="csi-navbar-user__avatar">{initials}</span>
-              Member Dashboard
-            </button>
+            <>
+              {isAdmin && (
+                <button
+                  type="button"
+                  className="csi-navbar-drawer__user"
+                  onClick={() => {
+                    closeMenu();
+                    openAdmin();
+                  }}
+                >
+                  Admin Console
+                </button>
+              )}
+              <button
+                type="button"
+                className="csi-navbar-drawer__user"
+                onClick={handleOpenDashboard}
+              >
+                <span className="csi-navbar-user__avatar">{initials}</span>
+                Member Dashboard
+              </button>
+            </>
           ) : (
             <div className="csi-navbar-drawer__auth">
               <button

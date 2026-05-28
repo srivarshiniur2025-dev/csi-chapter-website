@@ -329,6 +329,34 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
+.auth-portal-toggle {
+  display: flex;
+  gap: 0.35rem;
+  margin: 0 1.5rem 0.75rem;
+  padding: 0.25rem;
+  border-radius: 10px;
+  border: 1px solid rgba(167, 139, 250, 0.2);
+  background: rgba(6, 4, 18, 0.5);
+}
+
+.auth-portal-toggle__btn {
+  flex: 1;
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: rgba(228, 241, 255, 0.65);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.auth-portal-toggle__btn--active {
+  background: rgba(148, 0, 255, 0.25);
+  color: #e4f1ff;
+  box-shadow: 0 0 16px rgba(148, 0, 255, 0.2);
+}
+
 .auth-panel__body {
   position: relative;
   z-index: 2;

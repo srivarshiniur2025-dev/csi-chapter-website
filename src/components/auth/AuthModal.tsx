@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { LayoutDashboard, X } from 'lucide-react';
 import { ApiError } from '../../lib/api';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth, type AuthPortal } from '../../contexts/AuthContext';
 import {
   DEPARTMENT_OPTIONS,
   DOMAIN_INTEREST_OPTIONS,
@@ -67,6 +67,8 @@ export default function AuthModal() {
   const {
     authOpen,
     authTab,
+    authPortal,
+    setAuthPortal,
     closeAuth,
     firebaseReady,
     authMode,
@@ -295,6 +297,25 @@ export default function AuthModal() {
                   Sign Up
                 </button>
               </div>
+
+              {tab === 'login' && (
+                <div className="auth-portal-toggle" role="group" aria-label="Login as">
+                  <button
+                    type="button"
+                    className={`auth-portal-toggle__btn${authPortal === 'user' ? ' auth-portal-toggle__btn--active' : ''}`}
+                    onClick={() => setAuthPortal('user')}
+                  >
+                    Member
+                  </button>
+                  <button
+                    type="button"
+                    className={`auth-portal-toggle__btn${authPortal === 'admin' ? ' auth-portal-toggle__btn--active' : ''}`}
+                    onClick={() => setAuthPortal('admin' as AuthPortal)}
+                  >
+                    Admin
+                  </button>
+                </div>
+              )}
 
               <div className="auth-panel__body">
                 <AnimatePresence mode="wait">

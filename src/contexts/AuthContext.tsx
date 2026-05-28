@@ -51,6 +51,8 @@ export type AuthMode = 'api' | 'firebase' | 'local';
 
 export type AuthTab = 'login' | 'signup';
 
+export type AuthPortal = 'user' | 'admin';
+
 export interface SessionUser {
   uid: string;
   email: string;
@@ -86,9 +88,11 @@ interface AuthContextValue {
   authReady: boolean;
   authOpen: boolean;
   authTab: AuthTab;
+  authPortal: AuthPortal;
   dashboardOpen: boolean;
   adminOpen: boolean;
-  openAuth: (tab?: AuthTab) => void;
+  openAuth: (tab?: AuthTab, portal?: AuthPortal) => void;
+  setAuthPortal: (portal: AuthPortal) => void;
   closeAuth: () => void;
   openDashboard: () => void;
   closeDashboard: () => void;
@@ -140,6 +144,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [authOpen, setAuthOpen] = useState(false);
   const [authTab, setAuthTab] = useState<AuthTab>('login');
+  const [authPortal, setAuthPortal] = useState<AuthPortal>('user');
   const [dashboardOpen, setDashboardOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
   const dashboardIgnoreCloseRef = useRef(false);
@@ -237,8 +242,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [apiReady, syncLocalProfile]);
 
-  const openAuth = useCallback((tab: AuthTab = 'login') => {
+  const finishAuthSession = useCallback((session: SessionUser, portal: AuthPortal) => {
+    if (portal === 'admin' && session.role !== 'admin') {
+      throw new Error('This account does not have admin access. Try Member login or use admin credentials.');
+    }
+    setAuthOpen(false);
+    if (portal === 'admin') {
+      setDashboardOpen(false);
+      setAdminOpen(true);
+    } else {
+      setAdminOpen(false);
+      setDashboardOpen(true);
+    }
+  }, []);
+
+  const openAuth = useCallback((tab: AuthTab = 'login', portal: AuthPortal = 'user') => {
     setAuthTab(tab);
+    setAuthPortal(portal);
     setAuthOpen(true);
   }, []);
 
@@ -274,23 +294,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { token, user: apiUser } = await api.login(email, password);
         setApiToken(token);
         await applyApiSession(apiUser, token);
-        setAuthOpen(false);
-        setDashboardOpen(true);
+        finishAuthSession(apiToSession(apiUser), authPortal);
         return;
       }
       if (auth) {
         await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
-        await signInWithEmailAndPassword(auth, email.trim(), password);
-        setAuthOpen(false);
-        setDashboardOpen(true);
+        const cred = await signInWithEmailAndPassword(auth, email.trim(), password);
+        const session = firebaseToSession(cred.user);
+        setUser(session);
+        syncLocalProfile(session);
+        finishAuthSession(session, authPortal);
         return;
       }
       const session = localSignIn(email, password);
       applyLocalMemberSession(session);
-      setAuthOpen(false);
-      setDashboardOpen(true);
+      finishAuthSession(session, authPortal);
     },
-    [apiReady, applyApiSession, applyLocalMemberSession]
+    [apiReady, applyApiSession, applyLocalMemberSession, authPortal, finishAuthSession, syncLocalProfile]
   );
 
   const signUp = useCallback(
@@ -310,8 +330,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           domainInterests,
         });
         await applyApiSession(apiUser, token);
-        setAuthOpen(false);
-        setDashboardOpen(true);
+        finishAuthSession(apiToSession(apiUser), 'user');
         return;
       }
       if (auth) {
@@ -322,8 +341,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (domainInterests.length) p.domainInterests = domainInterests;
         saveUserProfile(cred.user.uid, p);
         setProfile(p);
-        setAuthOpen(false);
-        setDashboardOpen(true);
+        finishAuthSession(firebaseToSession(cred.user), 'user');
         return;
       }
       const session = localSignUp({
@@ -334,10 +352,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         domainInterests,
       });
       applyLocalMemberSession(session, { department, domainInterests });
-      setAuthOpen(false);
-      setDashboardOpen(true);
+      finishAuthSession(session, 'user');
     },
-    [apiReady, applyApiSession, applyLocalMemberSession]
+    [apiReady, applyApiSession, applyLocalMemberSession, finishAuthSession]
   );
 
   const signInGoogle = useCallback(async () => {
@@ -346,20 +363,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     const provider = new GoogleAuthProvider();
     const cred = await signInWithPopup(auth, provider);
+    let session = firebaseToSession(cred.user);
     if (apiReady) {
       const idToken = await cred.user.getIdToken();
       try {
         const { token, user: apiUser } = await api.google(idToken);
         await applyApiSession(apiUser, token);
+        session = apiToSession(apiUser);
       } catch {
-        const session = firebaseToSession(cred.user);
         setUser(session);
         syncLocalProfile(session);
       }
+    } else {
+      setUser(session);
+      syncLocalProfile(session);
     }
-    setAuthOpen(false);
-    setDashboardOpen(true);
-  }, [apiReady, applyApiSession, syncLocalProfile]);
+    finishAuthSession(session, authPortal);
+  }, [apiReady, applyApiSession, syncLocalProfile, authPortal, finishAuthSession]);
 
   const signOut = useCallback(async () => {
     setApiToken(null);
@@ -418,9 +438,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       authReady,
       authOpen,
       authTab,
+      authPortal,
       dashboardOpen,
       adminOpen,
       openAuth,
+      setAuthPortal,
       closeAuth,
       openDashboard,
       closeDashboard,
@@ -445,9 +467,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       authReady,
       authOpen,
       authTab,
+      authPortal,
       dashboardOpen,
       adminOpen,
       openAuth,
+      setAuthPortal,
       closeAuth,
       openDashboard,
       closeDashboard,

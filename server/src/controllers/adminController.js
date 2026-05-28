@@ -58,3 +58,22 @@ export const listResourcesAdmin = asyncHandler(async (req, res) => {
   const resources = await Resource.find().sort({ createdAt: -1 });
   res.json({ resources });
 });
+
+export const listRegistrations = asyncHandler(async (req, res) => {
+  const registrations = await Registration.find()
+    .populate('user', 'name email role')
+    .populate('event', 'title slug')
+    .sort({ createdAt: -1 })
+    .limit(100);
+  res.json({ registrations });
+});
+
+export const listAnnouncements = asyncHandler(async (req, res) => {
+  const announcements = await Announcement.find().sort({ createdAt: -1 });
+  res.json({ announcements });
+});
+
+export const deleteAnnouncement = asyncHandler(async (req, res) => {
+  await Announcement.findByIdAndDelete(req.params.id);
+  res.json({ message: 'Announcement deleted' });
+});
