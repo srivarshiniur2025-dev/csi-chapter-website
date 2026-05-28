@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, useInView, animate } from 'framer-motion';
 import { Brain, Globe, Bot, Terminal } from 'lucide-react';
+import SectionAmbient from './ambient/SectionAmbient';
 import './About.css';
 
 const domains = [
@@ -63,6 +64,7 @@ function AnimatedCounter({ target }: { target: number }) {
 const About = () => {
   return (
     <section id="about" className="about-section text-csi-pale">
+      <SectionAmbient preset="about" />
       <div className="about-container">
         <motion.header
           className="about-header"

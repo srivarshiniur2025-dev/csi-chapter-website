@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { LucideIcon } from 'lucide-react';
+import SectionAmbient from './ambient/SectionAmbient';
 import {
   Calendar,
   MapPin,
@@ -320,6 +321,7 @@ const Events = () => {
 
   return (
     <section id="events" className="events-section text-csi-pale">
+      <SectionAmbient preset="events" />
       <div className="events-container">
         <motion.header
           className="events-header"

@@ -11,6 +11,7 @@ import {
   Monitor,
   Sparkles,
 } from 'lucide-react';
+import SectionAmbient from './ambient/SectionAmbient';
 import './TechTimeline.css';
 
 const CINEMATIC_EASE = [0.22, 1, 0.36, 1] as const;
@@ -240,6 +241,7 @@ const TechTimeline = () => {
 
   return (
     <section id="journey" className="timeline-section text-csi-pale" aria-labelledby="journey-heading">
+      <SectionAmbient preset="journey" />
       <div className="timeline-section__particles" aria-hidden>
         {Array.from({ length: 14 }).map((_, i) => (
           <span key={i} className="timeline-section__particle" style={{ '--p': i } as CSSProperties} />

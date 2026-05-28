@@ -2,6 +2,7 @@ import { useState, useCallback, type FormEvent } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Send, Sparkles } from 'lucide-react';
 import { FaLinkedin, FaGithub, FaInstagram } from 'react-icons/fa';
+import SectionAmbient from './ambient/SectionAmbient';
 import './Contact.css';
 
 const CINEMATIC_EASE = [0.22, 1, 0.36, 1] as const;
@@ -59,6 +60,7 @@ const Contact = () => {
 
   return (
     <section id="contact" className="contact-section text-csi-pale">
+      <SectionAmbient preset="contact" />
       <div className="contact-container">
         <motion.header
           className="contact-header"

@@ -1,0 +1,274 @@
+/* —— Section-scoped ambient floating objects —— */
+.ambient-section {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.ambient-section::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(148, 0, 255, 0.03) 48%,
+    transparent 100%
+  );
+  opacity: 0.35;
+  animation: ambient-scan 14s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes ambient-scan {
+  0%,
+  100% {
+    transform: translateY(-8%);
+    opacity: 0.2;
+  }
+  50% {
+    transform: translateY(8%);
+    opacity: 0.4;
+  }
+}
+
+.ambient-obj-shell {
+  position: absolute;
+  pointer-events: none;
+  transform: translate(
+    calc(var(--ambient-mx, 0) * var(--ambient-depth, 0.4) * 14px),
+    calc(var(--ambient-my, 0) * var(--ambient-depth, 0.4) * 9px)
+  );
+  will-change: transform;
+}
+
+.ambient-obj {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+/* Holographic cube */
+.ambient-obj--cube {
+  aspect-ratio: 1;
+  border-radius: 4px;
+  background: linear-gradient(
+    135deg,
+    rgba(148, 0, 255, 0.12) 0%,
+    rgba(107, 140, 255, 0.06) 50%,
+    rgba(148, 0, 255, 0.1) 100%
+  );
+  border: 1px solid rgba(167, 139, 250, 0.35);
+  box-shadow:
+    0 0 20px rgba(124, 58, 237, 0.2),
+    inset 0 0 12px rgba(174, 210, 255, 0.06);
+  transform: rotateX(22deg) rotateY(-18deg);
+}
+
+.ambient-obj--cube::before {
+  content: '';
+  position: absolute;
+  inset: 18%;
+  border: 1px solid rgba(174, 210, 255, 0.2);
+  border-radius: 2px;
+}
+
+/* Glowing sphere */
+.ambient-obj--sphere {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 30%,
+    rgba(232, 242, 255, 0.35) 0%,
+    rgba(148, 0, 255, 0.2) 35%,
+    transparent 68%
+  );
+  box-shadow: 0 0 28px rgba(124, 58, 237, 0.25);
+  animation: ambient-pulse 6s ease-in-out infinite;
+}
+
+/* Neon ring */
+.ambient-obj--ring {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid rgba(167, 139, 250, 0.4);
+  box-shadow:
+    0 0 16px rgba(124, 58, 237, 0.15),
+    inset 0 0 12px rgba(148, 0, 255, 0.08);
+  background: transparent;
+}
+
+.ambient-obj--ring::after {
+  content: '';
+  position: absolute;
+  inset: 22%;
+  border-radius: 50%;
+  border: 1px dashed rgba(174, 210, 255, 0.15);
+}
+
+/* Hexagon */
+.ambient-obj--hex {
+  aspect-ratio: 1;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(59, 130, 246, 0.08));
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  border: none;
+  box-shadow: 0 0 18px rgba(124, 58, 237, 0.2);
+}
+
+/* AI node */
+.ambient-obj--node {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgba(174, 210, 255, 0.9);
+  box-shadow: 0 0 12px rgba(148, 0, 255, 0.6);
+}
+
+.ambient-obj--node::before,
+.ambient-obj--node::after {
+  content: '';
+  position: absolute;
+  background: linear-gradient(90deg, rgba(148, 0, 255, 0.4), transparent);
+  height: 1px;
+  top: 50%;
+}
+
+.ambient-obj--node::before {
+  width: 120%;
+  left: 100%;
+}
+
+.ambient-obj--node::after {
+  width: 80%;
+  right: 100%;
+  transform: rotate(120deg);
+  transform-origin: right center;
+}
+
+/* Wireframe box */
+.ambient-obj--wire {
+  aspect-ratio: 1.2;
+  border: 1px solid rgba(167, 139, 250, 0.28);
+  border-radius: 6px;
+  background: transparent;
+  box-shadow: inset 0 0 20px rgba(124, 58, 237, 0.06);
+}
+
+.ambient-obj--wire::before {
+  content: '';
+  position: absolute;
+  inset: 12%;
+  border: 1px solid rgba(174, 210, 255, 0.12);
+  border-radius: 4px;
+}
+
+/* Glass panel */
+.ambient-obj--glass {
+  border-radius: 10px;
+  background: rgba(14, 9, 38, 0.25);
+  border: 1px solid rgba(167, 139, 250, 0.22);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow:
+    0 0 24px rgba(124, 58, 237, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* Gradient blob */
+.ambient-obj--blob {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(148, 0, 255, 0.25), transparent 70%);
+  filter: blur(12px);
+}
+
+/* UI fragment */
+.ambient-obj--fragment {
+  aspect-ratio: 0.65;
+  border-radius: 4px;
+  border: 1px solid rgba(167, 139, 250, 0.35);
+  background: linear-gradient(160deg, rgba(148, 0, 255, 0.1), transparent);
+  transform: rotate(12deg);
+}
+
+/* Orbiting dot */
+.ambient-obj--orbit {
+  aspect-ratio: 1;
+}
+
+.ambient-obj--orbit::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(148, 0, 255, 0.2);
+}
+
+.ambient-obj--orbit::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  margin-left: -2.5px;
+  border-radius: 50%;
+  background: #aed2ff;
+  box-shadow: 0 0 8px rgba(148, 0, 255, 0.8);
+  animation: ambient-orbit 10s linear infinite;
+  transform-origin: 50% 50%;
+}
+
+@keyframes ambient-orbit {
+  from {
+    transform: rotate(0deg) translateY(-50%);
+  }
+  to {
+    transform: rotate(360deg) translateY(-50%);
+  }
+}
+
+/* Holographic line */
+.ambient-obj--line {
+  height: 1px !important;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(167, 139, 250, 0.5),
+    rgba(107, 140, 255, 0.35),
+    transparent
+  );
+  box-shadow: 0 0 12px rgba(124, 58, 237, 0.3);
+  opacity: 0.4 !important;
+}
+
+@keyframes ambient-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.7;
+    filter: brightness(1.15);
+  }
+}
+
+@media (max-width: 767px) {
+  .ambient-obj-shell {
+    transform: none;
+  }
+
+  .ambient-obj {
+    opacity: 0.35 !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-section {
+    display: none;
+  }
+}

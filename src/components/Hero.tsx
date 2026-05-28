@@ -2,6 +2,7 @@ import { useRef, useCallback } from 'react';
 import { ChevronRight } from 'lucide-react';
 import HeroAtmosphere from './HeroAtmosphere';
 import HeroGlobe from './HeroGlobe';
+import HeroAmbient from './ambient/HeroAmbient';
 import './Hero.css';
 
 const Hero = () => {
@@ -26,6 +27,7 @@ const Hero = () => {
       onMouseLeave={handleMouseLeave}
     >
       <HeroAtmosphere />
+      <HeroAmbient />
       <div className="hero-globe-layer" aria-hidden>
         <HeroGlobe mouse={mouseRef} />
       </div>

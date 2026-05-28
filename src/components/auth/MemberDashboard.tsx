@@ -13,6 +13,7 @@ import {
   UserRound,
   X,
 } from 'lucide-react';
+import SectionAmbient from '../ambient/SectionAmbient';
 import { CHAPTER_EVENTS_CATALOG, type EventCatalogItem } from '../../data/chapterEvents';
 import { dispatchOpenNova, useAuth } from '../../contexts/AuthContext';
 import { api, isApiConfigured } from '../../lib/api';
@@ -172,6 +173,7 @@ export default function MemberDashboard() {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.28, ease: CINEMATIC_EASE }}
         >
+          <SectionAmbient preset="dashboard" />
           <motion.div
             className="pdash-backdrop"
             initial={{ opacity: 0 }}

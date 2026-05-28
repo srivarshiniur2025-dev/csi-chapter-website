@@ -9,11 +9,13 @@
   justify-content: center;
   padding: clamp(0.75rem, 3vw, 1.5rem);
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .pdash-backdrop {
   position: absolute;
   inset: 0;
+  z-index: 0;
   background:
     radial-gradient(ellipse 70% 50% at 50% 40%, rgba(88, 28, 180, 0.2), transparent),
     rgba(2, 2, 14, 0.82);
@@ -23,7 +25,7 @@
 
 .pdash-stage__center {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   width: 100%;
   max-width: 52rem;
   max-height: min(92vh, 44rem);

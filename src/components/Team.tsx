@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { FaLinkedin, FaGithub, FaInstagram } from 'react-icons/fa';
+import SectionAmbient from './ambient/SectionAmbient';
 import './Team.css';
 
 const CINEMATIC_EASE = [0.22, 1, 0.36, 1] as const;
@@ -144,6 +145,7 @@ const TeamMemberCard = ({ member, index }: { member: TeamMember; index: number }
 const Team = () => {
   return (
     <section id="team" className="team-section text-csi-pale">
+      <SectionAmbient preset="team" />
       <div className="team-container">
         <motion.header
           className="team-header"

@@ -1,4 +1,5 @@
 import { AuthProvider } from './contexts/AuthContext';
+import { useAmbientParallax } from './hooks/useAmbientParallax';
 import AuthModal from './components/auth/AuthModal';
 import MemberDashboard from './components/auth/MemberDashboard';
 import AdminPanel from './components/auth/AdminPanel';
@@ -14,6 +15,8 @@ import ContactCTA from './components/ContactCTA';
 import Footer from './components/Footer';
 import AIAssistant from './components/AIAssistant';
 function App() {
+  useAmbientParallax();
+
   return (
     <AuthProvider>
       <div className="site-shell selection:bg-csi-accent selection:text-csi-pale">
