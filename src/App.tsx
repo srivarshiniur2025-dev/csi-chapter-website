@@ -1,3 +1,7 @@
+import { AuthProvider } from './contexts/AuthContext';
+import AuthModal from './components/auth/AuthModal';
+import MemberDashboard from './components/auth/MemberDashboard';
+import AdminPanel from './components/auth/AdminPanel';
 import Navbar from './components/Navbar';
 import SiteBackground from './components/SiteBackground';
 import Hero from './components/Hero';
@@ -11,23 +15,28 @@ import Footer from './components/Footer';
 import AIAssistant from './components/AIAssistant';
 function App() {
   return (
-    <div className="site-shell selection:bg-csi-accent selection:text-csi-pale">
-      <SiteBackground />
-      <Navbar />
-      <main>
-        <Hero />
+    <AuthProvider>
+      <div className="site-shell selection:bg-csi-accent selection:text-csi-pale">
+        <SiteBackground />
+        <Navbar />
+        <main>
+          <Hero />
 
-        <About />
+          <About />
 
-        <Events />
-        <TechTimeline />
-        <Team />
-        <Contact />
-      </main>
-      <ContactCTA />
-      <Footer />
-      <AIAssistant />
-    </div>
+          <Events />
+          <TechTimeline />
+          <Team />
+          <Contact />
+        </main>
+        <ContactCTA />
+        <Footer />
+        <AIAssistant />
+        <AuthModal />
+        <MemberDashboard />
+        <AdminPanel />
+      </div>
+    </AuthProvider>
   );
 }
 

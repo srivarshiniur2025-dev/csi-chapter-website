@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { Menu, X } from 'lucide-react';
 import VitChennaiLogo from './VitChennaiLogo';
+import { useAuth } from '../contexts/AuthContext';
 import './Navbar.css';
 
 const navLinks = [
@@ -22,12 +23,21 @@ const CodeLogo = () => (
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { user, profile, loading, openAuth, openDashboard } = useAuth();
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
   const handleNavClick = useCallback(() => {
     closeMenu();
   }, [closeMenu]);
+
+  const initials =
+    (profile?.displayName || user?.displayName || user?.email || 'U')
+      .split(' ')
+      .map((w) => w[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase() || 'U';
 
   return (
     <header className="csi-navbar">
@@ -61,12 +71,36 @@ const Navbar = () => {
         </div>
 
         <div className="csi-navbar-actions">
-          <a href="#team" className="csi-navbar-btn-primary csi-navbar-btn-primary--desktop">
-            Join Us
-            <span className="csi-navbar-btn-arrow" aria-hidden>
-              ↗
-            </span>
-          </a>
+          {!loading && user ? (
+            <button
+              type="button"
+              className="csi-navbar-user csi-navbar-user--desktop"
+              onClick={() => openDashboard()}
+              aria-label="Open member dashboard"
+            >
+              <span className="csi-navbar-user__avatar">{initials}</span>
+              <span className="csi-navbar-user__name">
+                {profile?.displayName?.split(' ')[0] || 'Member'}
+              </span>
+            </button>
+          ) : (
+            <>
+              <button
+                type="button"
+                className="csi-navbar-btn-ghost csi-navbar-btn-ghost--desktop"
+                onClick={() => openAuth('login')}
+              >
+                Login
+              </button>
+              <button
+                type="button"
+                className="csi-navbar-btn-primary csi-navbar-btn-primary--desktop"
+                onClick={() => openAuth('signup')}
+              >
+                Sign Up
+              </button>
+            </>
+          )}
 
           <button
             type="button"
@@ -97,9 +131,43 @@ const Navbar = () => {
               {label}
             </a>
           ))}
-          <a href="#team" className="csi-navbar-drawer__cta" onClick={handleNavClick}>
-            Join Us ↗
-          </a>
+
+          {!loading && user ? (
+            <button
+              type="button"
+              className="csi-navbar-drawer__user"
+              onClick={() => {
+                closeMenu();
+                openDashboard();
+              }}
+            >
+              <span className="csi-navbar-user__avatar">{initials}</span>
+              Member Dashboard
+            </button>
+          ) : (
+            <div className="csi-navbar-drawer__auth">
+              <button
+                type="button"
+                className="csi-navbar-drawer__auth-login"
+                onClick={() => {
+                  closeMenu();
+                  openAuth('login');
+                }}
+              >
+                Login
+              </button>
+              <button
+                type="button"
+                className="csi-navbar-drawer__cta"
+                onClick={() => {
+                  closeMenu();
+                  openAuth('signup');
+                }}
+              >
+                Sign Up
+              </button>
+            </div>
+          )}
         </nav>
       </div>
     </header>

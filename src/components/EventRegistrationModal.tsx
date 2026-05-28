@@ -29,6 +29,8 @@ import {
   YEAR_DEPT_OPTIONS,
   parseEventStart,
 } from '../lib/eventRegistration';
+import { useAuth } from '../contexts/AuthContext';
+import { api, getApiToken } from '../lib/api';
 import './EventRegistrationModal.css';
 
 const CINEMATIC_EASE = [0.22, 1, 0.36, 1] as const;
@@ -88,12 +90,13 @@ function EventPassQR({ registrationId }: { registrationId: string }) {
 }
 
 const EventRegistrationModal = ({ event, onClose }: EventRegistrationModalProps) => {
+  const { user, registerEvent, refreshProfile, apiReady } = useAuth();
   const [form, setForm] = useState<RegistrationFormData>(EMPTY_FORM);
   const [errors, setErrors] = useState<Partial<Record<keyof RegistrationFormData, string>>>({});
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [registrationId, setRegistrationId] = useState('');
-  const [seatsTaken, setSeatsTaken] = useState(() => getSeatsTaken(event.id));
+  const [seatsTaken, setSeatsTaken] = useState(() => event.seatsTaken ?? getSeatsTaken(event.id));
   const [countdown, setCountdown] = useState(() =>
     getCountdown(parseEventStart(event.startISO))
   );
@@ -136,14 +139,42 @@ const EventRegistrationModal = ({ event, onClose }: EventRegistrationModalProps)
     if (spotsLeft <= 0 || !validate()) return;
 
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 900));
-
-    const id = generateRegistrationId(event.id);
-    const taken = recordSeatTaken(event.id);
-    setSeatsTaken(taken);
-    setRegistrationId(id);
-    setSubmitting(false);
-    setSuccess(true);
+    try {
+      if (apiReady && user && getApiToken()) {
+        const { registration } = await api.registerEvent(event.id, {
+          name: form.name.trim(),
+          email: form.email.trim(),
+          domain: form.domain,
+          yearDept: form.yearDept,
+          message: form.message.trim(),
+        });
+        const id = registration.registrationId;
+        setRegistrationId(id);
+        setSeatsTaken(registration.event?.seatsTaken ?? seatsTaken + 1);
+        await refreshProfile();
+      } else {
+        await new Promise((r) => setTimeout(r, 900));
+        const id = generateRegistrationId(event.id);
+        const taken = recordSeatTaken(event.id);
+        setSeatsTaken(taken);
+        setRegistrationId(id);
+        if (user) {
+          registerEvent({
+            id,
+            eventId: event.id,
+            eventTitle: event.title,
+            registrationId: id,
+            registeredAt: new Date().toISOString(),
+            eventDate: event.startISO,
+          });
+        }
+      }
+      setSuccess(true);
+    } catch (err) {
+      setErrors({ email: err instanceof Error ? err.message : 'Registration failed' });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleAddToCalendar = () => {

@@ -1,3 +1,5 @@
+import { api, isApiConfigured } from './api';
+
 export interface QuickAction {
   id: string;
   label: string;
@@ -93,6 +95,20 @@ const KNOWLEDGE: ResponseMatch[] = [
     scrollTo: 'about',
   },
 ];
+
+export async function getAssistantResponseAsync(
+  input: string
+): Promise<{ text: string; scrollTo?: string }> {
+  if (isApiConfigured()) {
+    try {
+      const { reply } = await api.assistantChat(input);
+      return { text: reply };
+    } catch {
+      /* fall through to local knowledge */
+    }
+  }
+  return getAssistantResponse(input);
+}
 
 export function getAssistantResponse(input: string): { text: string; scrollTo?: string } {
   const normalized = input.toLowerCase().trim();

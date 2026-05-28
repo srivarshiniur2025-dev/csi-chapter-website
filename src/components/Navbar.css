@@ -262,6 +262,92 @@
   font-size: 0.85em;
 }
 
+.csi-navbar-btn-ghost--desktop {
+  display: inline-flex;
+}
+
+.csi-navbar-user {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.55rem 0.35rem 0.35rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 0, 255, 0.35);
+  background: rgba(10, 14, 39, 0.5);
+  cursor: pointer;
+  transition: border-color 0.22s, box-shadow 0.22s, transform 0.2s;
+}
+
+.csi-navbar-user:hover {
+  border-color: rgba(148, 0, 255, 0.55);
+  box-shadow: 0 0 20px rgba(148, 0, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+.csi-navbar-user__avatar {
+  width: 1.75rem;
+  height: 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #e8f2ff;
+  background: linear-gradient(135deg, rgba(148, 0, 255, 0.95), rgba(107, 140, 255, 0.75));
+  box-shadow: 0 0 12px rgba(148, 0, 255, 0.35);
+}
+
+.csi-navbar-user__name {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(232, 242, 255, 0.9);
+  max-width: 5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.csi-navbar-drawer__auth {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 0.5rem;
+}
+
+.csi-navbar-drawer__auth-login {
+  padding: 0.75rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(174, 210, 255, 0.9);
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(148, 0, 255, 0.25);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.csi-navbar-drawer__user {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 0.5rem;
+  padding: 0.85rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #e8f2ff;
+  background: linear-gradient(135deg, rgba(148, 0, 255, 0.25), rgba(107, 0, 199, 0.35));
+  border: 1px solid rgba(148, 0, 255, 0.4);
+  border-radius: 10px;
+  cursor: pointer;
+  width: 100%;
+}
+
 @media (max-width: 900px) {
   .csi-navbar-brand-sub {
     display: none;
@@ -274,6 +360,11 @@
   .csi-navbar-link {
     padding: 0.5rem 0.65rem;
     font-size: 0.65rem;
+  }
+
+  .csi-navbar-btn-ghost--desktop,
+  .csi-navbar-user--desktop {
+    display: none;
   }
 }
 

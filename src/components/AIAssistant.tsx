@@ -14,7 +14,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { X, Send, Sparkles } from 'lucide-react';
 import {
   BOT_NAME,
-  getAssistantResponse,
+  getAssistantResponseAsync,
   scrollToSection,
   QUICK_ACTIONS,
   WELCOME_GREETING,
@@ -22,6 +22,7 @@ import {
   WELCOME_SUBLINE,
 } from '../lib/aiAssistant';
 import type { QuickAction } from '../lib/aiAssistant';
+import { useAuth } from '../contexts/AuthContext';
 import './AIAssistant.css';
 
 type ChatRole = 'user' | 'assistant';
@@ -31,6 +32,13 @@ type ChatMessage = {
   role: ChatRole;
   text: string;
 };
+
+function buildWelcomeMessage(name?: string, domains: string[] = []): string {
+  if (!name) return WELCOME_MESSAGE;
+  const focus = domains.slice(0, 2).join(' and ');
+  if (!focus) return `Hi ${name}! I’m CSI Nova 👋\nReady to help with events, registrations, and resources.`;
+  return `Hi ${name}! I’m CSI Nova 👋\nI can recommend ${focus} opportunities and upcoming CSI events.`;
+}
 
 const CINEMATIC_EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -120,6 +128,7 @@ function AssistantReply({
 }
 
 export default function AIAssistant() {
+  const { user, profile } = useAuth();
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -137,6 +146,25 @@ export default function AIAssistant() {
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, typingText, thinking]);
+
+  useEffect(() => {
+    const personalized = buildWelcomeMessage(
+      (profile?.displayName || user?.displayName || '').split(' ')[0],
+      profile?.domainInterests ?? []
+    );
+    setMessages((prev) => {
+      if (!prev.length || prev[0]?.id !== 'welcome') return prev;
+      const next = [...prev];
+      next[0] = { ...next[0], text: personalized };
+      return next;
+    });
+  }, [profile?.displayName, profile?.domainInterests, user?.displayName]);
+
+  useEffect(() => {
+    const onOpenNova = () => setOpen(true);
+    window.addEventListener('csi-open-nova', onOpenNova);
+    return () => window.removeEventListener('csi-open-nova', onOpenNova);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -192,7 +220,7 @@ export default function AIAssistant() {
 
     await new Promise((r) => setTimeout(r, 500));
 
-    const { text: reply, scrollTo } = getAssistantResponse(userText);
+    const { text: reply, scrollTo } = await getAssistantResponseAsync(userText);
 
     setThinking(false);
     const full = reply.replaceAll('**', '');

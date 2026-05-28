@@ -17,8 +17,42 @@ import {
   Cpu,
 } from 'lucide-react';
 import { useMediaQuery } from '../lib/useMediaQuery';
+import { api, isApiConfigured, type ApiEvent } from '../lib/api';
 import EventRegistrationModal from './EventRegistrationModal';
 import './Events.css';
+
+const TECH_ICON_MAP: Record<string, LucideIcon> = {
+  brain: Brain,
+  star: Star,
+  cpu: Cpu,
+  layers: Layers,
+  code: Code2,
+  globe: Globe,
+  terminal: Terminal,
+  bot: Bot,
+};
+
+function mapApiEvent(e: ApiEvent): ChapterEvent {
+  const icons = (e.techIcons || [])
+    .map((key) => TECH_ICON_MAP[key.toLowerCase()])
+    .filter(Boolean) as LucideIcon[];
+  return {
+    id: e.id,
+    title: e.title,
+    date: e.date,
+    venue: e.venue,
+    label: e.label,
+    image: e.image,
+    imageAlt: e.imageAlt,
+    shortDescription: e.shortDescription,
+    fullDescription: e.fullDescription,
+    startISO: e.startISO,
+    totalSeats: e.totalSeats,
+    seatsTaken: e.seatsTaken,
+    speaker: e.speaker,
+    techIcons: icons.length ? icons : [Code2, Layers],
+  };
+}
 
 export interface ChapterEvent {
   id: string;
@@ -32,6 +66,7 @@ export interface ChapterEvent {
   fullDescription: string;
   startISO: string;
   totalSeats: number;
+  seatsTaken?: number;
   speaker: { name: string; role: string };
   techIcons: LucideIcon[];
 }
@@ -193,6 +228,7 @@ function getCardMotion(
 }
 
 const Events = () => {
+  const [events, setEvents] = useState<ChapterEvent[]>(eventsData);
   const [activeIndex, setActiveIndex] = useState(0);
   const [selected, setSelected] = useState<ChapterEvent | null>(null);
   const [cardSpread, setCardSpread] = useState(getCardSpread);
@@ -202,7 +238,19 @@ const Events = () => {
   const trackRef = useRef<HTMLDivElement>(null);
   const bannerMediaRef = useRef<HTMLDivElement>(null);
   const parallaxRaf = useRef(0);
-  const total = eventsData.length;
+  const total = events.length;
+
+  useEffect(() => {
+    if (!isApiConfigured()) return;
+    api
+      .events()
+      .then(({ events: remote }) => {
+        if (remote?.length) setEvents(remote.map(mapApiEvent));
+      })
+      .catch(() => {
+        /* keep static fallback */
+      });
+  }, []);
 
   useEffect(() => {
     let timeoutId: ReturnType<typeof setTimeout>;
@@ -316,7 +364,7 @@ const Events = () => {
             <div className="events-carousel__floor" aria-hidden />
             <div className="events-carousel__center-beam" aria-hidden />
             <div ref={trackRef} className="events-carousel__track">
-              {eventsData.map((event, index) => {
+              {events.map((event, index) => {
                 const cardMotion = getCardMotion(
                   index,
                   activeIndex,
@@ -457,7 +505,7 @@ const Events = () => {
         </div>
 
         <div className="events-carousel__dots">
-          {eventsData.map((event, i) => (
+          {events.map((event, i) => (
             <button
               key={event.id}
               type="button"
