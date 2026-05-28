@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState, type CSSProperties, type FormEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Sparkles, X } from 'lucide-react';
+import { LayoutDashboard, X } from 'lucide-react';
+import { ApiError } from '../../lib/api';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   DEPARTMENT_OPTIONS,
@@ -34,6 +35,14 @@ function mapAuthError(code: string): string {
   return map[code] ?? 'Something went wrong. Please try again.';
 }
 
+function getErrorMessage(err: unknown): string {
+  if (err instanceof ApiError) return err.message;
+  const code = (err as { code?: string }).code;
+  if (code) return mapAuthError(code);
+  if (err instanceof Error && err.message) return err.message;
+  return 'Something went wrong. Please try again.';
+}
+
 function AuthParticles() {
   return (
     <div className="auth-stage__particles" aria-hidden>
@@ -60,7 +69,7 @@ export default function AuthModal() {
     authTab,
     closeAuth,
     firebaseReady,
-    apiReady,
+    authMode,
     openAuth,
     signIn,
     signUp,
@@ -79,7 +88,7 @@ export default function AuthModal() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
-  const authReady = firebaseReady || apiReady;
+  const authReady = true;
 
   useEffect(() => {
     if (authOpen) setTab(authTab);
@@ -135,8 +144,7 @@ export default function AuthModal() {
     try {
       await signIn(email, password, remember);
     } catch (err) {
-      const code = (err as { code?: string }).code ?? '';
-      setError(mapAuthError(code));
+      setError(getErrorMessage(err));
     } finally {
       setBusy(false);
     }
@@ -145,8 +153,9 @@ export default function AuthModal() {
   const onSignup = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
-    if (!name.trim() || !email.trim() || !password || !department) {
-      setError('Fill in all required fields.');
+    const displayName = name.trim() || email.trim().split('@')[0].replace(/[._]/g, ' ');
+    if (!email.trim() || !password || !department) {
+      setError('Enter email, password, and department.');
       return;
     }
     if (password !== confirm) {
@@ -159,10 +168,9 @@ export default function AuthModal() {
     }
     setBusy(true);
     try {
-      await signUp(name, email, password, department, domainInterests);
+      await signUp(displayName, email, password, department, domainInterests);
     } catch (err) {
-      const code = (err as { code?: string }).code ?? '';
-      setError(mapAuthError(code));
+      setError(getErrorMessage(err));
     } finally {
       setBusy(false);
     }
@@ -174,8 +182,7 @@ export default function AuthModal() {
     try {
       await signInGoogle();
     } catch (err) {
-      const code = (err as { code?: string }).code ?? '';
-      setError(mapAuthError(code));
+      setError(getErrorMessage(err));
     } finally {
       setBusy(false);
     }
@@ -193,8 +200,7 @@ export default function AuthModal() {
       await resetPassword(email);
       setInfo('Password reset link sent. Check your inbox.');
     } catch (err) {
-      const code = (err as { code?: string }).code ?? '';
-      setError(mapAuthError(code));
+      setError(getErrorMessage(err));
     } finally {
       setBusy(false);
     }
@@ -255,11 +261,13 @@ export default function AuthModal() {
               <header className="auth-panel__header">
                 <div className="auth-panel__brand">
                   <span className="auth-panel__icon">
-                    <Sparkles size={16} strokeWidth={2} />
+                    <LayoutDashboard size={16} strokeWidth={2} />
                   </span>
                   <div>
-                    <p className="auth-panel__title">CSI Nova Access</p>
-                    <p className="auth-panel__subtitle">Welcome to CSI VIT Chennai</p>
+                    <p className="auth-panel__title">CSI Member Platform</p>
+                    <p className="auth-panel__subtitle">
+                      Dashboard · event reminders · registrations · admin tools
+                    </p>
                   </div>
                 </div>
                 <button type="button" className="auth-panel__close" onClick={closeAuth} aria-label="Close">
@@ -298,10 +306,20 @@ export default function AuthModal() {
                     exit={{ opacity: 0, y: -4 }}
                     transition={{ duration: 0.22, ease: CINEMATIC_EASE }}
                   >
-                    {!authReady && (
+                    <p className="auth-panel__features">
+                      Sign in to unlock your personalized member hub, registered events, reminders,
+                      bookmarks, and CSI Nova assistant. Admins can manage events from the admin console.
+                    </p>
+
+                    {authMode === 'local' && (
                       <div className="auth-alert auth-alert--info">
-                        Set <code>VITE_API_URL</code> for Mongo auth, or add Firebase keys from{' '}
-                        <code>.env.example</code>.
+                        Demo mode: accounts are saved on this browser. For cloud sync, set{' '}
+                        <code>VITE_API_URL</code> or Firebase keys in <code>.env</code>.
+                      </div>
+                    )}
+                    {authMode === 'api' && (
+                      <div className="auth-alert auth-alert--info auth-alert--compact">
+                        Connected to CSI cloud API — registrations sync across devices.
                       </div>
                     )}
 

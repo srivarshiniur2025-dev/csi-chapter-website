@@ -32,6 +32,12 @@ import {
   type ApiUser,
 } from '../lib/api';
 import {
+  getLocalSession,
+  localSignIn,
+  localSignOut,
+  localSignUp,
+} from '../lib/localAuth';
+import {
   addRegisteredEvent,
   loadUserProfile,
   saveUserProfile,
@@ -39,6 +45,8 @@ import {
   type RegisteredEventRecord,
   type UserProfile,
 } from '../lib/userDashboard';
+
+export type AuthMode = 'api' | 'firebase' | 'local';
 
 export type AuthTab = 'login' | 'signup';
 
@@ -73,6 +81,8 @@ interface AuthContextValue {
   loading: boolean;
   firebaseReady: boolean;
   apiReady: boolean;
+  authMode: AuthMode;
+  authReady: boolean;
   authOpen: boolean;
   authTab: AuthTab;
   dashboardOpen: boolean;
@@ -134,6 +144,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const firebaseReady = isFirebaseConfigured();
   const apiReady = isApiConfigured();
+  const authMode: AuthMode = apiReady ? 'api' : firebaseReady ? 'firebase' : 'local';
+  const authReady = true;
+
+  const applyLocalMemberSession = useCallback(
+    (session: SessionUser, extras?: { department?: string; domainInterests?: DomainInterest[] }) => {
+      setUser(session);
+      const p = loadUserProfile(session.uid, session.email, session.displayName ?? '');
+      if (extras?.department) p.department = extras.department;
+      if (extras?.domainInterests?.length) p.domainInterests = extras.domainInterests;
+      saveUserProfile(session.uid, p);
+      setProfile(p);
+    },
+    []
+  );
 
   const syncLocalProfile = useCallback((session: SessionUser) => {
     const p = loadUserProfile(session.uid, session.email, session.displayName ?? '');
@@ -169,6 +193,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
 
+      if (!apiReady || !getApiToken()) {
+        const local = getLocalSession();
+        if (local && !cancelled) {
+          setUser(local);
+          syncLocalProfile(local);
+        }
+      }
+
       if (!auth) {
         if (!cancelled) setLoading(false);
         return;
@@ -184,8 +216,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setUser(firebaseToSession(fbUser));
           syncLocalProfile(firebaseToSession(fbUser));
         } else if (!getApiToken()) {
-          setUser(null);
-          setProfile(null);
+          const local = getLocalSession();
+          if (local) {
+            setUser(local);
+            syncLocalProfile(local);
+          } else {
+            setUser(null);
+            setProfile(null);
+          }
         }
         setLoading(false);
       });
@@ -221,13 +259,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setDashboardOpen(true);
         return;
       }
-      if (!auth) throw new Error('Configure VITE_API_URL or Firebase keys in .env');
-      await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
-      await signInWithEmailAndPassword(auth, email.trim(), password);
+      if (auth) {
+        await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
+        await signInWithEmailAndPassword(auth, email.trim(), password);
+        setAuthOpen(false);
+        setDashboardOpen(true);
+        return;
+      }
+      const session = localSignIn(email, password);
+      applyLocalMemberSession(session);
       setAuthOpen(false);
       setDashboardOpen(true);
     },
-    [apiReady, applyApiSession]
+    [apiReady, applyApiSession, applyLocalMemberSession]
   );
 
   const signUp = useCallback(
@@ -251,23 +295,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setDashboardOpen(true);
         return;
       }
-      if (!auth) throw new Error('Configure VITE_API_URL or Firebase keys in .env');
-      const cred = await createUserWithEmailAndPassword(auth, email.trim(), password);
-      await updateProfile(cred.user, { displayName: name.trim() });
-      const p = loadUserProfile(cred.user.uid, email.trim(), name.trim());
-      p.department = department;
-      if (domainInterests.length) p.domainInterests = domainInterests;
-      saveUserProfile(cred.user.uid, p);
-      setProfile(p);
+      if (auth) {
+        const cred = await createUserWithEmailAndPassword(auth, email.trim(), password);
+        await updateProfile(cred.user, { displayName: name.trim() });
+        const p = loadUserProfile(cred.user.uid, email.trim(), name.trim());
+        p.department = department;
+        if (domainInterests.length) p.domainInterests = domainInterests;
+        saveUserProfile(cred.user.uid, p);
+        setProfile(p);
+        setAuthOpen(false);
+        setDashboardOpen(true);
+        return;
+      }
+      const session = localSignUp({
+        name,
+        email,
+        password,
+        department,
+        domainInterests,
+      });
+      applyLocalMemberSession(session, { department, domainInterests });
       setAuthOpen(false);
       setDashboardOpen(true);
     },
-    [apiReady, applyApiSession]
+    [apiReady, applyApiSession, applyLocalMemberSession]
   );
 
   const signInGoogle = useCallback(async () => {
-    if (!auth && !apiReady) throw new Error('Configure VITE_API_URL or Firebase keys in .env');
-    if (!auth) throw new Error('Google sign-in requires Firebase keys in .env');
+    if (!auth) {
+      throw new Error('Google sign-in requires Firebase. Use email sign-up or configure Firebase in .env');
+    }
     const provider = new GoogleAuthProvider();
     const cred = await signInWithPopup(auth, provider);
     if (apiReady) {
@@ -287,6 +344,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(async () => {
     setApiToken(null);
+    localSignOut();
     setUser(null);
     setProfile(null);
     setDashboardOpen(false);
@@ -295,9 +353,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const resetPassword = useCallback(async (email: string) => {
+    if (authMode === 'local') {
+      throw new Error('Password reset is not available in demo mode. Create a new account or use Firebase/API auth.');
+    }
     if (!auth) throw new Error('Password reset requires Firebase keys in .env');
     await sendPasswordResetEmail(auth, email.trim());
-  }, []);
+  }, [authMode]);
 
   const refreshProfile = useCallback(async () => {
     if (apiReady && getApiToken()) {
@@ -334,6 +395,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       loading,
       firebaseReady,
       apiReady,
+      authMode,
+      authReady,
       authOpen,
       authTab,
       dashboardOpen,
@@ -359,6 +422,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       loading,
       firebaseReady,
       apiReady,
+      authMode,
+      authReady,
       authOpen,
       authTab,
       dashboardOpen,

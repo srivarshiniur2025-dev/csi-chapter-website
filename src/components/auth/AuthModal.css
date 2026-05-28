@@ -356,6 +356,19 @@
   gap: 0.15rem;
 }
 
+.auth-panel__features {
+  margin: 0 0 0.75rem;
+  font-size: 0.74rem;
+  line-height: 1.5;
+  color: rgba(196, 181, 253, 0.72);
+}
+
+.auth-alert--compact {
+  margin-bottom: 0.65rem;
+  padding: 0.5rem 0.65rem;
+  font-size: 0.7rem;
+}
+
 .auth-panel__google {
   width: 100%;
   display: flex;

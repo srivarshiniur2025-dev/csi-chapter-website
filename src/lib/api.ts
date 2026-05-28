@@ -48,10 +48,11 @@ export interface ApiEvent {
   techIcons: string[];
 }
 
-class ApiError extends Error {
+export class ApiError extends Error {
   status: number;
   constructor(message: string, status: number) {
     super(message);
+    this.name = 'ApiError';
     this.status = status;
   }
 }
@@ -70,7 +71,15 @@ async function request<T>(
     const token = getApiToken();
     if (token) headers.Authorization = `Bearer ${token}`;
   }
-  const res = await fetch(`${API_URL}${path}`, { ...options, headers });
+  let res: Response;
+  try {
+    res = await fetch(`${API_URL}${path}`, { ...options, headers });
+  } catch {
+    throw new ApiError(
+      'Cannot reach the CSI API. If you are on the live site, deploy the server or remove VITE_API_URL until it is ready.',
+      0
+    );
+  }
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
     throw new ApiError(data.message || res.statusText || 'Request failed', res.status);
