@@ -9,11 +9,17 @@
   isolation: isolate;
   box-sizing: border-box;
   padding: 0 1.5rem;
-  background: rgba(10, 14, 39, 0.42);
-  backdrop-filter: blur(12px) saturate(1.2);
-  -webkit-backdrop-filter: blur(12px) saturate(1.2);
-  border-bottom: 1px solid rgba(148, 0, 255, 0.12);
-  box-shadow: 0 0 32px rgba(148, 0, 255, 0.04);
+  background: linear-gradient(
+    180deg,
+    rgba(10, 14, 39, 0.97) 0%,
+    rgba(10, 14, 39, 0.88) 100%
+  );
+  backdrop-filter: blur(20px) saturate(1.2);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  border-bottom: 1px solid rgba(148, 0, 255, 0.28);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.35),
+    0 1px 0 rgba(228, 241, 255, 0.06) inset;
   transition:
     background 0.45s cubic-bezier(0.22, 1, 0.36, 1),
     backdrop-filter 0.45s ease,

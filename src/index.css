@@ -21,6 +21,7 @@
   --csi-accent: #9400ff;
   --csi-light: #aed2ff;
   --csi-pale: #e4f1ff;
+  --csi-nav-height: 4.5rem;
 
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;

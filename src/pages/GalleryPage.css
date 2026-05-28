@@ -5,8 +5,9 @@
 
 .gallery-section {
   position: relative;
-  padding: 6rem 0 5rem;
+  padding: 2rem 0 5rem;
   overflow: hidden;
+  border-top: 1px solid rgba(148, 0, 255, 0.18);
 }
 
 .gallery-section__inner {

@@ -22,8 +22,10 @@ export default function LandingPage() {
       <ImmersiveCursorGlow />
       <SiteBackground />
       <AmbientNetwork3D />
-      <Navbar />
-      <main>
+      <div className="site-chrome" role="presentation">
+        <Navbar />
+      </div>
+      <main className="site-main">
         <Hero />
         <SectionDivider variant="subtle" />
         <About />

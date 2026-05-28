@@ -285,12 +285,23 @@
   z-index: 1;
 }
 
-.site-shell > .csi-navbar {
+.site-shell > .csi-navbar,
+.site-shell > .site-chrome .csi-navbar {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 10200;
+}
+
+.site-chrome {
+  position: relative;
+  z-index: 10200;
+  pointer-events: none;
+}
+
+.site-chrome .csi-navbar {
+  pointer-events: auto;
 }
 
 .site-shell > .immersive-cursor-glow {
@@ -304,11 +315,18 @@
   pointer-events: none;
 }
 
-.site-shell main {
+.site-shell main,
+.site-shell.site-main {
   display: flex;
   flex-direction: column;
   gap: 0;
   background: transparent;
+  /* Content starts below fixed navbar — hero is its own block, not under the bar */
+  padding-top: var(--csi-nav-height, 4.5rem);
+}
+
+.gallery-page.site-shell {
+  padding-top: var(--csi-nav-height, 4.5rem);
 }
 
 /* Sections share one environment — no block backgrounds */

@@ -1,12 +1,27 @@
 .hero-section {
   position: relative;
-  min-height: 100vh;
+  isolation: isolate;
+  min-height: calc(100svh - var(--csi-nav-height, 4.5rem));
   display: flex;
   flex-direction: column;
   justify-content: center;
   overflow: hidden;
   background: transparent;
-  padding-top: 4.5rem;
+  padding-top: 0;
+  border-top: 1px solid rgba(148, 0, 255, 0.18);
+  box-shadow: inset 0 1px 0 rgba(228, 241, 255, 0.04);
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3rem;
+  background: linear-gradient(180deg, rgba(3, 3, 12, 0.55) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 5;
 }
 
 .hero-globe-layer {
@@ -265,9 +280,8 @@
 
 @media (max-width: 767px) {
   .hero-section {
-    min-height: 100dvh;
-    min-height: 100svh;
-    padding-top: 4.25rem;
+    min-height: calc(100svh - var(--csi-nav-height, 4.5rem));
+    min-height: calc(100dvh - var(--csi-nav-height, 4.5rem));
   }
 
   .hero-globe-layer {

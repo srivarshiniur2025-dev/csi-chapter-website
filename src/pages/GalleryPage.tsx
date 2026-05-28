@@ -72,7 +72,9 @@ export default function GalleryPage() {
       <ImmersiveCursorGlow />
       <SiteBackground />
       <AmbientNetwork3D />
-      <Navbar />
+      <div className="site-chrome" role="presentation">
+        <Navbar />
+      </div>
 
       <section className="gallery-section" aria-labelledby="gallery-heading">
         <SectionAmbient preset="about" />
