@@ -181,6 +181,131 @@
   padding: 2.25rem 0 2.75rem;
 }
 
+.events-carousel__switch-flash {
+  position: absolute;
+  inset: 5% 8%;
+  border-radius: 24px;
+  background: radial-gradient(ellipse at center, rgba(148, 0, 255, 0.25) 0%, transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+  animation: events-switch-flash 0.85s ease-out forwards;
+}
+
+@keyframes events-switch-flash {
+  0% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.events-carousel__stage-rings {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(100%, 640px);
+  height: min(100%, 420px);
+  translate: -50% -50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.events-carousel__stage-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(167, 139, 250, 0.3);
+  box-shadow: 0 0 40px rgba(124, 58, 237, 0.2);
+}
+
+.events-carousel__stage-ring--a {
+  animation: events-stage-ring-spin 36s linear infinite;
+}
+
+.events-carousel__stage-ring--b {
+  inset: 12%;
+  border-style: dashed;
+  opacity: 0.55;
+  animation: events-stage-ring-spin 24s linear infinite reverse;
+}
+
+@keyframes events-stage-ring-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+.events-carousel__card-orbit {
+  position: absolute;
+  inset: -12%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.events-carousel__card-orbit-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  margin: -2.5px;
+  border-radius: 50%;
+  background: #e4f1ff;
+  box-shadow: 0 0 12px rgba(148, 0, 255, 0.85);
+  animation: events-card-orbit 7s linear infinite;
+  animation-delay: calc(var(--oi) * -0.85s);
+  transform: rotate(calc(var(--oi) * 45deg)) translateY(min(-220px, -38cqi));
+}
+
+@keyframes events-card-orbit {
+  to {
+    transform: rotate(calc(var(--oi) * 45deg + 360deg)) translateY(min(-220px, -38cqi));
+  }
+}
+
+.events-carousel__card-sweep {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 4;
+  opacity: 0;
+}
+
+.events-carousel__card--active .events-carousel__card-sweep {
+  opacity: 1;
+}
+
+.events-carousel__card-sweep::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(174, 210, 255, 0.12) 48%,
+    rgba(148, 0, 255, 0.2) 52%,
+    transparent 70%
+  );
+  animation: events-card-sweep 5s ease-in-out infinite;
+}
+
+@keyframes events-card-sweep {
+  0% {
+    left: -120%;
+  }
+  45%,
+  100% {
+    left: 140%;
+  }
+}
+
 .events-carousel__floor {
   position: absolute;
   left: 50%;
@@ -387,7 +512,9 @@
 }
 
 .events-carousel__card--active .events-carousel__card-neon {
-  opacity: 0.55;
+  opacity: 0.85;
+  filter: blur(8px);
+  box-shadow: 0 0 40px rgba(148, 0, 255, 0.35);
 }
 
 @keyframes events-neon-border {

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, useInView, animate } from 'framer-motion';
 import { Brain, Globe, Bot, Terminal } from 'lucide-react';
 import SectionAmbient from './ambient/SectionAmbient';
+import SectionReveal from './immersive/SectionReveal';
 import './About.css';
 
 const domains = [
@@ -65,7 +66,7 @@ const About = () => {
   return (
     <section id="about" className="about-section text-csi-pale">
       <SectionAmbient preset="about" />
-      <div className="about-container">
+      <SectionReveal className="about-container">
         <motion.header
           className="about-header"
           initial={{ opacity: 0, y: 28 }}
@@ -119,7 +120,7 @@ const About = () => {
             </div>
           ))}
         </motion.div>
-      </div>
+      </SectionReveal>
     </section>
   );
 };

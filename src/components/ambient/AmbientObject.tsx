@@ -8,7 +8,7 @@ interface AmbientObjectProps {
 
 export default function AmbientObject({ item }: AmbientObjectProps) {
   const duration = item.duration ?? 16 + (item.delay ?? 0) * 2;
-  const floatY = 10 + (item.depth ?? 0.4) * 8;
+  const floatY = 16 + (item.depth ?? 0.4) * 14;
   const depth = item.depth ?? 0.4;
 
   const shellStyle: CSSProperties = {
@@ -25,7 +25,7 @@ export default function AmbientObject({ item }: AmbientObjectProps) {
         className={`ambient-obj ambient-obj--${item.kind}`}
         initial={{ opacity: 0 }}
         animate={{
-          opacity: item.opacity ?? 0.55,
+          opacity: item.opacity ?? 0.82,
           y: [0, -floatY, 0],
           ...(item.rotate ? { rotate: [0, 180, 360] } : {}),
         }}

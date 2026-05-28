@@ -1,6 +1,9 @@
+import type { CSSProperties } from 'react';
 import { motion } from 'framer-motion';
 import { FaLinkedin, FaGithub, FaInstagram } from 'react-icons/fa';
 import SectionAmbient from './ambient/SectionAmbient';
+import TeamImmersive from './immersive/TeamImmersive';
+import SectionReveal from './immersive/SectionReveal';
 import './Team.css';
 
 const CINEMATIC_EASE = [0.22, 1, 0.36, 1] as const;
@@ -105,11 +108,23 @@ const TeamMemberCard = ({ member, index }: { member: TeamMember; index: number }
       whileInView="visible"
       viewport={{ once: true, margin: '-40px' }}
       whileHover={{ y: -10, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } }}
+      onMouseMove={(e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        e.currentTarget.style.setProperty('--card-mx', `${((e.clientX - rect.left) / rect.width) * 100}%`);
+        e.currentTarget.style.setProperty('--card-my', `${((e.clientY - rect.top) / rect.height) * 100}%`);
+      }}
     >
       <span className="team-card__glow" aria-hidden />
       <span className="team-card__edge" aria-hidden />
+      <span className="team-card__hover-light" aria-hidden />
+      <span className="team-card__halo" aria-hidden />
 
       <div className="team-card__portrait">
+        <span className="team-card__orbit-particles" aria-hidden>
+          {[0, 1, 2, 3, 4].map((i) => (
+            <span key={i} className="team-card__orbit-dot" style={{ ['--oi' as string]: i } as CSSProperties} />
+          ))}
+        </span>
         <span className="team-card__ring team-card__ring--outer" aria-hidden />
         <span className="team-card__ring team-card__ring--inner" aria-hidden />
         <div className="team-card__image-wrap">
@@ -146,7 +161,8 @@ const Team = () => {
   return (
     <section id="team" className="team-section text-csi-pale">
       <SectionAmbient preset="team" />
-      <div className="team-container">
+      <TeamImmersive />
+      <SectionReveal className="team-container">
         <motion.header
           className="team-header"
           initial={{ opacity: 0, y: 24 }}
@@ -173,7 +189,7 @@ const Team = () => {
             <TeamMemberCard key={member.id} member={member} index={index} />
           ))}
         </div>
-      </div>
+      </SectionReveal>
     </section>
   );
 };

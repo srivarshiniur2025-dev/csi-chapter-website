@@ -12,6 +12,8 @@ import {
   Sparkles,
 } from 'lucide-react';
 import SectionAmbient from './ambient/SectionAmbient';
+import JourneyImmersive from './immersive/JourneyImmersive';
+import SectionReveal from './immersive/SectionReveal';
 import './TechTimeline.css';
 
 const CINEMATIC_EASE = [0.22, 1, 0.36, 1] as const;
@@ -184,7 +186,7 @@ function TimelineCard({
       transition={{ duration: 0.5, ease: CINEMATIC_EASE }}
     >
       <motion.div
-        className="timeline-node"
+        className={`timeline-node${inView ? ' timeline-node--lit' : ''}`}
         initial={{ scale: 0.6, opacity: 0 }}
         animate={inView ? { scale: 1, opacity: 1 } : {}}
         transition={{ duration: 0.45, delay: 0.05, ease: CINEMATIC_EASE }}
@@ -242,13 +244,14 @@ const TechTimeline = () => {
   return (
     <section id="journey" className="timeline-section text-csi-pale" aria-labelledby="journey-heading">
       <SectionAmbient preset="journey" />
+      <JourneyImmersive scrollTarget={trackRef} />
       <div className="timeline-section__particles" aria-hidden>
         {Array.from({ length: 14 }).map((_, i) => (
           <span key={i} className="timeline-section__particle" style={{ '--p': i } as CSSProperties} />
         ))}
       </div>
 
-      <div className="timeline-container">
+      <SectionReveal className="timeline-container">
         <motion.header
           className="timeline-header"
           initial={{ opacity: 0, y: 24 }}
@@ -297,7 +300,7 @@ const TechTimeline = () => {
             ))}
           </ol>
         </div>
-      </div>
+      </SectionReveal>
     </section>
   );
 };

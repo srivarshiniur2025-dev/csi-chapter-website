@@ -436,11 +436,20 @@ export default function AIAssistant() {
         )}
       </AnimatePresence>
 
-      <div className="ai-assistant__orb-wrap">
+      <div
+        className={`ai-assistant__orb-wrap${thinking ? ' ai-assistant__orb-wrap--thinking' : ''}${open ? ' ai-assistant__orb-wrap--open' : ''}`}
+      >
         {!open && (
           <>
             <span className="ai-assistant__orb-ring ai-assistant__orb-ring--1" aria-hidden />
             <span className="ai-assistant__orb-ring ai-assistant__orb-ring--2" aria-hidden />
+            <span className="ai-assistant__orb-ring ai-assistant__orb-ring--3" aria-hidden />
+            <span className="ai-assistant__orb-scan" aria-hidden />
+            <span className="ai-assistant__orb-particles" aria-hidden>
+              {Array.from({ length: 10 }).map((_, i) => (
+                <span key={i} className="ai-assistant__orb-particle" style={{ ['--oi' as string]: i } as CSSProperties} />
+              ))}
+            </span>
           </>
         )}
 

@@ -230,6 +230,17 @@
   justify-self: center;
 }
 
+.timeline-node--lit .timeline-node__ring {
+  box-shadow:
+    0 0 24px rgba(148, 0, 255, 0.65),
+    0 0 48px rgba(124, 58, 237, 0.35);
+  border-color: rgba(174, 210, 255, 0.55);
+}
+
+.timeline-node--lit .timeline-node__core {
+  box-shadow: 0 0 20px rgba(148, 0, 255, 0.5);
+}
+
 .timeline-node__ring {
   position: absolute;
   inset: -6px;

@@ -1,0 +1,140 @@
+.team-immersive {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.team-immersive__glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.65;
+  animation: team-glow-drift 14s ease-in-out infinite;
+}
+
+.team-immersive__glow--a {
+  width: min(50vw, 420px);
+  height: min(40vh, 320px);
+  top: 10%;
+  left: -5%;
+  background: rgba(148, 0, 255, 0.18);
+}
+
+.team-immersive__glow--b {
+  width: min(45vw, 380px);
+  height: min(38vh, 300px);
+  bottom: 5%;
+  right: -5%;
+  background: rgba(107, 140, 255, 0.14);
+  animation-delay: -7s;
+}
+
+@keyframes team-glow-drift {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: translate(0, 0);
+  }
+  50% {
+    opacity: 0.95;
+    transform: translate(12px, -8px);
+  }
+}
+
+.team-immersive__streak {
+  position: absolute;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(167, 139, 250, 0.55),
+    rgba(174, 210, 255, 0.4),
+    transparent
+  );
+  box-shadow: 0 0 20px rgba(148, 0, 255, 0.35);
+  animation: team-streak-slide 16s ease-in-out infinite;
+}
+
+.team-immersive__streak--1 {
+  width: 55%;
+  top: 22%;
+  left: -5%;
+}
+
+.team-immersive__streak--2 {
+  width: 48%;
+  bottom: 30%;
+  right: -5%;
+  animation-delay: -6s;
+}
+
+@keyframes team-streak-slide {
+  0%,
+  100% {
+    opacity: 0.25;
+    translate: 0 0;
+  }
+  50% {
+    opacity: 0.9;
+    translate: 24px -6px;
+  }
+}
+
+.team-immersive__geo {
+  position: absolute;
+  pointer-events: none;
+}
+
+.team-immersive__geo--ring {
+  top: 8%;
+  right: 8%;
+  width: 7rem;
+  height: 7rem;
+  border-radius: 50%;
+  border: 1px dashed rgba(148, 0, 255, 0.4);
+  box-shadow: 0 0 36px rgba(124, 58, 237, 0.25);
+  opacity: 0.65;
+}
+
+.team-immersive__geo--hex {
+  bottom: 15%;
+  left: 6%;
+  width: 5rem;
+  height: 5rem;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  border: 1px solid rgba(167, 139, 250, 0.45);
+  background: rgba(148, 0, 255, 0.1);
+  opacity: 0.6;
+}
+
+.team-immersive__particles {
+  position: absolute;
+  inset: 0;
+}
+
+.team-immersive__particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #d8b4fe;
+  box-shadow: 0 0 10px rgba(148, 0, 255, 0.7);
+  left: calc((var(--ti) * 4.8) * 1% + 3%);
+  top: calc((var(--ti) * 3.2) * 1% + 10%);
+  animation: team-particle-float calc(9s + (var(--ti) % 3)) ease-in-out infinite;
+  animation-delay: calc(var(--ti) * -0.6s);
+}
+
+@keyframes team-particle-float {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-16px);
+  }
+}

@@ -1,4 +1,4 @@
-/* —— Hero globe zone: rings, nodes, trails —— */
+/* —— Hero: restrained cinematic accents (globe zone) —— */
 .hero-ambient {
   position: absolute;
   inset: 0;
@@ -36,7 +36,6 @@
 .hero-ambient__ring--inner {
   width: min(48vw, 300px);
   height: min(48vw, 300px);
-  border-width: 1px;
   opacity: 0.35;
 }
 
@@ -60,30 +59,12 @@
   animation-delay: calc(var(--node-i) * -1.3s);
 }
 
-.hero-ambient__node:nth-child(1) {
-  top: 8%;
-  left: 50%;
-}
-.hero-ambient__node:nth-child(2) {
-  top: 28%;
-  left: 92%;
-}
-.hero-ambient__node:nth-child(3) {
-  top: 72%;
-  left: 78%;
-}
-.hero-ambient__node:nth-child(4) {
-  top: 88%;
-  left: 42%;
-}
-.hero-ambient__node:nth-child(5) {
-  top: 55%;
-  left: 8%;
-}
-.hero-ambient__node:nth-child(6) {
-  top: 18%;
-  left: 18%;
-}
+.hero-ambient__node:nth-child(1) { top: 8%; left: 50%; }
+.hero-ambient__node:nth-child(2) { top: 28%; left: 92%; }
+.hero-ambient__node:nth-child(3) { top: 72%; left: 78%; }
+.hero-ambient__node:nth-child(4) { top: 88%; left: 42%; }
+.hero-ambient__node:nth-child(5) { top: 55%; left: 8%; }
+.hero-ambient__node:nth-child(6) { top: 18%; left: 18%; }
 
 @keyframes hero-node-float {
   0%,

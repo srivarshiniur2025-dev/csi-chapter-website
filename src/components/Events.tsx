@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { LucideIcon } from 'lucide-react';
 import SectionAmbient from './ambient/SectionAmbient';
+import EventsImmersive from './immersive/EventsImmersive';
+import SectionReveal from './immersive/SectionReveal';
 import {
   Calendar,
   MapPin,
@@ -231,6 +233,7 @@ function getCardMotion(
 const Events = () => {
   const [events, setEvents] = useState<ChapterEvent[]>(eventsData);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [switchFlash, setSwitchFlash] = useState(0);
   const [selected, setSelected] = useState<ChapterEvent | null>(null);
   const [cardSpread, setCardSpread] = useState(getCardSpread);
   const isMobileCarousel = useMediaQuery('(max-width: 767px)');
@@ -240,6 +243,10 @@ const Events = () => {
   const bannerMediaRef = useRef<HTMLDivElement>(null);
   const parallaxRaf = useRef(0);
   const total = events.length;
+
+  useEffect(() => {
+    setSwitchFlash((n) => n + 1);
+  }, [activeIndex]);
 
   useEffect(() => {
     if (!isApiConfigured()) return;
@@ -322,7 +329,8 @@ const Events = () => {
   return (
     <section id="events" className="events-section text-csi-pale">
       <SectionAmbient preset="events" />
-      <div className="events-container">
+      <EventsImmersive />
+      <SectionReveal className="events-container">
         <motion.header
           className="events-header"
           initial={{ opacity: 0, y: 24 }}
@@ -363,6 +371,11 @@ const Events = () => {
             onMouseLeave={isTouch ? undefined : handleStageLeave}
           >
           <div className="events-carousel__stage">
+            <div key={switchFlash} className="events-carousel__switch-flash" aria-hidden />
+            <div className="events-carousel__stage-rings" aria-hidden>
+              <span className="events-carousel__stage-ring events-carousel__stage-ring--a" />
+              <span className="events-carousel__stage-ring events-carousel__stage-ring--b" />
+            </div>
             <div className="events-carousel__floor" aria-hidden />
             <div className="events-carousel__center-beam" aria-hidden />
             <div ref={trackRef} className="events-carousel__track">
@@ -399,16 +412,24 @@ const Events = () => {
                     onClick={() => (isActive ? setSelected(event) : setActiveIndex(index))}
                     whileHover={
                       !isTouch && isActive
-                        ? { y: -5, scale: 1.01, transition: { duration: 0.35, ease: CINEMATIC_EASE } }
+                        ? { y: -12, scale: 1.03, transition: { duration: 0.35, ease: CINEMATIC_EASE } }
                         : !isTouch
                           ? {
-                              scale: cardMotion.scale * 1.02,
-                              opacity: Math.min(cardMotion.opacity + 0.08, 0.62),
+                              scale: cardMotion.scale * 1.04,
+                              opacity: Math.min(cardMotion.opacity + 0.12, 0.68),
                               transition: { duration: 0.3 },
                             }
                           : undefined
                     }
                   >
+                    {isActive && (
+                      <div className="events-carousel__card-orbit" aria-hidden>
+                        {Array.from({ length: 8 }).map((_, oi) => (
+                          <span key={oi} className="events-carousel__card-orbit-dot" style={{ ['--oi' as string]: oi }} />
+                        ))}
+                      </div>
+                    )}
+                    <span className="events-carousel__card-sweep" aria-hidden />
                     <div className="events-carousel__card-shell" aria-hidden>
                       <span className="events-carousel__card-neon" />
                       <span className="events-carousel__card-edge" />
@@ -517,7 +538,7 @@ const Events = () => {
             />
           ))}
         </div>
-      </div>
+      </SectionReveal>
 
       <AnimatePresence>
         {selected && <EventRegistrationModal event={selected} onClose={closeModal} />}

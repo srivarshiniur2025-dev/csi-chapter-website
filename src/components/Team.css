@@ -128,6 +128,85 @@
   opacity: 1;
 }
 
+.team-card__hover-light {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: radial-gradient(
+    circle 120px at var(--card-mx, 50%) var(--card-my, 30%),
+    rgba(148, 0, 255, 0.2) 0%,
+    transparent 65%
+  );
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+
+.team-card:hover .team-card__hover-light {
+  opacity: 1;
+}
+
+.team-card__halo {
+  position: absolute;
+  left: 50%;
+  top: 5.5rem;
+  width: 140px;
+  height: 140px;
+  translate: -50% 0;
+  border-radius: 50%;
+  border: 1px solid rgba(167, 139, 250, 0.35);
+  box-shadow: 0 0 32px rgba(148, 0, 255, 0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  animation: team-halo-spin 16s linear infinite;
+}
+
+.team-card:hover .team-card__halo {
+  opacity: 0.85;
+}
+
+@keyframes team-halo-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+.team-card__orbit-particles {
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  top: 50%;
+  left: 50%;
+  translate: -50% -58%;
+  pointer-events: none;
+}
+
+.team-card__orbit-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  margin: -2.5px;
+  border-radius: 50%;
+  background: #e4f1ff;
+  box-shadow: 0 0 10px rgba(148, 0, 255, 0.8);
+  animation: team-orbit-dot 8s linear infinite;
+  animation-delay: calc(var(--oi) * -1.6s);
+  transform: rotate(calc(var(--oi) * 72deg)) translateY(-78px);
+}
+
+@keyframes team-orbit-dot {
+  to {
+    transform: rotate(calc(var(--oi) * 72deg + 360deg)) translateY(-78px);
+  }
+}
+
+.team-card:hover .team-card__orbit-dot {
+  box-shadow: 0 0 16px rgba(148, 0, 255, 1);
+}
+
 .team-card__edge {
   position: absolute;
   inset: -1px;

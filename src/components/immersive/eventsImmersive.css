@@ -1,0 +1,285 @@
+.events-immersive {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.events-immersive__grid {
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  width: min(95%, 56rem);
+  height: min(70vh, 520px);
+  translate: -50% -50%;
+  opacity: 0.22;
+  background-image:
+    linear-gradient(rgba(148, 0, 255, 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 0, 255, 0.5) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, black 20%, transparent 72%);
+  animation: events-grid-drift 18s linear infinite;
+}
+
+@keyframes events-grid-drift {
+  0% {
+    transform: perspective(800px) rotateX(58deg) translateY(0);
+  }
+  100% {
+    transform: perspective(800px) rotateX(58deg) translateY(48px);
+  }
+}
+
+.events-immersive__energy {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(80vw, 640px);
+  height: min(50vh, 380px);
+  translate: -50% -50%;
+  background: radial-gradient(ellipse at center, rgba(148, 0, 255, 0.18) 0%, transparent 68%);
+  animation: events-energy-pulse 6s ease-in-out infinite;
+}
+
+@keyframes events-energy-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+    scale: 0.95;
+  }
+  50% {
+    opacity: 0.95;
+    scale: 1.05;
+  }
+}
+
+.events-immersive__symbol {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  translate: -50% -50%;
+  border-radius: 50%;
+  border: 1px solid rgba(167, 139, 250, 0.35);
+  box-shadow:
+    0 0 40px rgba(124, 58, 237, 0.25),
+    inset 0 0 30px rgba(148, 0, 255, 0.08);
+}
+
+.events-immersive__symbol--a {
+  width: min(72vw, 480px);
+  height: min(72vw, 480px);
+  border-style: dashed;
+}
+
+.events-immersive__symbol--b {
+  width: min(58vw, 380px);
+  height: min(58vw, 380px);
+  opacity: 0.55;
+}
+
+.events-immersive__symbol--b::after {
+  content: '';
+  position: absolute;
+  inset: 18%;
+  border: 1px solid rgba(174, 210, 255, 0.2);
+  border-radius: 50%;
+}
+
+.events-immersive__particles {
+  position: absolute;
+  inset: 0;
+}
+
+.events-immersive__particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #e4f1ff;
+  box-shadow: 0 0 12px rgba(148, 0, 255, 0.7);
+  left: calc((var(--pi) * 4.3) * 1% + 2%);
+  top: calc((var(--pi) * 3.6) * 1% + 6%);
+  animation: events-particle-float calc(8s + (var(--pi) % 5) * 1.2s) ease-in-out infinite;
+  animation-delay: calc(var(--pi) * -0.7s);
+}
+
+@keyframes events-particle-float {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0) scale(0.8);
+  }
+  50% {
+    opacity: 0.95;
+    transform: translateY(-18px) scale(1.15);
+  }
+}
+
+.events-immersive__shards {
+  position: absolute;
+  inset: 0;
+}
+
+.events-immersive__shard {
+  position: absolute;
+  width: 3.5rem;
+  height: 2.25rem;
+  border: 1px solid rgba(167, 139, 250, 0.4);
+  border-radius: 4px;
+  background: linear-gradient(135deg, rgba(148, 0, 255, 0.15), transparent);
+  box-shadow: 0 0 24px rgba(124, 58, 237, 0.2);
+  animation: events-shard-drift 14s ease-in-out infinite;
+}
+
+.events-immersive__shard--1 {
+  top: 18%;
+  left: 8%;
+  transform: rotate(-12deg);
+}
+
+.events-immersive__shard--2 {
+  top: 62%;
+  right: 6%;
+  animation-delay: -5s;
+  transform: rotate(18deg);
+}
+
+.events-immersive__shard--3 {
+  bottom: 14%;
+  left: 12%;
+  animation-delay: -9s;
+  width: 2.5rem;
+  height: 1.75rem;
+  opacity: 0.7;
+}
+
+.events-immersive__shard--4 {
+  top: 38%;
+  right: 14%;
+  animation-delay: -12s;
+  width: 3rem;
+  height: 2rem;
+}
+
+.events-immersive__ring {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  translate: -50% -50%;
+  border-radius: 50%;
+  border: 1px solid rgba(167, 139, 250, 0.35);
+  box-shadow: 0 0 48px rgba(124, 58, 237, 0.28);
+  pointer-events: none;
+}
+
+.events-immersive__ring--xl {
+  width: min(88vw, 580px);
+  height: min(88vw, 580px);
+  border-style: dashed;
+  border-color: rgba(148, 0, 255, 0.28);
+  opacity: 0.55;
+}
+
+.events-immersive__ring--lg {
+  width: min(72vw, 460px);
+  height: min(72vw, 460px);
+  opacity: 0.65;
+}
+
+.events-immersive__ring--md {
+  width: min(56vw, 360px);
+  height: min(56vw, 360px);
+  border-color: rgba(107, 140, 255, 0.35);
+  opacity: 0.5;
+}
+
+.events-immersive__connections {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  width: min(90vw, 640px);
+  height: min(45vh, 320px);
+  translate: -50% -50%;
+  opacity: 0.7;
+}
+
+.events-immersive__hub {
+  animation: events-hub-pulse 3s ease-in-out infinite;
+}
+
+@keyframes events-hub-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.events-immersive__geo {
+  position: absolute;
+  inset: 0;
+}
+
+.events-immersive__cube {
+  position: absolute;
+  top: 24%;
+  left: 6%;
+  width: 3.5rem;
+  height: 3.5rem;
+  border: 1px solid rgba(167, 139, 250, 0.5);
+  border-radius: 4px;
+  background: rgba(148, 0, 255, 0.12);
+  box-shadow: 0 0 28px rgba(124, 58, 237, 0.3);
+  transform: rotateX(20deg) rotateY(-25deg);
+  animation: events-geo-float 10s ease-in-out infinite;
+}
+
+.events-immersive__prism {
+  position: absolute;
+  bottom: 20%;
+  right: 7%;
+  width: 0;
+  height: 0;
+  border-left: 1.5rem solid transparent;
+  border-right: 1.5rem solid transparent;
+  border-bottom: 2.75rem solid rgba(148, 0, 255, 0.2);
+  filter: drop-shadow(0 0 16px rgba(148, 0, 255, 0.4));
+  animation: events-geo-float 12s ease-in-out infinite reverse;
+}
+
+@keyframes events-geo-float {
+  0%,
+  100% {
+    opacity: 0.45;
+    translate: 0 0;
+  }
+  50% {
+    opacity: 0.95;
+    translate: 0 -14px;
+  }
+}
+
+@keyframes events-shard-drift {
+  0%,
+  100% {
+    opacity: 0.35;
+    translate: 0 0;
+  }
+  50% {
+    opacity: 0.85;
+    translate: 8px -12px;
+  }
+}
+
+@media (max-width: 767px) {
+  .events-immersive__symbol {
+    opacity: 0.35;
+  }
+
+  .events-immersive__shard {
+    display: none;
+  }
+}

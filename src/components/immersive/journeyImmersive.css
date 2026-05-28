@@ -1,0 +1,168 @@
+.journey-immersive {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.journey-immersive__energy {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(90vw, 520px);
+  height: 80%;
+  translate: -50% -50%;
+  background: radial-gradient(ellipse at center, rgba(148, 0, 255, 0.2) 0%, transparent 65%);
+}
+
+.journey-immersive__trail {
+  position: absolute;
+  left: 50%;
+  top: 8%;
+  width: 4px;
+  height: 84%;
+  translate: -50% 0;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(148, 0, 255, 0.5) 25%,
+    rgba(174, 210, 255, 0.65) 50%,
+    rgba(148, 0, 255, 0.5) 75%,
+    transparent
+  );
+  box-shadow: 0 0 24px rgba(148, 0, 255, 0.45);
+  transform-origin: top center;
+  border-radius: 4px;
+}
+
+.journey-immersive__hex {
+  position: absolute;
+  top: 12%;
+  right: 6%;
+  width: 5rem;
+  height: 5rem;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  border: 1px solid rgba(167, 139, 250, 0.4);
+  background: linear-gradient(135deg, rgba(148, 0, 255, 0.2), transparent);
+  box-shadow: 0 0 32px rgba(124, 58, 237, 0.3);
+  opacity: 0.7;
+}
+
+.journey-immersive__fragments {
+  position: absolute;
+  inset: 0;
+}
+
+.journey-immersive__fragment {
+  position: absolute;
+  border: 1px solid rgba(167, 139, 250, 0.45);
+  border-radius: 4px;
+  background: linear-gradient(160deg, rgba(148, 0, 255, 0.15), transparent);
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.25);
+  animation: journey-fragment-float 12s ease-in-out infinite;
+}
+
+.journey-immersive__fragment--1 {
+  width: 3.5rem;
+  height: 2.25rem;
+  top: 18%;
+  left: 5%;
+  transform: rotate(-14deg);
+}
+
+.journey-immersive__fragment--2 {
+  width: 2.75rem;
+  height: 2rem;
+  top: 42%;
+  right: 4%;
+  animation-delay: -4s;
+  transform: rotate(12deg);
+}
+
+.journey-immersive__fragment--3 {
+  width: 3rem;
+  height: 1.75rem;
+  bottom: 28%;
+  left: 8%;
+  animation-delay: -7s;
+}
+
+.journey-immersive__fragment--4 {
+  width: 2.5rem;
+  height: 2.5rem;
+  bottom: 12%;
+  right: 10%;
+  animation-delay: -10s;
+  transform: rotate(8deg);
+}
+
+@keyframes journey-fragment-float {
+  0%,
+  100% {
+    opacity: 0.4;
+    translate: 0 0;
+  }
+  50% {
+    opacity: 0.95;
+    translate: 10px -14px;
+  }
+}
+
+.journey-immersive__particles {
+  position: absolute;
+  inset: 0;
+}
+
+.journey-immersive__particle {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #e4f1ff;
+  box-shadow: 0 0 12px rgba(148, 0, 255, 0.75);
+  left: calc((var(--ji) * 3.4) * 1% + 4%);
+  top: calc((var(--ji) * 2.9) * 1% + 8%);
+  animation: journey-particle-drift calc(7s + (var(--ji) % 4) * 1.5s) ease-in-out infinite;
+  animation-delay: calc(var(--ji) * -0.5s);
+}
+
+@keyframes journey-particle-drift {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-22px);
+  }
+}
+
+.journey-immersive__paths {
+  position: absolute;
+  left: 50%;
+  top: 10%;
+  height: 80%;
+  width: 120px;
+  translate: -50% 0;
+  opacity: 0.35;
+}
+
+.journey-immersive__path-line {
+  animation: journey-path-flow 20s linear infinite;
+}
+
+@keyframes journey-path-flow {
+  to {
+    stroke-dashoffset: -40;
+  }
+}
+
+@media (max-width: 767px) {
+  .journey-immersive__hex,
+  .journey-immersive__fragment--3,
+  .journey-immersive__fragment--4 {
+    display: none;
+  }
+}
