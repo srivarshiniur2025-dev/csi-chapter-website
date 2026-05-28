@@ -35,6 +35,7 @@ import {
 import {
   getLocalSession,
   localSignIn,
+  ensureDemoAdminAccount,
   localSignOut,
   localSignUp,
 } from '../lib/localAuth';
@@ -187,6 +188,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let unsubFirebase: (() => void) | undefined;
 
     (async () => {
+      if (!apiReady && !firebaseReady) {
+        ensureDemoAdminAccount();
+      }
+
       if (apiReady && getApiToken()) {
         try {
           const { user: apiUser } = await api.me();

@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { LayoutDashboard, X } from 'lucide-react';
 import { ApiError } from '../../lib/api';
 import { useAuth, type AuthPortal } from '../../contexts/AuthContext';
+import { DEMO_ADMIN_EMAIL, DEMO_ADMIN_PASSWORD } from '../../lib/localAuth';
 import {
   DEPARTMENT_OPTIONS,
   DOMAIN_INTEREST_OPTIONS,
@@ -334,8 +335,10 @@ export default function AuthModal() {
 
                     {authMode === 'local' && (
                       <div className="auth-alert auth-alert--info">
-                        Demo mode: accounts are saved on this browser. For cloud sync, set{' '}
-                        <code>VITE_API_URL</code> or Firebase keys in <code>.env</code>.
+                        Demo mode: accounts are saved on this browser. Dummy admin — choose{' '}
+                        <strong>Admin</strong> on login, then use <code>{DEMO_ADMIN_EMAIL}</code> /{' '}
+                        <code>{DEMO_ADMIN_PASSWORD}</code>. For cloud sync, set <code>VITE_API_URL</code>{' '}
+                        or Firebase in <code>.env</code>.
                       </div>
                     )}
                     {authMode === 'api' && (

@@ -10,6 +10,11 @@ export interface LocalSession {
 const USERS_KEY = 'csi-local-users';
 const SESSION_KEY = 'csi-local-session';
 
+/** Demo admin for local-only mode (no API / Firebase) */
+export const DEMO_ADMIN_EMAIL = 'admin@csi.vitc.edu';
+export const DEMO_ADMIN_PASSWORD = 'Admin@12345';
+export const DEMO_ADMIN_NAME = 'CSI Admin';
+
 interface LocalUserRecord {
   uid: string;
   email: string;
@@ -50,6 +55,24 @@ export function isLocalAuthAvailable(): boolean {
   return typeof window !== 'undefined';
 }
 
+/** Ensures one dummy admin exists in browser storage for demo login */
+export function ensureDemoAdminAccount(): void {
+  if (typeof window === 'undefined') return;
+  const users = loadUsers();
+  if (users.some((u) => u.email === DEMO_ADMIN_EMAIL)) return;
+
+  users.push({
+    uid: 'local-admin-demo',
+    email: DEMO_ADMIN_EMAIL,
+    passwordHash: hashPassword(DEMO_ADMIN_PASSWORD, DEMO_ADMIN_EMAIL),
+    name: DEMO_ADMIN_NAME,
+    role: 'admin',
+    department: 'CSE',
+    domainInterests: ['Web Development', 'AI / ML'],
+  });
+  saveUsers(users);
+}
+
 export function getLocalSession(): LocalSession | null {
   try {
     const raw = localStorage.getItem(SESSION_KEY);
@@ -74,7 +97,7 @@ export function localSignUp(params: {
   if (users.some((u) => u.email === email)) {
     throw new Error('An account with this email already exists.');
   }
-  const isAdmin = email === 'admin@csi.vitc.edu';
+  const isAdmin = email === DEMO_ADMIN_EMAIL;
   const record: LocalUserRecord = {
     uid: `local-${Date.now().toString(36)}`,
     email,
