@@ -73,6 +73,7 @@ export default function AuthModal() {
     closeAuth,
     firebaseReady,
     authMode,
+    apiReady,
     openAuth,
     signIn,
     signUp,
@@ -345,9 +346,9 @@ export default function AuthModal() {
                         Demo mode — data stays in this browser.
                       </p>
                     )}
-                    {authMode === 'api' && (
+                    {apiReady && firebaseReady && (
                       <p className="auth-panel__hint auth-panel__hint--muted">
-                        Synced with CSI cloud API.
+                        Sign in syncs your profile with the CSI cloud API.
                       </p>
                     )}
 

@@ -15,6 +15,8 @@ import {
 } from '../data/galleryItems';
 import { loadLocalGallery } from '../lib/localGallery';
 import { useImmersiveMotion } from '../hooks/useImmersiveMotion';
+import AmbientNetwork3D from '../components/ecosystem/AmbientNetwork3D';
+import ImmersiveCursorGlow from '../components/immersive/ImmersiveCursorGlow';
 import './GalleryPage.css';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -67,7 +69,9 @@ export default function GalleryPage() {
 
   return (
     <div className="gallery-page site-shell selection:bg-csi-accent selection:text-csi-pale">
+      <ImmersiveCursorGlow />
       <SiteBackground />
+      <AmbientNetwork3D />
       <Navbar />
 
       <section className="gallery-section" aria-labelledby="gallery-heading">
@@ -120,10 +124,23 @@ export default function GalleryPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.05, ease: EASE }}
                   whileHover={{ y: -8, scale: 1.02 }}
+                  onMouseMove={(e) => {
+                    const el = e.currentTarget.querySelector('.gallery-card__media') as HTMLElement | null;
+                    if (!el) return;
+                    const r = el.getBoundingClientRect();
+                    const x = ((e.clientX - r.left) / r.width - 0.5) * 12;
+                    const y = ((e.clientY - r.top) / r.height - 0.5) * 12;
+                    el.style.transform = `translate(${x}px, ${y}px) scale(1.04)`;
+                  }}
+                  onMouseLeave={(e) => {
+                    const el = e.currentTarget.querySelector('.gallery-card__media') as HTMLElement;
+                    if (el) el.style.transform = '';
+                  }}
                   onClick={() => setPreview(item)}
                 >
                   <span className="gallery-card__glow" aria-hidden />
                   <span className="gallery-card__edge" aria-hidden />
+                  <span className="gallery-card__holo-frame" aria-hidden />
                   <div className="gallery-card__media">
                     <img src={item.imageUrl} alt={item.title} loading="lazy" />
                     <span className="gallery-card__overlay" />
@@ -157,12 +174,13 @@ export default function GalleryPage() {
           >
             <motion.div
               className="gallery-lightbox__panel"
-              initial={{ scale: 0.92, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.96, opacity: 0 }}
-              transition={{ duration: 0.35, ease: EASE }}
+              initial={{ scale: 0.92, opacity: 0, filter: 'blur(8px)' }}
+              animate={{ scale: 1, opacity: 1, filter: 'blur(0px)' }}
+              exit={{ scale: 0.96, opacity: 0, filter: 'blur(4px)' }}
+              transition={{ duration: 0.45, ease: EASE }}
               onClick={(e) => e.stopPropagation()}
             >
+              <span className="gallery-lightbox__holo" aria-hidden />
               <button
                 type="button"
                 className="gallery-lightbox__close"

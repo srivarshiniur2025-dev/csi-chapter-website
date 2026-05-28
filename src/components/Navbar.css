@@ -6,17 +6,54 @@
   z-index: 10200;
   isolation: isolate;
   padding: 0 1.5rem;
+  background: rgba(10, 14, 39, 0.42);
+  backdrop-filter: blur(12px) saturate(1.2);
+  -webkit-backdrop-filter: blur(12px) saturate(1.2);
+  border-bottom: 1px solid rgba(148, 0, 255, 0.12);
+  box-shadow: 0 0 32px rgba(148, 0, 255, 0.04);
+  transition:
+    background 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    backdrop-filter 0.45s ease,
+    border-color 0.45s ease,
+    box-shadow 0.45s ease;
+}
+
+.csi-navbar--scrolled {
   background: linear-gradient(
     180deg,
-    rgba(10, 14, 39, 0.92) 0%,
-    rgba(39, 0, 93, 0.75) 100%
+    rgba(10, 14, 39, 0.94) 0%,
+    rgba(39, 0, 93, 0.82) 100%
   );
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(148, 0, 255, 0.2);
+  backdrop-filter: blur(22px) saturate(1.25);
+  -webkit-backdrop-filter: blur(22px) saturate(1.25);
+  border-bottom-color: rgba(148, 0, 255, 0.28);
   box-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.4),
-    0 0 40px rgba(148, 0, 255, 0.08);
+    0 8px 32px rgba(0, 0, 0, 0.45),
+    0 0 48px rgba(148, 0, 255, 0.12);
+}
+
+.csi-navbar__edge-glow {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(148, 0, 255, 0.5) 25%,
+    rgba(174, 210, 255, 0.65) 50%,
+    rgba(148, 0, 255, 0.5) 75%,
+    transparent 100%
+  );
+  opacity: 0.55;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.csi-navbar--scrolled .csi-navbar__edge-glow {
+  opacity: 1;
+  box-shadow: 0 0 16px rgba(148, 0, 255, 0.35);
 }
 
 .csi-navbar-inner {
@@ -188,6 +225,23 @@
 .csi-navbar-link.is-active {
   color: #e4f1ff;
   text-shadow: 0 0 12px rgba(148, 0, 255, 0.6);
+  background: rgba(148, 0, 255, 0.1);
+}
+
+.csi-navbar-link.is-active::after {
+  animation: csi-nav-indicator-glow 2.8s ease-in-out infinite;
+}
+
+@keyframes csi-nav-indicator-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 6px rgba(148, 0, 255, 0.5);
+    opacity: 0.85;
+  }
+  50% {
+    box-shadow: 0 0 14px rgba(148, 0, 255, 0.9);
+    opacity: 1;
+  }
 }
 
 /* —— Right: actions —— */

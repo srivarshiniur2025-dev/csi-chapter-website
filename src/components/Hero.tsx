@@ -1,9 +1,28 @@
 import { useRef, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import HeroAtmosphere from './HeroAtmosphere';
 import HeroGlobe from './HeroGlobe';
 import HeroAmbient from './ambient/HeroAmbient';
 import './Hero.css';
+
+const CINEMATIC = [0.22, 1, 0.36, 1] as const;
+const heroStagger = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.12, delayChildren: 0.15 },
+  },
+};
+const heroItem = {
+  hidden: { opacity: 0, y: 22, filter: 'blur(6px)' },
+  show: {
+    opacity: 1,
+    y: 0,
+    filter: 'blur(0px)',
+    transition: { duration: 0.75, ease: CINEMATIC },
+  },
+};
 
 const Hero = () => {
   const mouseRef = useRef({ x: 0, y: 0 });
@@ -32,23 +51,28 @@ const Hero = () => {
         <HeroGlobe mouse={mouseRef} />
       </div>
 
-      <div className="hero-content">
-        <div className="hero-badge">
+      <motion.div
+        className="hero-content"
+        variants={heroStagger}
+        initial="hidden"
+        animate="show"
+      >
+        <motion.div className="hero-badge" variants={heroItem}>
           <span className="hero-badge__dot" />
           Code · Innovate · Impact
-        </div>
+        </motion.div>
 
-        <h1 className="hero-title">
+        <motion.h1 className="hero-title" variants={heroItem}>
           Building the Future Through
           <span className="hero-title__accent">Technology</span>
-        </h1>
+        </motion.h1>
 
-        <p className="hero-subtitle">
+        <motion.p className="hero-subtitle" variants={heroItem}>
           CSI Student Chapter is a community of passionate innovators, developers, and tech
           enthusiasts driving change through AI/ML, web development, robotics, and cybersecurity.
-        </p>
+        </motion.p>
 
-        <div className="hero-cta-row">
+        <motion.div className="hero-cta-row" variants={heroItem}>
           <a href="#events" className="hero-btn-primary">
             Explore Events
             <ChevronRight size={18} aria-hidden />
@@ -56,8 +80,8 @@ const Hero = () => {
           <a href="#about" className="hero-btn-secondary">
             Our Projects
           </a>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </section>
   );
 };

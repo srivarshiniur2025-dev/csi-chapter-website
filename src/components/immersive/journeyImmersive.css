@@ -23,6 +23,7 @@
   width: 4px;
   height: 84%;
   translate: -50% 0;
+  overflow: hidden;
   background: linear-gradient(
     180deg,
     transparent,

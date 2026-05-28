@@ -65,6 +65,7 @@ function AnimatedCounter({ target }: { target: number }) {
 const About = () => {
   return (
     <section id="about" className="about-section text-csi-pale">
+      <div className="about-section__holo" aria-hidden />
       <SectionAmbient preset="about" />
       <SectionReveal className="about-container">
         <motion.header

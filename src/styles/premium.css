@@ -1,0 +1,112 @@
+/* CSI Premium Design System — spacing, glass, motion (palette unchanged) */
+
+:root {
+  --csi-ease-cinematic: cubic-bezier(0.22, 1, 0.36, 1);
+  --csi-ease-spring: cubic-bezier(0.34, 1.2, 0.64, 1);
+  --csi-section-y: clamp(5rem, 10vw, 7.5rem);
+  --csi-container: min(76rem, calc(100% - clamp(2rem, 6vw, 4rem)));
+  --csi-glass-bg: rgba(6, 4, 20, 0.62);
+  --csi-glass-border: rgba(148, 0, 255, 0.22);
+  --csi-glass-highlight: rgba(228, 241, 255, 0.06);
+  --csi-glow-soft: 0 0 40px rgba(148, 0, 255, 0.18);
+  --csi-glow-strong: 0 0 60px rgba(148, 0, 255, 0.32);
+  --csi-text-muted: rgba(174, 210, 255, 0.62);
+  --csi-immersive-scroll: 0;
+}
+
+html {
+  --ambient-mx: 0;
+  --ambient-my: 0;
+  --ambient-depth: 0;
+  --immersive-scroll: var(--csi-immersive-scroll, 0);
+}
+
+.site-shell .section-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--csi-light);
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 0, 255, 0.28);
+  background: rgba(10, 5, 25, 0.55);
+  backdrop-filter: blur(10px);
+}
+
+/* Premium glass panel utility */
+.csi-glass-panel {
+  position: relative;
+  border-radius: 1rem;
+  background: var(--csi-glass-bg);
+  border: 1px solid var(--csi-glass-border);
+  backdrop-filter: blur(20px) saturate(1.15);
+  -webkit-backdrop-filter: blur(20px) saturate(1.15);
+  box-shadow:
+    0 0 0 1px var(--csi-glass-highlight) inset,
+    0 16px 48px -20px rgba(0, 0, 0, 0.55),
+    var(--csi-glow-soft);
+  transition:
+    transform 0.4s var(--csi-ease-cinematic),
+    border-color 0.35s ease,
+    box-shadow 0.4s var(--csi-ease-cinematic);
+}
+
+.csi-glass-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(148, 0, 255, 0.35) 0%,
+    rgba(107, 140, 255, 0.08) 45%,
+    rgba(148, 0, 255, 0.2) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.csi-glass-panel:hover {
+  border-color: rgba(148, 0, 255, 0.38);
+  box-shadow:
+    0 0 0 1px rgba(228, 241, 255, 0.08) inset,
+    0 24px 56px -18px rgba(0, 0, 0, 0.6),
+    var(--csi-glow-strong);
+  transform: translateY(-3px);
+}
+
+/* Page load fade */
+@keyframes csi-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.site-shell {
+  animation: csi-page-enter 0.85s var(--csi-ease-cinematic) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-shell {
+    animation: none;
+  }
+
+  .csi-glass-panel:hover {
+    transform: none;
+  }
+}

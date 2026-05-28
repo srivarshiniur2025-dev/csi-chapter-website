@@ -30,7 +30,7 @@ import {
   parseEventStart,
 } from '../lib/eventRegistration';
 import { useAuth } from '../contexts/AuthContext';
-import { api, getApiToken } from '../lib/api';
+import { api, hasApiSession } from '../lib/api';
 import './EventRegistrationModal.css';
 
 const CINEMATIC_EASE = [0.22, 1, 0.36, 1] as const;
@@ -140,7 +140,7 @@ const EventRegistrationModal = ({ event, onClose }: EventRegistrationModalProps)
 
     setSubmitting(true);
     try {
-      if (apiReady && user && getApiToken()) {
+      if (apiReady && user && (await hasApiSession())) {
         const { registration } = await api.registerEvent(event.id, {
           name: form.name.trim(),
           email: form.email.trim(),

@@ -1,0 +1,99 @@
+.section-divider {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: min(42rem, 88%);
+  margin: 0 auto;
+  padding: clamp(1.25rem, 4vw, 2rem) 1.5rem;
+  pointer-events: none;
+}
+
+.section-divider__beam {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(148, 0, 255, 0.15) 20%,
+    rgba(174, 210, 255, 0.45) 50%,
+    rgba(148, 0, 255, 0.15) 80%,
+    transparent
+  );
+  opacity: 0.7;
+}
+
+.section-divider__beam--left {
+  background: linear-gradient(90deg, transparent, rgba(148, 0, 255, 0.35), rgba(174, 210, 255, 0.5));
+}
+
+.section-divider__beam--right {
+  background: linear-gradient(90deg, rgba(174, 210, 255, 0.5), rgba(148, 0, 255, 0.35), transparent);
+}
+
+.section-divider__core {
+  position: relative;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.section-divider__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(148, 0, 255, 0.35);
+  box-shadow:
+    0 0 24px rgba(148, 0, 255, 0.25),
+    inset 0 0 12px rgba(148, 0, 255, 0.12);
+  animation: section-divider-ring 4s ease-in-out infinite;
+}
+
+.section-divider__node {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #9400ff;
+  box-shadow: 0 0 16px rgba(148, 0, 255, 0.8);
+}
+
+.section-divider--strong .section-divider__beam {
+  opacity: 1;
+}
+
+.section-divider--strong .section-divider__ring {
+  box-shadow:
+    0 0 36px rgba(148, 0, 255, 0.4),
+    inset 0 0 16px rgba(148, 0, 255, 0.2);
+}
+
+.section-divider--subtle .section-divider__beam {
+  opacity: 0.35;
+}
+
+.section-divider--subtle .section-divider__core {
+  transform: scale(0.75);
+}
+
+@keyframes section-divider-ring {
+  0%,
+  100% {
+    transform: scale(0.92);
+    opacity: 0.65;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section-divider__ring {
+    animation: none;
+  }
+}

@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@import "./styles/premium.css";
+@import "./styles/premium-sections.css";
+@import "./styles/premium-os.css";
 
 /* ColorHunt palette: https://colorhunt.co/palette/27005d9400ffaed2ffe4f1ff */
 @theme {

@@ -1,21 +1,16 @@
+import { auth, isFirebaseConfigured } from './firebase';
 import type { DomainInterest, UserProfile, RegisteredEventRecord } from './userDashboard';
 
 const API_URL = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') || '';
-const TOKEN_KEY = 'csi-api-token';
 
 export function isApiConfigured(): boolean {
   return Boolean(API_URL);
 }
 
-export function getApiToken(): string | null {
-  if (typeof window === 'undefined') return null;
-  return localStorage.getItem(TOKEN_KEY);
-}
-
-export function setApiToken(token: string | null): void {
-  if (typeof window === 'undefined') return;
-  if (token) localStorage.setItem(TOKEN_KEY, token);
-  else localStorage.removeItem(TOKEN_KEY);
+/** True when the API is configured and the user has a Firebase session for Bearer auth */
+export async function hasApiSession(): Promise<boolean> {
+  if (!isApiConfigured() || !isFirebaseConfigured() || !auth?.currentUser) return false;
+  return true;
 }
 
 export interface ApiUser {
@@ -57,19 +52,27 @@ export class ApiError extends Error {
   }
 }
 
+async function attachAuthHeader(headers: Record<string, string>) {
+  if (!isFirebaseConfigured() || !auth?.currentUser) return;
+  const idToken = await auth.currentUser.getIdToken();
+  headers.Authorization = `Bearer ${idToken}`;
+}
+
 async function request<T>(
   path: string,
   options: RequestInit = {},
-  auth = true
+  authRequired = true
 ): Promise<T> {
   if (!API_URL) throw new Error('API URL not configured');
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...(options.headers as Record<string, string>),
   };
-  if (auth) {
-    const token = getApiToken();
-    if (token) headers.Authorization = `Bearer ${token}`;
+  if (authRequired) {
+    await attachAuthHeader(headers);
+    if (!headers.Authorization) {
+      throw new ApiError('Sign in with Firebase to use cloud features', 401);
+    }
   }
   let res: Response;
   try {
@@ -95,21 +98,21 @@ export const api = {
     department?: string;
     domainInterests?: DomainInterest[];
   }) {
-    return request<{ token: string; user: ApiUser }>('/api/auth/signup', {
+    return request<{ user: ApiUser }>('/api/auth/signup', {
       method: 'POST',
       body: JSON.stringify(body),
     }, false);
   },
 
   login(email: string, password: string) {
-    return request<{ token: string; user: ApiUser }>('/api/auth/login', {
+    return request<{ user: ApiUser }>('/api/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     }, false);
   },
 
   google(idToken: string) {
-    return request<{ token: string; user: ApiUser }>('/api/auth/google', {
+    return request<{ user: ApiUser }>('/api/auth/google', {
       method: 'POST',
       body: JSON.stringify({ idToken }),
     }, false);

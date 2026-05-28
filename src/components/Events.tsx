@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { LucideIcon } from 'lucide-react';
 import SectionAmbient from './ambient/SectionAmbient';
+import EventsField3D from './ecosystem/EventsField3D';
 import EventsImmersive from './immersive/EventsImmersive';
 import SectionReveal from './immersive/SectionReveal';
 import {
@@ -329,6 +330,7 @@ const Events = () => {
   return (
     <section id="events" className="events-section text-csi-pale">
       <SectionAmbient preset="events" />
+      <EventsField3D />
       <EventsImmersive />
       <SectionReveal className="events-container">
         <motion.header

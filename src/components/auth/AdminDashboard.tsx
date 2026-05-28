@@ -15,6 +15,7 @@ import {
 import { dispatchOpenNova, useAuth } from '../../contexts/AuthContext';
 import { api, isApiConfigured, type ApiEvent } from '../../lib/api';
 import { addLocalGalleryItem, loadLocalGallery, removeLocalGalleryItem } from '../../lib/localGallery';
+import FuturisticSparkline from '../ecosystem/FuturisticSparkline';
 import './AdminDashboard.css';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -240,16 +241,19 @@ export default function AdminDashboard() {
 
               {tab === 'overview' && (
                 <>
-                  <div className="adm-stats">
-                    {stats.map((s) => (
-                      <div key={s.label} className="adm-stat">
+                  <div className="adm-analytics-grid">
+                    {stats.map((s, i) => (
+                      <div key={s.label} className="adm-chart-card adm-card--os">
                         <s.icon size={16} />
                         <strong>{s.value}</strong>
                         <span>{s.label}</span>
+                        <FuturisticSparkline
+                          values={[4 + i * 3, 8 + i * 2, 6 + i, 12 + i, 10 + i * 2, 14 + i]}
+                        />
                       </div>
                     ))}
                   </div>
-                  <section>
+                  <section className="adm-card--os">
                     <h3 className="adm-section-title">Activity feed</h3>
                     <ul className="adm-feed">
                       {recent.length

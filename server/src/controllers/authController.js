@@ -1,7 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { User } from '../models/User.js';
-import { signToken } from '../utils/token.js';
 import { getFirebaseAdmin } from '../config/firebaseAdmin.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
@@ -19,8 +18,7 @@ const loginSchema = z.object({
 });
 
 function authResponse(user) {
-  const token = signToken({ sub: user._id.toString(), role: user.role });
-  return { token, user: user.toSafeJSON() };
+  return { user: user.toSafeJSON() };
 }
 
 export const signup = asyncHandler(async (req, res) => {

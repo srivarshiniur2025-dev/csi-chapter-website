@@ -317,6 +317,12 @@ export default function AIAssistant() {
               ))}
             </div>
 
+            <div className="ai-assistant__os-strip" aria-hidden>
+              <span className="ai-assistant__os-strip-dot" />
+              <span>CSI Nova Core · v2.0</span>
+              <span className="ai-assistant__os-strip-tag">SECURE LINK</span>
+            </div>
+
             <header className="ai-assistant__header">
               <div className="ai-assistant__header-info">
                 <div className="ai-assistant__header-bot">

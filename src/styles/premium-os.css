@@ -1,0 +1,248 @@
+/* CSI Futuristic OS — command-center layer (palette unchanged) */
+
+.csi-os-chrome {
+  position: relative;
+}
+
+/* Navbar OS control panel */
+.csi-navbar.csi-os-chrome::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(148, 0, 255, 0.06) 0%,
+    transparent 30%,
+    transparent 70%,
+    rgba(107, 140, 255, 0.06) 100%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.csi-navbar--scrolled.csi-os-chrome::before {
+  opacity: 1;
+}
+
+.csi-navbar__os-pulse {
+  position: absolute;
+  bottom: 0;
+  left: var(--nav-indicator-x, 50%);
+  width: 4rem;
+  height: 2px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, #9400ff, #aed2ff, #9400ff, transparent);
+  box-shadow: 0 0 16px rgba(148, 0, 255, 0.7);
+  opacity: 0;
+  transition:
+    left 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.csi-navbar--scrolled .csi-navbar__os-pulse {
+  opacity: 0.85;
+}
+
+/* Team command panels */
+.team-section {
+  position: relative;
+}
+
+.team-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 40% 30% at 15% 40%, rgba(148, 0, 255, 0.08), transparent 55%),
+    radial-gradient(ellipse 35% 28% at 88% 55%, rgba(107, 140, 255, 0.06), transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.team-card {
+  position: relative;
+  isolation: isolate;
+}
+
+.team-card::before {
+  content: 'IDENTITY';
+  position: absolute;
+  top: 0.65rem;
+  right: 0.75rem;
+  font-size: 0.5rem;
+  letter-spacing: 0.2em;
+  color: rgba(148, 0, 255, 0.35);
+  font-family: 'Orbitron', sans-serif;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Events cinematic depth */
+.events-carousel__card--active {
+  filter: drop-shadow(0 0 28px rgba(148, 0, 255, 0.35));
+}
+
+.events-carousel__card--active .events-carousel__card-neon {
+  animation: events-os-neon 2.5s ease-in-out infinite;
+}
+
+@keyframes events-os-neon {
+  0%,
+  100% {
+    opacity: 0.65;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Journey energy pulse */
+.journey-immersive__trail::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent, rgba(148, 0, 255, 0.4), transparent);
+  animation: journey-pulse 3s ease-in-out infinite;
+}
+
+@keyframes journey-pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scaleY(0.85);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scaleY(1);
+  }
+}
+
+/* Nova OS core */
+.ai-assistant__os-strip {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 1rem;
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(174, 210, 255, 0.55);
+  border-bottom: 1px solid rgba(148, 0, 255, 0.15);
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.ai-assistant__os-strip-tag {
+  margin-left: auto;
+  padding: 0.12rem 0.4rem;
+  border-radius: 0.25rem;
+  border: 1px solid rgba(148, 0, 255, 0.25);
+  color: rgba(148, 0, 255, 0.85);
+  font-size: 0.5rem;
+}
+
+.ai-assistant__os-strip-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.8);
+  animation: nova-os-pulse 2s ease-in-out infinite;
+}
+
+@keyframes nova-os-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Dashboard OS widgets */
+.pdash-card--os,
+.adm-card--os {
+  position: relative;
+  overflow: hidden;
+}
+
+.pdash-card--os::after,
+.adm-card--os::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 5rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(148, 0, 255, 0.5));
+}
+
+.adm-analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 640px) {
+  .adm-analytics-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.adm-chart-card {
+  padding: 0.75rem;
+  border-radius: 0.65rem;
+  border: 1px solid rgba(148, 0, 255, 0.2);
+  background: rgba(4, 3, 16, 0.55);
+}
+
+.adm-chart-card strong {
+  display: block;
+  font-size: 1.1rem;
+  color: #e4f1ff;
+}
+
+.adm-chart-card span {
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(174, 210, 255, 0.5);
+}
+
+/* Gallery holographic depth */
+.gallery-card__holo-frame {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(148, 0, 255, 0.2);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.gallery-card:hover .gallery-card__holo-frame {
+  opacity: 1;
+  box-shadow: inset 0 0 40px rgba(148, 0, 255, 0.12);
+}
+
+.gallery-lightbox__holo {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border: 1px solid rgba(148, 0, 255, 0.3);
+  border-radius: inherit;
+  box-shadow: 0 0 60px rgba(148, 0, 255, 0.2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .events-carousel__card--active .events-carousel__card-neon,
+  .journey-immersive__trail::after,
+  .ai-assistant__os-strip-dot {
+    animation: none;
+  }
+}

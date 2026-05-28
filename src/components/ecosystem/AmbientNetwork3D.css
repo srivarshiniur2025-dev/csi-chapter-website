@@ -1,0 +1,25 @@
+.ambient-network-3d {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.55;
+  mask-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    black 22%,
+    black 78%,
+    transparent 100%
+  );
+}
+
+.ambient-network-3d canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+@media (max-width: 767px) {
+  .ambient-network-3d {
+    display: none;
+  }
+}

@@ -14,7 +14,7 @@ npm run dev
 ### Full-stack (Mongo API)
 
 1. Start MongoDB (local or Atlas — see `server/README.md`).
-2. `cd server && cp .env.example .env` → set `MONGODB_URI` and `JWT_SECRET`.
+2. `cd server && cp .env.example .env` → set `MONGODB_URI` and Firebase Admin keys (for protected routes).
 3. `npm install && npm run seed && npm run dev` (API on port 5000).
 4. In project root `.env`, set `VITE_API_URL=http://localhost:5000`.
 5. Run `npm run dev` for the frontend.

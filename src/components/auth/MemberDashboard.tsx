@@ -30,6 +30,7 @@ import {
   getTimeGreeting,
 } from '../../lib/personalization';
 import { scrollToSectionSmooth } from '../../lib/lenisScroll';
+import FuturisticSparkline from '../ecosystem/FuturisticSparkline';
 import './MemberDashboard.css';
 
 const CINEMATIC_EASE = [0.22, 1, 0.36, 1] as const;
@@ -282,6 +283,14 @@ export default function MemberDashboard() {
                           </motion.div>
                         ))}
                       </div>
+
+                      <section className="pdash-card pdash-card--os pdash-card--wide">
+                        <h3>Platform activity</h3>
+                        <FuturisticSparkline
+                          values={[8, 14, 11, 19, 16, 24, 28, 22]}
+                          label="Engagement"
+                        />
+                      </section>
 
                       <section className="pdash-card pdash-card--wide">
                         <h3>Recommended for you</h3>

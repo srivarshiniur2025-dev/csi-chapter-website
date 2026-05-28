@@ -314,6 +314,31 @@
   display: none;
 }
 
+.site-background__scan {
+  position: absolute;
+  inset: 0;
+  opacity: 0.04;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(174, 210, 255, 0.04) 3px,
+    rgba(174, 210, 255, 0.04) 4px
+  );
+  mask-image: linear-gradient(180deg, transparent 0%, black 18%, black 82%, transparent 100%);
+  animation: site-scan-drift 12s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes site-scan-drift {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(24px);
+  }
+}
+
 @media (max-width: 767px) {
   .site-background__glow {
     filter: blur(56px);
@@ -321,5 +346,9 @@
 
   .site-background__glow--hero {
     animation: none;
+  }
+
+  .site-background__scan {
+    display: none;
   }
 }

@@ -1,0 +1,161 @@
+.csi-boot {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: grid;
+  place-items: center;
+  background: #020208;
+  overflow: hidden;
+}
+
+.csi-boot__grid {
+  position: absolute;
+  inset: -20%;
+  opacity: 0.12;
+  background-image:
+    linear-gradient(rgba(148, 0, 255, 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 0, 255, 0.5) 1px, transparent 1px);
+  background-size: 48px 48px;
+  animation: csi-boot-grid 20s linear infinite;
+}
+
+@keyframes csi-boot-grid {
+  0% {
+    transform: perspective(600px) rotateX(58deg) translateY(0);
+  }
+  100% {
+    transform: perspective(600px) rotateX(58deg) translateY(48px);
+  }
+}
+
+.csi-boot__scan {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(174, 210, 255, 0.03) 3px,
+    rgba(174, 210, 255, 0.03) 4px
+  );
+  animation: csi-boot-scan 4s linear infinite;
+}
+
+@keyframes csi-boot-scan {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(8px);
+  }
+}
+
+.csi-boot__glow {
+  position: absolute;
+  width: min(70vw, 32rem);
+  height: min(40vh, 18rem);
+  background: radial-gradient(ellipse, rgba(148, 0, 255, 0.35), transparent 68%);
+  filter: blur(40px);
+  animation: csi-boot-glow 2.5s ease-in-out infinite;
+}
+
+@keyframes csi-boot-glow {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+}
+
+.csi-boot__panel {
+  position: relative;
+  z-index: 2;
+  width: min(22rem, 90vw);
+  padding: 2rem 1.75rem;
+  text-align: center;
+  border-radius: 1rem;
+  background: rgba(8, 6, 22, 0.85);
+  border: 1px solid rgba(148, 0, 255, 0.35);
+  box-shadow:
+    0 0 60px rgba(148, 0, 255, 0.25),
+    inset 0 1px 0 rgba(228, 241, 255, 0.08);
+  backdrop-filter: blur(20px);
+}
+
+.csi-boot__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2.25rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.5rem;
+}
+
+.csi-boot__logo-bracket {
+  color: #9400ff;
+  text-shadow: 0 0 20px rgba(148, 0, 255, 0.8);
+}
+
+.csi-boot__logo-core {
+  color: #e4f1ff;
+}
+
+.csi-boot__title {
+  margin: 0 0 1.25rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(174, 210, 255, 0.65);
+}
+
+.csi-boot__status {
+  margin: 0 0 1rem;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #aed2ff;
+  min-height: 1.2em;
+}
+
+.csi-boot__bar {
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(148, 0, 255, 0.15);
+  overflow: hidden;
+}
+
+.csi-boot__bar-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #9400ff, #6b8cff, #aed2ff);
+  box-shadow: 0 0 12px rgba(148, 0, 255, 0.8);
+}
+
+.csi-boot__pct {
+  margin: 0.5rem 0 0;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: rgba(174, 210, 255, 0.45);
+}
+
+.csi-app-root {
+  min-height: 100vh;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .csi-boot__grid,
+  .csi-boot__scan,
+  .csi-boot__glow {
+    animation: none;
+  }
+}

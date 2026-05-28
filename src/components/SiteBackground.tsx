@@ -46,6 +46,7 @@ const SiteBackground = () => {
       <div className="site-background__streak site-background__streak--3" />
 
       <div className="site-background__vignette" />
+      <div className="site-background__scan" aria-hidden />
 
       {particles.map((p) => (
         <span
