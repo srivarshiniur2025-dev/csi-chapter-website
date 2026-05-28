@@ -51,7 +51,8 @@ export interface ReminderRecord {
 
 const profileKey = (uid: string) => `csi-user-profile-${uid}`;
 
-const DEFAULT_RESOURCES = [
+/** Platform resources shown in the dashboard before the member saves any */
+export const PLATFORM_RESOURCE_SUGGESTIONS = [
   'CSI Nova AI Guide',
   'Web Dev Starter Kit',
   'Python for Beginners',
@@ -63,12 +64,12 @@ export function getDefaultProfile(email: string, displayName = ''): UserProfile 
     displayName,
     email,
     department: '',
-    domainInterests: ['Web Development'],
-    savedResources: [...DEFAULT_RESOURCES],
-    bookmarkedEvents: ['AI Nexus Workshop', 'CodeStorm Hackathon'],
+    domainInterests: [],
+    savedResources: [],
+    bookmarkedEvents: [],
     registeredEvents: [],
     registrationHistory: [],
-    achievements: ['Explorer Badge'],
+    achievements: [],
     upcomingReminders: [],
   };
 }

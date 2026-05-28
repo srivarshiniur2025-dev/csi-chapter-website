@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema(
     domainInterests: { type: [String], default: [] },
     bookmarkedEvents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }],
     savedResources: { type: [String], default: [] },
-    achievements: { type: [String], default: ['Explorer Badge'] },
+    achievements: { type: [String], default: [] },
     firebaseUid: { type: String, default: '' },
     isActive: { type: Boolean, default: true },
     lastLoginAt: { type: Date },

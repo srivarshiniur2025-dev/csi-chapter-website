@@ -178,7 +178,7 @@ export function apiUserToProfile(user: ApiUser, extra?: Partial<UserProfile>): U
     bookmarkedEvents: [],
     registeredEvents: extra?.registeredEvents ?? [],
     registrationHistory: extra?.registrationHistory ?? [],
-    achievements: user.achievements || ['Explorer Badge'],
+    achievements: user.achievements || [],
     upcomingReminders: extra?.upcomingReminders ?? [],
   };
 }

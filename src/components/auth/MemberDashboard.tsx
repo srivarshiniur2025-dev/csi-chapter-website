@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Bell, Bookmark, CalendarClock, Medal, Sparkles, X } from 'lucide-react';
 import { dispatchOpenNova, useAuth } from '../../contexts/AuthContext';
+import { PLATFORM_RESOURCE_SUGGESTIONS } from '../../lib/userDashboard';
 import { scrollToSectionSmooth } from '../../lib/lenisScroll';
 import './MemberDashboard.css';
 
@@ -86,7 +87,7 @@ export default function MemberDashboard() {
                   Welcome back, {(profile?.displayName || 'Member').split(' ')[0]}.
                   CSI Nova recommends checking upcoming events in your top interests:
                   {' '}
-                  {(profile?.domainInterests ?? []).slice(0, 2).join(' · ') || 'Web Development'}.
+                  {(profile?.domainInterests ?? []).slice(0, 2).join(' · ') || 'our upcoming events'}.
                 </p>
               </section>
 
@@ -157,22 +158,38 @@ export default function MemberDashboard() {
 
               <section>
                 <p className="dash-section__label">Saved resources</p>
-                <ul className="dash-list">
-                  {(profile?.savedResources ?? []).slice(0, 4).map((r) => (
-                    <li key={r}>{r}</li>
-                  ))}
-                </ul>
+                {(profile?.savedResources ?? []).length ? (
+                  <ul className="dash-list">
+                    {(profile?.savedResources ?? []).slice(0, 4).map((r) => (
+                      <li key={r}>{r}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <>
+                    <p className="dash-empty">You have not saved any resources yet.</p>
+                    <p className="dash-section__label dash-section__label--sub">Suggested for you</p>
+                    <ul className="dash-list dash-list--muted">
+                      {PLATFORM_RESOURCE_SUGGESTIONS.slice(0, 4).map((r) => (
+                        <li key={r}>{r}</li>
+                      ))}
+                    </ul>
+                  </>
+                )}
               </section>
 
               <section>
                 <p className="dash-section__label">Domain interests</p>
-                <div className="dash-chips">
-                  {(profile?.domainInterests ?? ['Web Development']).map((d) => (
-                    <span key={d} className="dash-chip">
-                      {d}
-                    </span>
-                  ))}
-                </div>
+                {(profile?.domainInterests ?? []).length ? (
+                  <div className="dash-chips">
+                    {(profile?.domainInterests ?? []).map((d) => (
+                      <span key={d} className="dash-chip">
+                        {d}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="dash-empty">Set interests during sign-up or in your profile.</p>
+                )}
               </section>
 
               <section>

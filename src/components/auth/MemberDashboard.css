@@ -192,6 +192,17 @@
   border: 1px dashed rgba(148, 0, 255, 0.2);
 }
 
+.dash-section__label--sub {
+  margin-top: 0.65rem;
+  font-size: 0.58rem;
+  opacity: 0.75;
+}
+
+.dash-list--muted li {
+  opacity: 0.65;
+  font-style: italic;
+}
+
 .dash-chips {
   display: flex;
   flex-wrap: wrap;
