@@ -1,0 +1,70 @@
+.csi-skeleton {
+  display: block;
+  background: linear-gradient(
+    90deg,
+    rgba(148, 0, 255, 0.08) 0%,
+    rgba(174, 210, 255, 0.14) 50%,
+    rgba(148, 0, 255, 0.08) 100%
+  );
+  background-size: 200% 100%;
+  animation: csi-skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+.csi-skeleton--sm {
+  border-radius: 0.35rem;
+}
+.csi-skeleton--md {
+  border-radius: 0.5rem;
+}
+.csi-skeleton--lg {
+  border-radius: 0.75rem;
+}
+.csi-skeleton--full {
+  border-radius: 999px;
+}
+
+@keyframes csi-skeleton-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+.events-skeleton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 2rem 0;
+  min-height: 420px;
+}
+
+.events-skeleton__card {
+  width: min(100%, 720px);
+}
+
+.events-skeleton__dots {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.csi-skeleton-dash {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+
+.csi-skeleton-dash__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.65rem;
+}
+
+@media (min-width: 640px) {
+  .csi-skeleton-dash__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

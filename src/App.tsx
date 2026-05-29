@@ -1,21 +1,22 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { ToastProvider } from './contexts/ToastContext';
 import AuthModal from './components/auth/AuthModal';
 import MemberDashboard from './components/auth/MemberDashboard';
 import AdminDashboard from './components/auth/AdminDashboard';
 import AIAssistant from './components/AIAssistant';
 import BootSequence from './components/ecosystem/BootSequence';
 import LandingPage from './pages/LandingPage';
-import GalleryPage from './pages/GalleryPage';
 
 function App() {
   return (
     <AuthProvider>
+      <ToastProvider>
       <BootSequence>
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<LandingPage />} />
-            <Route path="/gallery" element={<GalleryPage />} />
+            <Route path="/gallery" element={<Navigate to="/#gallery" replace />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
           <AIAssistant />
@@ -24,6 +25,7 @@ function App() {
           <AdminDashboard />
         </BrowserRouter>
       </BootSequence>
+      </ToastProvider>
     </AuthProvider>
   );
 }

@@ -16,11 +16,14 @@ import { dispatchOpenNova, useAuth } from '../../contexts/AuthContext';
 import { api, isApiConfigured, type ApiEvent } from '../../lib/api';
 import { addLocalGalleryItem, loadLocalGallery, removeLocalGalleryItem } from '../../lib/localGallery';
 import FuturisticSparkline from '../ecosystem/FuturisticSparkline';
+import { useToast } from '../../contexts/ToastContext';
+import EmptyState from '../ui/EmptyState';
+import { DashboardSkeleton } from '../ui/Skeleton';
 import './AdminDashboard.css';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-type AdminTab = 'overview' | 'events' | 'gallery' | 'users' | 'announcements';
+type AdminTab = 'overview' | 'events' | 'registrations' | 'gallery' | 'users' | 'announcements';
 
 const emptyEvent = {
   slug: '',
@@ -56,20 +59,29 @@ export default function AdminDashboard() {
   const [announceForm, setAnnounceForm] = useState({ title: '', body: '' });
   const [error, setError] = useState('');
   const [msg, setMsg] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [registrations, setRegistrations] = useState<
+    Array<{ registrationId?: string; user?: { name?: string; email?: string }; event?: { title?: string }; createdAt?: string }>
+  >([]);
+  const [editingSlug, setEditingSlug] = useState<string | null>(null);
+  const toast = useToast();
 
   const refresh = async () => {
     setError('');
+    setLoading(true);
     if (isApiConfigured()) {
       try {
-        const [a, ev, u, g, ann] = await Promise.all([
+        const [a, ev, u, g, ann, regs] = await Promise.all([
           api.adminAnalytics(),
           api.events(),
           api.adminUsers(),
           api.adminGallery(),
           api.adminAnnouncements(),
+          api.adminRegistrations(),
         ]);
         setAnalytics(a.analytics);
         setRecent((a.recentRegistrations as typeof recent) ?? []);
+        setRegistrations(regs.registrations ?? []);
         setEvents(ev.events);
         setUsers(u.users.map((x) => ({ id: x.id, name: x.name, email: x.email, role: x.role })));
         setGallery(
@@ -83,11 +95,16 @@ export default function AdminDashboard() {
         );
         setAnnouncements(ann.announcements);
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Failed to load admin data');
+        const m = e instanceof Error ? e.message : 'Failed to load admin data';
+        setError(m);
+        toast.error(m);
+      } finally {
+        setLoading(false);
       }
     } else {
       setGallery(loadLocalGallery());
       setAnalytics({ users: 1, events: 4, registrations: 0, announcements: 0 });
+      setLoading(false);
     }
   };
 
@@ -120,16 +137,71 @@ export default function AdminDashboard() {
       });
       setEventForm(emptyEvent);
       setMsg('Event published.');
+      toast.success('Event published.');
       void refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create event');
+      const m = err instanceof Error ? err.message : 'Failed to create event';
+      setError(m);
+      toast.error(m);
     }
+  };
+
+  const onSaveEdit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!editingSlug || !isApiConfigured()) return;
+    setMsg('');
+    try {
+      await api.adminUpdateEvent(editingSlug, {
+        ...eventForm,
+        slug: eventForm.slug || editingSlug,
+        startISO: eventForm.startISO || new Date().toISOString(),
+      });
+      setEditingSlug(null);
+      setEventForm(emptyEvent);
+      toast.success('Event updated.');
+      void refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Update failed');
+    }
+  };
+
+  const startEdit = (ev: ApiEvent) => {
+    setEditingSlug(ev.id);
+    setEventForm({
+      slug: ev.id,
+      title: ev.title,
+      dateLabel: ev.date,
+      venue: ev.venue,
+      label: ev.label,
+      image: ev.image,
+      shortDescription: ev.shortDescription,
+      fullDescription: ev.fullDescription,
+      startISO: ev.startISO.slice(0, 16),
+      totalSeats: ev.totalSeats,
+    });
+    setTab('events');
   };
 
   const onDeleteEvent = async (slug: string) => {
     if (!isApiConfigured() || !confirm('Delete this event?')) return;
-    await api.adminDeleteEvent(slug);
-    void refresh();
+    try {
+      await api.adminDeleteEvent(slug);
+      toast.success('Event deleted.');
+      void refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Delete failed');
+    }
+  };
+
+  const onDeleteAnnouncement = async (id: string) => {
+    if (!isApiConfigured() || !confirm('Delete this announcement?')) return;
+    try {
+      await api.adminDeleteAnnouncement(id);
+      toast.success('Announcement removed.');
+      void refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Delete failed');
+    }
   };
 
   const onAddGallery = async (e: FormEvent) => {
@@ -218,6 +290,7 @@ export default function AdminDashboard() {
                 [
                   ['overview', 'Overview', BarChart3],
                   ['events', 'Events', Calendar],
+                  ['registrations', 'Regs', Ticket],
                   ['gallery', 'Gallery', Image],
                   ['users', 'Users', Users],
                   ['announcements', 'Announce', Megaphone],
@@ -238,8 +311,9 @@ export default function AdminDashboard() {
             <div className="adm-panel__body">
               {error ? <p className="adm-error">{error}</p> : null}
               {msg ? <p className="adm-msg">{msg}</p> : null}
+              {loading ? <DashboardSkeleton /> : null}
 
-              {tab === 'overview' && (
+              {!loading && tab === 'overview' && (
                 <>
                   <div className="adm-analytics-grid">
                     {stats.map((s, i) => (
@@ -271,10 +345,10 @@ export default function AdminDashboard() {
                 </>
               )}
 
-              {tab === 'events' && (
+              {!loading && tab === 'events' && (
                 <>
-                  <form className="adm-form" onSubmit={onCreateEvent}>
-                    <h3 className="adm-section-title">Add event</h3>
+                  <form className="adm-form" onSubmit={editingSlug ? onSaveEdit : onCreateEvent}>
+                    <h3 className="adm-section-title">{editingSlug ? 'Edit event' : 'Add event'}</h3>
                     <div className="adm-form__grid">
                       <input placeholder="Slug (ai-nexus)" value={eventForm.slug} onChange={(e) => setEventForm({ ...eventForm, slug: e.target.value })} />
                       <input placeholder="Title" required value={eventForm.title} onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })} />
@@ -287,23 +361,62 @@ export default function AdminDashboard() {
                     </div>
                     <textarea placeholder="Short description" rows={2} value={eventForm.shortDescription} onChange={(e) => setEventForm({ ...eventForm, shortDescription: e.target.value })} />
                     <button type="submit" className="adm-btn-primary">
-                      <Plus size={16} /> Publish event
+                      <Plus size={16} /> {editingSlug ? 'Save changes' : 'Publish event'}
                     </button>
+                    {editingSlug ? (
+                      <button
+                        type="button"
+                        className="adm-btn-ghost"
+                        onClick={() => {
+                          setEditingSlug(null);
+                          setEventForm(emptyEvent);
+                        }}
+                      >
+                        Cancel edit
+                      </button>
+                    ) : null}
                   </form>
                   <ul className="adm-list">
                     {events.map((ev) => (
                       <li key={ev.id}>
                         <span>{ev.title}</span>
-                        <button type="button" onClick={() => onDeleteEvent(ev.id)} aria-label="Delete">
-                          <Trash2 size={14} />
-                        </button>
+                        <div className="adm-list__actions">
+                          <button type="button" onClick={() => startEdit(ev)} aria-label="Edit">
+                            Edit
+                          </button>
+                          <button type="button" onClick={() => onDeleteEvent(ev.id)} aria-label="Delete">
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
                       </li>
                     ))}
                   </ul>
                 </>
               )}
 
-              {tab === 'gallery' && (
+              {!loading && tab === 'registrations' && (
+                <section className="adm-card--os">
+                  <h3 className="adm-section-title">All registrations</h3>
+                  {registrations.length ? (
+                    <ul className="adm-feed">
+                      {registrations.map((r, i) => (
+                        <li key={r.registrationId ?? i}>
+                          <Ticket size={14} />
+                          <span>
+                            <strong>{r.user?.name ?? 'Member'}</strong> ({r.user?.email ?? '—'}) →{' '}
+                            {r.event?.title ?? 'Event'}
+                            {r.createdAt ? ` · ${new Date(r.createdAt).toLocaleString()}` : ''}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <EmptyState title="No registrations" description="Registrations will appear when members sign up for events." />
+                  )}
+                </section>
+              )}
+
+              {!loading && tab === 'gallery' && (
                 <>
                   <form className="adm-form" onSubmit={onAddGallery}>
                     <h3 className="adm-section-title">Upload gallery image</h3>
@@ -334,7 +447,7 @@ export default function AdminDashboard() {
                 </>
               )}
 
-              {tab === 'users' && (
+              {!loading && tab === 'users' && (
                 <ul className="adm-list adm-list--users">
                   {users.map((u) => (
                     <li key={u.id}>
@@ -348,7 +461,7 @@ export default function AdminDashboard() {
                 </ul>
               )}
 
-              {tab === 'announcements' && (
+              {!loading && tab === 'announcements' && (
                 <>
                   <form className="adm-form" onSubmit={onAnnounce}>
                     <h3 className="adm-section-title">New announcement</h3>
@@ -362,6 +475,9 @@ export default function AdminDashboard() {
                     {announcements.map((a) => (
                       <li key={a._id}>
                         <span>{a.title}</span>
+                        <button type="button" onClick={() => void onDeleteAnnouncement(a._id)} aria-label="Delete">
+                          <Trash2 size={14} />
+                        </button>
                       </li>
                     ))}
                   </ul>

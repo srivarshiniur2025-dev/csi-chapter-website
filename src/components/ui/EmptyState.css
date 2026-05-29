@@ -1,0 +1,28 @@
+.csi-empty {
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+  border-radius: 0.75rem;
+  border: 1px dashed rgba(148, 0, 255, 0.25);
+  background: rgba(6, 4, 18, 0.45);
+}
+
+.csi-empty__title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #e4f1ff;
+}
+
+.csi-empty__desc {
+  margin: 0.5rem 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: rgba(174, 210, 255, 0.62);
+  max-width: 28rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.csi-empty__action {
+  margin-top: 1rem;
+}

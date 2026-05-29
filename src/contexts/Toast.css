@@ -1,0 +1,78 @@
+.csi-toast-stack {
+  position: fixed;
+  bottom: calc(var(--ai-offset, 5.5rem) + 0.5rem);
+  right: max(1rem, env(safe-area-inset-right, 0px));
+  z-index: 10300;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: min(22rem, calc(100vw - 2rem));
+  pointer-events: none;
+}
+
+.csi-toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.55rem;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: #e4f1ff;
+  background: rgba(8, 6, 22, 0.94);
+  border: 1px solid rgba(148, 0, 255, 0.28);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  animation: csi-toast-in 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.csi-toast--success {
+  border-color: rgba(52, 211, 153, 0.4);
+}
+
+.csi-toast--error {
+  border-color: rgba(251, 113, 133, 0.45);
+}
+
+.csi-toast--info {
+  border-color: rgba(107, 140, 255, 0.35);
+}
+
+.csi-toast__text {
+  flex: 1;
+}
+
+.csi-toast__close {
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  color: rgba(174, 210, 255, 0.6);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.csi-toast__close:hover {
+  color: #e4f1ff;
+}
+
+@keyframes csi-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 767px) {
+  .csi-toast-stack {
+    bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+    left: 1rem;
+    right: 1rem;
+    max-width: none;
+  }
+}

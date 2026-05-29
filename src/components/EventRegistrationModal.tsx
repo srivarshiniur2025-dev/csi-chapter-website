@@ -30,6 +30,7 @@ import {
   parseEventStart,
 } from '../lib/eventRegistration';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import { api, hasApiSession } from '../lib/api';
 import './EventRegistrationModal.css';
 
@@ -46,6 +47,7 @@ const EMPTY_FORM: RegistrationFormData = {
 interface EventRegistrationModalProps {
   event: ChapterEvent;
   onClose: () => void;
+  onRegistered?: (eventId: string, seatsTaken: number) => void;
 }
 
 function EventPassQR({ registrationId }: { registrationId: string }) {
@@ -89,8 +91,9 @@ function EventPassQR({ registrationId }: { registrationId: string }) {
   );
 }
 
-const EventRegistrationModal = ({ event, onClose }: EventRegistrationModalProps) => {
-  const { user, registerEvent, refreshProfile, apiReady } = useAuth();
+const EventRegistrationModal = ({ event, onClose, onRegistered }: EventRegistrationModalProps) => {
+  const { user, profile, openAuth, registerEvent, refreshProfile, apiReady } = useAuth();
+  const toast = useToast();
   const [form, setForm] = useState<RegistrationFormData>(EMPTY_FORM);
   const [errors, setErrors] = useState<Partial<Record<keyof RegistrationFormData, string>>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -105,6 +108,15 @@ const EventRegistrationModal = ({ event, onClose }: EventRegistrationModalProps)
   const fillPercent = Math.min(100, Math.round((seatsTaken / event.totalSeats) * 100));
 
   const targetDate = useMemo(() => parseEventStart(event.startISO), [event.startISO]);
+
+  useEffect(() => {
+    if (!user) return;
+    setForm((f) => ({
+      ...f,
+      name: profile?.displayName?.trim() || f.name,
+      email: profile?.email || user.email || f.email,
+    }));
+  }, [user, profile?.displayName, profile?.email]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && !submitting && onClose();
@@ -149,14 +161,17 @@ const EventRegistrationModal = ({ event, onClose }: EventRegistrationModalProps)
           message: form.message.trim(),
         });
         const id = registration.registrationId;
+        const taken = registration.event?.seatsTaken ?? seatsTaken + 1;
         setRegistrationId(id);
-        setSeatsTaken(registration.event?.seatsTaken ?? seatsTaken + 1);
+        setSeatsTaken(taken);
+        onRegistered?.(event.id, taken);
         await refreshProfile();
       } else {
         await new Promise((r) => setTimeout(r, 900));
         const id = generateRegistrationId(event.id);
         const taken = recordSeatTaken(event.id);
         setSeatsTaken(taken);
+        onRegistered?.(event.id, taken);
         setRegistrationId(id);
         if (user) {
           registerEvent({
@@ -170,8 +185,11 @@ const EventRegistrationModal = ({ event, onClose }: EventRegistrationModalProps)
         }
       }
       setSuccess(true);
+      toast.success(`You're registered for ${event.title}`);
     } catch (err) {
-      setErrors({ email: err instanceof Error ? err.message : 'Registration failed' });
+      const msg = err instanceof Error ? err.message : 'Registration failed';
+      setErrors({ email: msg });
+      toast.error(msg);
     } finally {
       setSubmitting(false);
     }
@@ -274,6 +292,44 @@ const EventRegistrationModal = ({ event, onClose }: EventRegistrationModalProps)
                 </button>
                 <button type="button" className="ereg-btn ereg-btn--ghost" onClick={onClose}>
                   Done
+                </button>
+              </div>
+            </motion.div>
+          ) : !user ? (
+            <motion.div
+              key="auth-gate"
+              className="ereg-auth-gate"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <h2 id="ereg-title" className="ereg-title">
+                Sign in to register
+              </h2>
+              <p className="ereg-desc">
+                Create a CSI member account to secure your seat for <strong>{event.title}</strong>,
+                receive your digital pass, and get event reminders.
+              </p>
+              <div className="ereg-success__actions">
+                <button
+                  type="button"
+                  className="ereg-btn ereg-btn--calendar"
+                  onClick={() => {
+                    onClose();
+                    openAuth('signup');
+                  }}
+                >
+                  Create account
+                </button>
+                <button
+                  type="button"
+                  className="ereg-btn ereg-btn--ghost"
+                  onClick={() => {
+                    onClose();
+                    openAuth('login');
+                  }}
+                >
+                  Sign in
                 </button>
               </div>
             </motion.div>

@@ -27,7 +27,7 @@
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: 52rem;
+  max-width: 58rem;
   max-height: min(92vh, 44rem);
   display: flex;
 }
@@ -185,6 +185,81 @@
 
 .pdash-hero__tier small {
   opacity: 0.75;
+}
+
+.pdash-layout {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.pdash-sidebar {
+  flex: 0 0 10.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.75rem 0.65rem;
+  border-right: 1px solid rgba(167, 139, 250, 0.12);
+  background: rgba(4, 2, 14, 0.35);
+}
+
+.pdash-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.pdash-sidebar .pdash-tab {
+  width: 100%;
+  justify-content: flex-start;
+  border-radius: 0.45rem;
+  border: 1px solid transparent;
+}
+
+.pdash-announce {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pdash-announce li strong {
+  display: block;
+  font-size: 0.82rem;
+  color: #e4f1ff;
+  margin-bottom: 0.25rem;
+}
+
+.pdash-announce li p {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: rgba(174, 210, 255, 0.58);
+}
+
+.pdash-list--notif li {
+  align-items: flex-start;
+}
+
+.pdash-list--notif li.is-read {
+  opacity: 0.55;
+}
+
+.pdash-list--notif button {
+  flex-shrink: 0;
+  font-size: 0.68rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.35rem;
+  border: 1px solid rgba(148, 0, 255, 0.25);
+  background: transparent;
+  color: #c4b5fd;
+  cursor: pointer;
 }
 
 .pdash-tabs {
@@ -597,6 +672,27 @@
 }
 
 @media (max-width: 640px) {
+  .pdash-layout {
+    flex-direction: column;
+  }
+
+  .pdash-sidebar {
+    flex: none;
+    flex-direction: row;
+    flex-wrap: wrap;
+    border-right: none;
+    border-bottom: 1px solid rgba(167, 139, 250, 0.12);
+    padding: 0.5rem 0.65rem;
+  }
+
+  .pdash-sidebar .pdash-tab {
+    width: auto;
+    flex: 1 1 auto;
+    justify-content: center;
+    padding: 0.45rem 0.55rem;
+    font-size: 0.68rem;
+  }
+
   .pdash-grid {
     grid-template-columns: 1fr;
   }

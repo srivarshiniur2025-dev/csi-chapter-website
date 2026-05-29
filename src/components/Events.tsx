@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { LucideIcon } from 'lucide-react';
 import SectionAmbient from './ambient/SectionAmbient';
@@ -11,6 +11,8 @@ import {
   Ticket,
   ChevronLeft,
   ChevronRight,
+  Bookmark,
+  Users,
   Brain,
   Code2,
   Globe,
@@ -22,6 +24,17 @@ import {
 } from 'lucide-react';
 import { useMediaQuery } from '../lib/useMediaQuery';
 import { api, isApiConfigured, type ApiEvent } from '../lib/api';
+import {
+  filterEventsByTime,
+  getSpotsLeft,
+  searchEvents,
+  type EventTimeFilter,
+} from '../lib/eventFilters';
+import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
+import EmptyState from './ui/EmptyState';
+import { EventsCarouselSkeleton } from './ui/Skeleton';
+import EventsToolbar from './events/EventsToolbar';
 import EventRegistrationModal from './EventRegistrationModal';
 import './Events.css';
 
@@ -232,34 +245,93 @@ function getCardMotion(
 }
 
 const Events = () => {
+  const { user, profile, toggleBookmark } = useAuth();
+  const toast = useToast();
   const [events, setEvents] = useState<ChapterEvent[]>(eventsData);
+  const [loading, setLoading] = useState(isApiConfigured());
+  const [timeFilter, setTimeFilter] = useState<EventTimeFilter>('upcoming');
+  const [search, setSearch] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
   const [switchFlash, setSwitchFlash] = useState(0);
   const [selected, setSelected] = useState<ChapterEvent | null>(null);
   const [cardSpread, setCardSpread] = useState(getCardSpread);
+  const [bookmarkBusy, setBookmarkBusy] = useState(false);
   const isMobileCarousel = useMediaQuery('(max-width: 767px)');
   const isTouch = useMediaQuery('(pointer: coarse)');
   const stageRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const bannerMediaRef = useRef<HTMLDivElement>(null);
   const parallaxRaf = useRef(0);
-  const total = events.length;
+
+  const filteredEvents = useMemo(() => {
+    const byTime = filterEventsByTime(events, timeFilter);
+    return searchEvents(byTime, search);
+  }, [events, timeFilter, search]);
+
+  const total = filteredEvents.length;
+  const activeEvent = filteredEvents[activeIndex];
+
+  const isBookmarked = useMemo(() => {
+    if (!activeEvent || !profile?.bookmarkedEvents.length) return false;
+    return profile.bookmarkedEvents.includes(activeEvent.title);
+  }, [activeEvent, profile?.bookmarkedEvents]);
 
   useEffect(() => {
     setSwitchFlash((n) => n + 1);
   }, [activeIndex]);
 
   useEffect(() => {
-    if (!isApiConfigured()) return;
+    setActiveIndex(0);
+  }, [timeFilter, search]);
+
+  useEffect(() => {
+    if (activeIndex >= total && total > 0) setActiveIndex(0);
+  }, [activeIndex, total]);
+
+  useEffect(() => {
+    if (!isApiConfigured()) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
     api
       .events()
       .then(({ events: remote }) => {
         if (remote?.length) setEvents(remote.map(mapApiEvent));
       })
       .catch(() => {
-        /* keep static fallback */
-      });
+        toast.info('Showing chapter events offline.');
+      })
+      .finally(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fetch once on mount
   }, []);
+
+  const handleSeatUpdate = useCallback((eventId: string, seatsTaken: number) => {
+    setEvents((prev) =>
+      prev.map((e) => (e.id === eventId ? { ...e, seatsTaken } : e))
+    );
+  }, []);
+
+  const handleBookmark = useCallback(
+    async (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (!activeEvent) return;
+      if (!user) {
+        toast.info('Sign in to bookmark events.');
+        return;
+      }
+      setBookmarkBusy(true);
+      try {
+        const saved = await toggleBookmark(activeEvent.id, activeEvent.title);
+        toast.success(saved ? 'Event bookmarked' : 'Bookmark removed');
+      } catch {
+        toast.error('Could not update bookmark.');
+      } finally {
+        setBookmarkBusy(false);
+      }
+    },
+    [activeEvent, user, toggleBookmark, toast]
+  );
 
   useEffect(() => {
     let timeoutId: ReturnType<typeof setTimeout>;
@@ -275,10 +347,12 @@ const Events = () => {
   }, []);
 
   const goPrev = useCallback(() => {
+    if (total <= 0) return;
     setActiveIndex((i) => (i - 1 + total) % total);
   }, [total]);
 
   const goNext = useCallback(() => {
+    if (total <= 0) return;
     setActiveIndex((i) => (i + 1) % total);
   }, [total]);
 
@@ -353,6 +427,35 @@ const Events = () => {
           </p>
         </motion.header>
 
+        <EventsToolbar
+          search={search}
+          onSearchChange={setSearch}
+          timeFilter={timeFilter}
+          onTimeFilterChange={setTimeFilter}
+          resultCount={total}
+        />
+
+        {loading ? (
+          <EventsCarouselSkeleton />
+        ) : total === 0 ? (
+          <EmptyState
+            title="No events match your filters"
+            description="Try another tab or clear your search to see the full CSI calendar."
+            action={
+              <button
+                type="button"
+                className="events-toolbar__tab events-toolbar__tab--active"
+                onClick={() => {
+                  setSearch('');
+                  setTimeFilter('all');
+                }}
+              >
+                Show all events
+              </button>
+            }
+          />
+        ) : (
+        <>
         <div className="events-carousel">
           <motion.button
             type="button"
@@ -381,7 +484,7 @@ const Events = () => {
             <div className="events-carousel__floor" aria-hidden />
             <div className="events-carousel__center-beam" aria-hidden />
             <div ref={trackRef} className="events-carousel__track">
-              {events.map((event, index) => {
+              {filteredEvents.map((event, index) => {
                 const cardMotion = getCardMotion(
                   index,
                   activeIndex,
@@ -481,6 +584,10 @@ const Events = () => {
                                 {event.venue}
                               </p>
                               <p className="events-carousel__desc">{event.shortDescription}</p>
+                              <p className="events-carousel__seats">
+                                <Users size={12} strokeWidth={1.5} />
+                                <strong>{getSpotsLeft(event)}</strong> spots left
+                              </p>
                             </div>
                             <div className="events-carousel__footer">
                               <div className="events-carousel__tech">
@@ -490,10 +597,21 @@ const Events = () => {
                                   </span>
                                 ))}
                               </div>
-                              <span className="events-carousel__action">
-                                Register
-                                <Ticket size={15} strokeWidth={2} />
-                              </span>
+                              <div className="events-carousel__footer-actions">
+                                <button
+                                  type="button"
+                                  className={`events-carousel__bookmark${isBookmarked ? ' is-on' : ''}`}
+                                  onClick={handleBookmark}
+                                  disabled={bookmarkBusy}
+                                  aria-label={isBookmarked ? 'Remove bookmark' : 'Bookmark event'}
+                                >
+                                  <Bookmark size={14} strokeWidth={1.5} />
+                                </button>
+                                <span className="events-carousel__action">
+                                  Register
+                                  <Ticket size={15} strokeWidth={2} />
+                                </span>
+                              </div>
                             </div>
                           </>
                         ) : (
@@ -530,7 +648,7 @@ const Events = () => {
         </div>
 
         <div className="events-carousel__dots">
-          {events.map((event, i) => (
+          {filteredEvents.map((event, i) => (
             <button
               key={event.id}
               type="button"
@@ -540,10 +658,18 @@ const Events = () => {
             />
           ))}
         </div>
+        </>
+        )}
       </SectionReveal>
 
       <AnimatePresence>
-        {selected && <EventRegistrationModal event={selected} onClose={closeModal} />}
+        {selected && (
+          <EventRegistrationModal
+            event={selected}
+            onClose={closeModal}
+            onRegistered={handleSeatUpdate}
+          />
+        )}
       </AnimatePresence>
     </section>
   );

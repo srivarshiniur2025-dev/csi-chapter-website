@@ -557,6 +557,19 @@
 }
 
 /* —— Success —— */
+.ereg-auth-gate {
+  position: relative;
+  z-index: 2;
+  padding: 2rem 1.75rem 1.75rem;
+  text-align: center;
+  max-width: 26rem;
+  margin: 0 auto;
+}
+
+.ereg-auth-gate .ereg-desc {
+  margin-bottom: 1.25rem;
+}
+
 .ereg-success {
   position: relative;
   z-index: 5;

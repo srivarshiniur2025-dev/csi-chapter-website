@@ -17,6 +17,9 @@ import SectionAmbient from '../ambient/SectionAmbient';
 import { CHAPTER_EVENTS_CATALOG, type EventCatalogItem } from '../../data/chapterEvents';
 import { dispatchOpenNova, useAuth } from '../../contexts/AuthContext';
 import { api, isApiConfigured } from '../../lib/api';
+import { useToast } from '../../contexts/ToastContext';
+import EmptyState from '../ui/EmptyState';
+import { DashboardSkeleton } from '../ui/Skeleton';
 import {
   DEPARTMENT_OPTIONS,
   DOMAIN_INTEREST_OPTIONS,
@@ -34,7 +37,7 @@ import FuturisticSparkline from '../ecosystem/FuturisticSparkline';
 import './MemberDashboard.css';
 
 const CINEMATIC_EASE = [0.22, 1, 0.36, 1] as const;
-type DashTab = 'overview' | 'events' | 'profile';
+type DashTab = 'overview' | 'events' | 'notifications' | 'profile';
 
 export default function MemberDashboard() {
   const {
@@ -56,10 +59,29 @@ export default function MemberDashboard() {
   const [editDept, setEditDept] = useState('');
   const [editDomains, setEditDomains] = useState<DomainInterest[]>([]);
   const [saveMsg, setSaveMsg] = useState('');
+  const [dashLoading, setDashLoading] = useState(false);
+  const [announcements, setAnnouncements] = useState<Array<{ title: string; body: string }>>([]);
+  const [notifications, setNotifications] = useState<
+    Array<{ _id: string; title: string; message: string; read?: boolean }>
+  >([]);
+  const toast = useToast();
 
   useEffect(() => {
-    if (dashboardOpen && apiReady) void refreshProfile();
-  }, [dashboardOpen, apiReady, refreshProfile]);
+    if (!dashboardOpen) return;
+    setDashLoading(true);
+    void refreshProfile().finally(() => setDashLoading(false));
+  }, [dashboardOpen, refreshProfile]);
+
+  useEffect(() => {
+    if (!dashboardOpen || !apiReady) return;
+    api
+      .dashboard()
+      .then((d) => {
+        setAnnouncements(d.announcements ?? []);
+        setNotifications(d.notifications ?? []);
+      })
+      .catch(() => {});
+  }, [dashboardOpen, apiReady]);
 
   useEffect(() => {
     if (!dashboardOpen || !isApiConfigured()) return;
@@ -140,7 +162,20 @@ export default function MemberDashboard() {
       }
     }
     setSaveMsg('Profile updated.');
+    toast.success('Profile saved.');
     setTimeout(() => setSaveMsg(''), 2500);
+  };
+
+  const markNotifRead = async (id: string) => {
+    if (!apiReady) return;
+    try {
+      await api.markNotificationRead(id);
+      setNotifications((prev) =>
+        prev.map((n) => (n._id === id ? { ...n, read: true } : n))
+      );
+    } catch {
+      toast.error('Could not update notification.');
+    }
   };
 
   const toggleEditDomain = (d: DomainInterest) => {
@@ -211,6 +246,29 @@ export default function MemberDashboard() {
                 </button>
               </header>
 
+              <div className="pdash-layout">
+                <nav className="pdash-sidebar" aria-label="Dashboard sections">
+                  {(
+                    [
+                      { id: 'overview', label: 'Overview', icon: LayoutGrid },
+                      { id: 'events', label: 'My Events', icon: CalendarClock },
+                      { id: 'notifications', label: 'Alerts', icon: Bell },
+                      { id: 'profile', label: 'Profile', icon: UserRound },
+                    ] as const
+                  ).map(({ id, label, icon: Icon }) => (
+                    <button
+                      key={id}
+                      type="button"
+                      className={`pdash-tab${tab === id ? ' pdash-tab--active' : ''}`}
+                      onClick={() => setTab(id)}
+                    >
+                      <Icon size={14} />
+                      {label}
+                    </button>
+                  ))}
+                </nav>
+
+                <div className="pdash-main">
               <div className="pdash-hero">
                 <span className="pdash-hero__avatar">{initials}</span>
                 <div className="pdash-hero__copy">
@@ -237,29 +295,10 @@ export default function MemberDashboard() {
                 </div>
               </div>
 
-              <nav className="pdash-tabs" aria-label="Dashboard sections">
-                {(
-                  [
-                    { id: 'overview', label: 'Overview', icon: LayoutGrid },
-                    { id: 'events', label: 'My Events', icon: CalendarClock },
-                    { id: 'profile', label: 'Profile', icon: UserRound },
-                  ] as const
-                ).map(({ id, label, icon: Icon }) => (
-                  <button
-                    key={id}
-                    type="button"
-                    className={`pdash-tab${tab === id ? ' pdash-tab--active' : ''}`}
-                    onClick={() => setTab(id)}
-                  >
-                    <Icon size={14} />
-                    {label}
-                  </button>
-                ))}
-              </nav>
-
               <div className="pdash-body">
+                {dashLoading && !profile ? <DashboardSkeleton /> : null}
                 <AnimatePresence mode="wait">
-                  {tab === 'overview' && (
+                  {!dashLoading && tab === 'overview' && (
                     <motion.div
                       key="overview"
                       className="pdash-grid"
@@ -342,6 +381,20 @@ export default function MemberDashboard() {
                         )}
                       </section>
 
+                      {announcements.length > 0 ? (
+                        <section className="pdash-card pdash-card--wide">
+                          <h3>Chapter announcements</h3>
+                          <ul className="pdash-announce">
+                            {announcements.slice(0, 3).map((a, i) => (
+                              <li key={`${a.title}-${i}`}>
+                                <strong>{a.title}</strong>
+                                <p>{a.body}</p>
+                              </li>
+                            ))}
+                          </ul>
+                        </section>
+                      ) : null}
+
                       <section className="pdash-card">
                         <h3>Quick actions</h3>
                         <div className="pdash-actions">
@@ -373,7 +426,7 @@ export default function MemberDashboard() {
                     </motion.div>
                   )}
 
-                  {tab === 'events' && (
+                  {!dashLoading && tab === 'events' && (
                     <motion.div
                       key="events"
                       className="pdash-stack"
@@ -399,7 +452,10 @@ export default function MemberDashboard() {
                             ))}
                           </ul>
                         ) : (
-                          <p className="pdash-empty">No registrations yet.</p>
+                          <EmptyState
+                            title="No registrations yet"
+                            description="Browse upcoming events and register to build your CSI pass history."
+                          />
                         )}
                       </section>
 
@@ -436,7 +492,61 @@ export default function MemberDashboard() {
                     </motion.div>
                   )}
 
-                  {tab === 'profile' && (
+                  {!dashLoading && tab === 'notifications' && (
+                    <motion.div
+                      key="notifications"
+                      className="pdash-stack"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -6 }}
+                    >
+                      <section className="pdash-card">
+                        <h3>Notifications</h3>
+                        {notifications.length ? (
+                          <ul className="pdash-list pdash-list--notif">
+                            {notifications.map((n) => (
+                              <li key={n._id} className={n.read ? 'is-read' : ''}>
+                                <div>
+                                  <strong>{n.title}</strong>
+                                  <span>{n.message}</span>
+                                </div>
+                                {!n.read ? (
+                                  <button type="button" onClick={() => void markNotifRead(n._id)}>
+                                    Mark read
+                                  </button>
+                                ) : null}
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <EmptyState
+                            title="All caught up"
+                            description="System and event notifications will appear here when the API is connected."
+                          />
+                        )}
+                      </section>
+                      <section className="pdash-card">
+                        <h3>Event reminders</h3>
+                        {(profile?.upcomingReminders ?? []).length ? (
+                          <ul className="pdash-timeline">
+                            {(profile?.upcomingReminders ?? []).map((rem) => (
+                              <li key={rem.id}>
+                                <span className="pdash-timeline__dot" />
+                                <div>
+                                  <strong>{rem.title}</strong>
+                                  <span>{new Date(rem.when).toLocaleString()}</span>
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="pdash-empty">Register for events to enable reminders.</p>
+                        )}
+                      </section>
+                    </motion.div>
+                  )}
+
+                  {!dashLoading && tab === 'profile' && (
                     <motion.div
                       key="profile"
                       className="pdash-stack"
@@ -535,6 +645,8 @@ export default function MemberDashboard() {
                   Sign out
                 </button>
               </footer>
+                </div>
+              </div>
             </motion.article>
           </div>
         </motion.div>

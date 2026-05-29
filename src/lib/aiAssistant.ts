@@ -66,6 +66,12 @@ const KNOWLEDGE: ResponseMatch[] = [
     scrollTo: 'contact',
   },
   {
+    keywords: ['gallery', 'photos', 'pictures', 'images', 'archive'],
+    response:
+      'Browse the Chapter Gallery after Events — workshops, hackathons, team moments, and milestones. Filter by category and tap any image to preview.',
+    scrollTo: 'gallery',
+  },
+  {
     keywords: ['project', 'resources', 'showcase', 'journey', 'achievement', 'portfolio'],
     response:
       'Explore milestones in Journey — workshops, hackathons, and national wins. About covers 500+ members and 50+ projects.',
@@ -99,15 +105,16 @@ const KNOWLEDGE: ResponseMatch[] = [
 export async function getAssistantResponseAsync(
   input: string
 ): Promise<{ text: string; scrollTo?: string }> {
+  const local = getAssistantResponse(input);
   if (isApiConfigured()) {
     try {
       const { reply } = await api.assistantChat(input);
-      return { text: reply };
+      return { text: reply, scrollTo: local.scrollTo };
     } catch {
       /* fall through to local knowledge */
     }
   }
-  return getAssistantResponse(input);
+  return local;
 }
 
 export function getAssistantResponse(input: string): { text: string; scrollTo?: string } {

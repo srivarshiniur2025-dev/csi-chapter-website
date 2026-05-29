@@ -4,13 +4,15 @@ import { Menu, X } from 'lucide-react';
 import VitChennaiLogo from './VitChennaiLogo';
 import { useAuth } from '../contexts/AuthContext';
 import { useActiveSection } from '../hooks/useActiveSection';
+import { getNavScrollOffset } from '../hooks/useLandingHashScroll';
+import { scrollToSectionSmooth } from '../lib/lenisScroll';
 import './Navbar.css';
 
 const navLinks = [
   { label: 'Home', to: 'home', route: false },
   { label: 'About', to: 'about', route: false },
   { label: 'Events', to: 'events', route: false },
-  { label: 'Gallery', to: '/gallery', route: true },
+  { label: 'Gallery', to: 'gallery', route: false },
   { label: 'Journey', to: 'journey', route: false },
   { label: 'Team', to: 'team', route: false },
   { label: 'Contact Us', to: 'contact', route: false },
@@ -63,6 +65,16 @@ const Navbar = () => {
   const handleNavClick = useCallback(() => {
     closeMenu();
   }, [closeMenu]);
+
+  const handleSectionNav = useCallback(
+    (e: MouseEvent<HTMLAnchorElement>, sectionId: string) => {
+      closeMenu();
+      if (location.pathname !== '/') return;
+      e.preventDefault();
+      scrollToSectionSmooth(sectionId, getNavScrollOffset());
+    },
+    [closeMenu, location.pathname]
+  );
 
   const handleOpenDashboard = useCallback(
     (e: MouseEvent) => {
@@ -129,7 +141,7 @@ const Navbar = () => {
                     aria-current={
                       (to === 'home' ? isSectionActive('home') : isSectionActive(to)) ? 'page' : undefined
                     }
-                    onClick={handleNavClick}
+                    onClick={(e) => handleSectionNav(e, to)}
                   >
                     {label}
                   </a>
@@ -218,7 +230,7 @@ const Navbar = () => {
                 className={`csi-navbar-drawer__link${
                   (to === 'home' ? isSectionActive('home') : isSectionActive(to)) ? ' is-active' : ''
                 }`}
-                onClick={handleNavClick}
+                onClick={(e) => handleSectionNav(e, to)}
               >
                 {label}
               </a>

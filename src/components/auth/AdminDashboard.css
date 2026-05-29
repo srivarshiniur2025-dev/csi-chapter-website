@@ -199,6 +199,22 @@
   padding: 0;
 }
 
+.adm-list__actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.adm-list__actions button {
+  font-size: 0.72rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.35rem;
+  border: 1px solid rgba(148, 0, 255, 0.25);
+  background: transparent;
+  color: #c4b5fd;
+  cursor: pointer;
+}
+
 .adm-list li {
   display: flex;
   align-items: center;

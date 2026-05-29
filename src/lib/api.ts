@@ -159,8 +159,25 @@ export const api = {
       bookmarks: ApiEvent[];
       resources: Array<{ title: string; description: string; category: string }>;
       announcements: Array<{ title: string; body: string }>;
+      notifications: Array<{
+        _id: string;
+        title: string;
+        message: string;
+        type?: string;
+        read?: boolean;
+      }>;
       reminders: Array<{ title: string; when: string; venue: string }>;
     }>('/api/dashboard');
+  },
+
+  toggleBookmark(slug: string) {
+    return request<{ bookmarked: boolean }>(`/api/dashboard/bookmarks/${slug}`, {
+      method: 'POST',
+    });
+  },
+
+  markNotificationRead(id: string) {
+    return request(`/api/dashboard/notifications/${id}/read`, { method: 'PATCH' });
   },
 
   assistantChat(message: string) {

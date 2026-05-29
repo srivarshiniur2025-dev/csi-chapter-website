@@ -42,6 +42,7 @@ import {
   addRegisteredEvent,
   loadUserProfile,
   saveUserProfile,
+  toggleBookmarkedEvent,
   type DomainInterest,
   type RegisteredEventRecord,
   type UserProfile,
@@ -112,6 +113,7 @@ interface AuthContextValue {
   refreshProfile: () => Promise<void>;
   updateUserProfile: (patch: Partial<UserProfile>) => void;
   registerEvent: (record: RegisteredEventRecord) => void;
+  toggleBookmark: (eventSlug: string, eventTitle: string) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -412,6 +414,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [user]
   );
 
+  const toggleBookmark = useCallback(
+    async (eventSlug: string, eventTitle: string): Promise<boolean> => {
+      if (!user) return false;
+      if (apiReady && (await hasApiSession())) {
+        const { bookmarked } = await api.toggleBookmark(eventSlug);
+        await refreshProfile();
+        return bookmarked;
+      }
+      const next = toggleBookmarkedEvent(user.uid, eventTitle);
+      setProfile(next);
+      return next.bookmarkedEvents.includes(eventTitle);
+    },
+    [user, apiReady, refreshProfile]
+  );
+
   const value = useMemo(
     () => ({
       user,
@@ -441,6 +458,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       refreshProfile,
       updateUserProfile,
       registerEvent,
+      toggleBookmark,
     }),
     [
       user,
@@ -470,6 +488,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       refreshProfile,
       updateUserProfile,
       registerEvent,
+      toggleBookmark,
     ]
   );
 

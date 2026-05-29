@@ -992,6 +992,57 @@
   flex-shrink: 1;
 }
 
+.events-carousel__seats {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0.35rem 0 0;
+  font-size: 0.72rem;
+  color: rgba(174, 210, 255, 0.62);
+}
+
+.events-carousel__seats strong {
+  color: #c4b5fd;
+  font-weight: 600;
+}
+
+.events-carousel__footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.events-carousel__bookmark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.4rem;
+  border: 1px solid rgba(148, 0, 255, 0.25);
+  background: rgba(8, 6, 22, 0.6);
+  color: rgba(174, 210, 255, 0.7);
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.events-carousel__bookmark:hover:not(:disabled) {
+  color: #e4f1ff;
+  border-color: rgba(167, 139, 250, 0.5);
+}
+
+.events-carousel__bookmark.is-on {
+  color: #c4b5fd;
+  border-color: rgba(167, 139, 250, 0.55);
+  background: rgba(148, 0, 255, 0.15);
+}
+
+.events-carousel__bookmark:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
 .events-carousel__footer {
   display: flex;
   align-items: center;
@@ -1017,8 +1068,11 @@
   flex-shrink: 0;
 }
 
-.events-carousel__card--active .events-carousel__action {
+.events-carousel__card--active .events-carousel__footer-actions {
   margin-left: auto;
+}
+
+.events-carousel__card--active .events-carousel__action {
   position: relative;
   z-index: 2;
 }

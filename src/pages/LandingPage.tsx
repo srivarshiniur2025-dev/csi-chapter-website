@@ -1,4 +1,5 @@
 import { useImmersiveMotion } from '../hooks/useImmersiveMotion';
+import { useLandingHashScroll } from '../hooks/useLandingHashScroll';
 import ImmersiveCursorGlow from '../components/immersive/ImmersiveCursorGlow';
 import AmbientNetwork3D from '../components/ecosystem/AmbientNetwork3D';
 import Navbar from '../components/Navbar';
@@ -6,6 +7,7 @@ import SiteBackground from '../components/SiteBackground';
 import Hero from '../components/Hero';
 import About from '../components/About';
 import Events from '../components/Events';
+import Gallery from '../components/Gallery';
 import TechTimeline from '../components/TechTimeline';
 import Team from '../components/Team';
 import Contact from '../components/Contact';
@@ -16,6 +18,7 @@ import SectionDivider from '../components/premium/SectionDivider';
 /** Main marketing site — cinematic section flow */
 export default function LandingPage() {
   useImmersiveMotion();
+  useLandingHashScroll();
 
   return (
     <div className="site-shell selection:bg-csi-accent selection:text-csi-pale">
@@ -31,6 +34,8 @@ export default function LandingPage() {
         <About />
         <SectionDivider />
         <Events />
+        <SectionDivider />
+        <Gallery />
         <SectionDivider variant="strong" />
         <TechTimeline />
         <SectionDivider />
