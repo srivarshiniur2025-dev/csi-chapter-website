@@ -13,6 +13,4 @@ export const env = {
   adminEmail: process.env.ADMIN_EMAIL || 'admin@csi.vitc.edu',
   adminPassword: process.env.ADMIN_PASSWORD || 'Admin@12345',
   adminName: process.env.ADMIN_NAME || 'CSI Admin',
-  jwtSecret: process.env.JWT_SECRET || 'csi-dev-jwt-secret-change-in-production',
-  jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
 };

@@ -1,12 +1,5 @@
 import { User } from '../models/User.js';
 import { getFirebaseAdmin } from '../config/firebaseAdmin.js';
-import { verifyUserToken } from '../utils/jwt.js';
-
-async function resolveUserFromJwt(token) {
-  const payload = verifyUserToken(token);
-  const user = await User.findById(payload.sub);
-  return user;
-}
 
 async function resolveUserFromIdToken(idToken) {
   const app = getFirebaseAdmin();
@@ -34,16 +27,6 @@ async function resolveUserFromIdToken(idToken) {
   return user;
 }
 
-async function resolveUserFromBearer(token) {
-  try {
-    const user = await resolveUserFromJwt(token);
-    if (user) return user;
-  } catch {
-    /* not a platform JWT — try Firebase */
-  }
-  return resolveUserFromIdToken(token);
-}
-
 export async function requireAuth(req, res, next) {
   try {
     const header = req.headers.authorization || '';
@@ -51,7 +34,7 @@ export async function requireAuth(req, res, next) {
     if (!bearer) {
       return res.status(401).json({ message: 'Authentication required' });
     }
-    const user = await resolveUserFromBearer(bearer);
+    const user = await resolveUserFromIdToken(bearer);
     if (!user || !user.isActive) {
       return res.status(401).json({ message: 'Invalid session' });
     }
@@ -59,8 +42,8 @@ export async function requireAuth(req, res, next) {
     next();
   } catch (err) {
     if (err.message === 'FIREBASE_NOT_CONFIGURED') {
-      return res.status(401).json({
-        message: 'Invalid session. Use email login for API JWT or configure Firebase Admin.',
+      return res.status(503).json({
+        message: 'Configure Firebase Admin on the server for protected API routes.',
       });
     }
     return res.status(401).json({ message: 'Invalid or expired session' });
@@ -75,7 +58,7 @@ export async function optionalAuth(req, res, next) {
     return next();
   }
   try {
-    const user = await resolveUserFromBearer(bearer);
+    const user = await resolveUserFromIdToken(bearer);
     req.user = user && user.isActive ? user : null;
   } catch {
     req.user = null;

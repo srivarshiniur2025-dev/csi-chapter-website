@@ -1,7 +1,4 @@
 import { auth, isFirebaseConfigured } from './firebase';
-import { getApiToken, setApiToken } from './apiToken';
-
-export { setApiToken, getApiToken };
 import type { DomainInterest, UserProfile, RegisteredEventRecord } from './userDashboard';
 
 const API_URL = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') || '';
@@ -57,11 +54,6 @@ export class ApiError extends Error {
 }
 
 async function attachAuthHeader(headers: Record<string, string>) {
-  const jwt = getApiToken();
-  if (jwt) {
-    headers.Authorization = `Bearer ${jwt}`;
-    return;
-  }
   if (!isFirebaseConfigured() || !auth?.currentUser) return;
   const idToken = await auth.currentUser.getIdToken();
   headers.Authorization = `Bearer ${idToken}`;
@@ -80,7 +72,7 @@ async function request<T>(
   if (authRequired) {
     await attachAuthHeader(headers);
     if (!headers.Authorization) {
-      throw new ApiError('Sign in to use cloud features (email login or Firebase)', 401);
+      throw new ApiError('Sign in with Firebase to use cloud features', 401);
     }
   }
   let res: Response;
@@ -100,28 +92,8 @@ async function request<T>(
 }
 
 export const api = {
-  signup(body: {
-    name: string;
-    email: string;
-    password: string;
-    department?: string;
-    domainInterests?: DomainInterest[];
-  }) {
-    return request<{ user: ApiUser; token: string }>('/api/auth/signup', {
-      method: 'POST',
-      body: JSON.stringify(body),
-    }, false);
-  },
-
-  login(email: string, password: string) {
-    return request<{ user: ApiUser; token: string }>('/api/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ email, password }),
-    }, false);
-  },
-
   google(idToken: string) {
-    return request<{ user: ApiUser; token: string }>('/api/auth/google', {
+    return request<{ user: ApiUser }>('/api/auth/google', {
       method: 'POST',
       body: JSON.stringify({ idToken }),
     }, false);

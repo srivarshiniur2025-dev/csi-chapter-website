@@ -29,10 +29,8 @@ import {
   hasApiSession,
   isApiConfigured,
   mapRegistrations,
-  setApiToken,
   type ApiUser,
 } from '../lib/api';
-import { getApiToken } from '../lib/apiToken';
 import {
   getLocalSession,
   localSignIn,
@@ -49,6 +47,7 @@ import {
   type RegisteredEventRecord,
   type UserProfile,
 } from '../lib/userDashboard';
+import { ensureFirestoreUser, type UserRole } from '../lib/userRoles';
 
 export type AuthMode = 'firebase' | 'local';
 
@@ -63,22 +62,22 @@ export interface SessionUser {
   role: string;
 }
 
-function firebaseToSession(u: FirebaseUser): SessionUser {
+async function buildSession(fbUser: FirebaseUser, apiUser?: ApiUser): Promise<SessionUser> {
+  const role: UserRole = await ensureFirestoreUser(
+    fbUser.uid,
+    fbUser.email ?? '',
+    fbUser.displayName
+  );
   return {
-    uid: u.uid,
-    email: u.email ?? '',
-    displayName: u.displayName,
-    role: 'user',
+    uid: fbUser.uid,
+    email: fbUser.email ?? '',
+    displayName: apiUser?.name ?? fbUser.displayName,
+    role,
   };
 }
 
-function apiToSession(u: ApiUser): SessionUser {
-  return {
-    uid: u.id,
-    email: u.email,
-    displayName: u.name,
-    role: u.role,
-  };
+function localToSession(local: { uid: string; email: string; displayName: string | null; role: string }): SessionUser {
+  return local;
 }
 
 interface AuthContextValue {
@@ -177,46 +176,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setProfile(p);
   }, []);
 
-  const applyApiSession = useCallback(
-    async (apiUser: ApiUser) => {
-      const session = apiToSession(apiUser);
-      setUser(session);
-      const p = await loadApiProfile();
-      if (p) setProfile(p);
-      else syncLocalProfile(session);
-    },
-    [syncLocalProfile]
-  );
+  const hydrateFromApi = useCallback(async (fbUser: FirebaseUser) => {
+    const idToken = await fbUser.getIdToken();
+    const { user: apiUser } = await api.google(idToken);
+    const session = await buildSession(fbUser, apiUser);
+    setUser(session);
+    const p = await loadApiProfile();
+    if (p) setProfile(p);
+    else syncLocalProfile(session);
+    return session;
+  }, [syncLocalProfile]);
 
   useEffect(() => {
     let cancelled = false;
     let unsubFirebase: (() => void) | undefined;
 
     (async () => {
-      if (!apiReady && !firebaseReady) {
+      if (!firebaseReady) {
         ensureDemoAdminAccount();
+        const local = getLocalSession();
+        if (!cancelled && local) {
+          setUser(localToSession(local));
+          syncLocalProfile(localToSession(local));
+        }
+        if (!cancelled) setLoading(false);
+        return;
       }
 
       if (!auth) {
-        let hydrated = false;
-        if (apiReady && getApiToken()) {
-          try {
-            const { user: apiUser } = await api.me();
-            if (!cancelled) {
-              await applyApiSession(apiUser);
-              hydrated = true;
-            }
-          } catch {
-            setApiToken(null);
-          }
-        }
-        if (!hydrated && !cancelled) {
-          const local = getLocalSession();
-          if (local) {
-            setUser(local);
-            syncLocalProfile(local);
-          }
-        }
         if (!cancelled) setLoading(false);
         return;
       }
@@ -224,27 +211,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       unsubFirebase = onAuthStateChanged(auth, async (fbUser) => {
         if (cancelled) return;
         if (fbUser) {
-          const session = firebaseToSession(fbUser);
-          setUser(session);
-          if (apiReady) {
-            try {
-              const idToken = await fbUser.getIdToken();
-              const { user: apiUser, token } = await api.google(idToken);
-              if (token) setApiToken(token);
-              if (!cancelled) {
-                await applyApiSession(apiUser);
-              }
-            } catch {
-              if (!cancelled) syncLocalProfile(session);
+          try {
+            if (apiReady) {
+              await hydrateFromApi(fbUser);
+            } else {
+              const session = await buildSession(fbUser);
+              setUser(session);
+              syncLocalProfile(session);
             }
-          } else if (!cancelled) {
+          } catch {
+            const session = await buildSession(fbUser);
+            setUser(session);
             syncLocalProfile(session);
           }
         } else {
           const local = getLocalSession();
           if (local) {
-            setUser(local);
-            syncLocalProfile(local);
+            setUser(localToSession(local));
+            syncLocalProfile(localToSession(local));
           } else {
             setUser(null);
             setProfile(null);
@@ -258,7 +242,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       cancelled = true;
       unsubFirebase?.();
     };
-  }, [apiReady, firebaseReady, applyApiSession, syncLocalProfile]);
+  }, [apiReady, firebaseReady, hydrateFromApi, syncLocalProfile]);
 
   const finishAuthSession = useCallback((session: SessionUser, portal: AuthPortal) => {
     if (portal === 'admin' && session.role !== 'admin') {
@@ -300,6 +284,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     window.addEventListener('csi-open-dashboard', onOpenDashboard);
     return () => window.removeEventListener('csi-open-dashboard', onOpenDashboard);
   }, [openDashboard]);
+
   const openAdmin = useCallback(() => {
     setDashboardOpen(false);
     setAdminOpen(true);
@@ -308,39 +293,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = useCallback(
     async (email: string, password: string, remember: boolean) => {
-      if (auth) {
-        await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
-        const cred = await signInWithEmailAndPassword(auth, email.trim(), password);
-        const session = firebaseToSession(cred.user);
-        setUser(session);
-        if (apiReady) {
-          try {
-            const idToken = await cred.user.getIdToken();
-            const { user: apiUser, token } = await api.google(idToken);
-            if (token) setApiToken(token);
-            await applyApiSession(apiUser);
-            finishAuthSession(apiToSession(apiUser), authPortal);
-            return;
-          } catch {
-            syncLocalProfile(session);
-          }
-        }
-        syncLocalProfile(session);
+      if (!auth) {
+        const session = localSignIn(email, password);
+        applyLocalMemberSession(session);
         finishAuthSession(session, authPortal);
         return;
       }
+      await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
+      const cred = await signInWithEmailAndPassword(auth, email.trim(), password);
+      let session: SessionUser;
       if (apiReady) {
-        const { user: apiUser, token } = await api.login(email.trim(), password);
-        setApiToken(token);
-        await applyApiSession(apiUser);
-        finishAuthSession(apiToSession(apiUser), authPortal);
-        return;
+        try {
+          session = await hydrateFromApi(cred.user);
+        } catch {
+          session = await buildSession(cred.user);
+          setUser(session);
+          syncLocalProfile(session);
+        }
+      } else {
+        session = await buildSession(cred.user);
+        setUser(session);
+        syncLocalProfile(session);
       }
-      const session = localSignIn(email, password);
-      applyLocalMemberSession(session);
       finishAuthSession(session, authPortal);
     },
-    [applyLocalMemberSession, authPortal, finishAuthSession, syncLocalProfile]
+    [applyLocalMemberSession, authPortal, finishAuthSession, apiReady, hydrateFromApi, syncLocalProfile]
   );
 
   const signUp = useCallback(
@@ -351,83 +328,61 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       department: string,
       domainInterests: DomainInterest[]
     ) => {
-      if (auth) {
-        const cred = await createUserWithEmailAndPassword(auth, email.trim(), password);
-        await updateProfile(cred.user, { displayName: name.trim() });
-        const p = loadUserProfile(cred.user.uid, email.trim(), name.trim());
-        p.department = department;
-        if (domainInterests.length) p.domainInterests = domainInterests;
-        saveUserProfile(cred.user.uid, p);
-        setProfile(p);
-        if (apiReady) {
-          try {
-            const idToken = await cred.user.getIdToken();
-            const { user: apiUser, token } = await api.google(idToken);
-            if (token) setApiToken(token);
-            await applyApiSession(apiUser);
-            finishAuthSession(apiToSession(apiUser), 'user');
-            return;
-          } catch {
-            /* local profile only */
-          }
-        }
-        finishAuthSession(firebaseToSession(cred.user), 'user');
+      if (!auth) {
+        const session = localSignUp({ name, email, password, department, domainInterests });
+        applyLocalMemberSession(session, { department, domainInterests });
+        finishAuthSession(session, 'user');
         return;
       }
+      const cred = await createUserWithEmailAndPassword(auth, email.trim(), password);
+      await updateProfile(cred.user, { displayName: name.trim() });
+      const p = loadUserProfile(cred.user.uid, email.trim(), name.trim());
+      p.department = department;
+      if (domainInterests.length) p.domainInterests = domainInterests;
+      saveUserProfile(cred.user.uid, p);
+      setProfile(p);
+      let session: SessionUser;
       if (apiReady) {
-        const { user: apiUser, token } = await api.signup({
-          name,
-          email,
-          password,
-          department,
-          domainInterests,
-        });
-        setApiToken(token);
-        await applyApiSession(apiUser);
-        finishAuthSession(apiToSession(apiUser), 'user');
-        return;
+        try {
+          session = await hydrateFromApi(cred.user);
+        } catch {
+          session = await buildSession(cred.user);
+          setUser(session);
+        }
+      } else {
+        session = await buildSession(cred.user);
+        setUser(session);
       }
-      const session = localSignUp({
-        name,
-        email,
-        password,
-        department,
-        domainInterests,
-      });
-      applyLocalMemberSession(session, { department, domainInterests });
       finishAuthSession(session, 'user');
     },
-    [applyLocalMemberSession, finishAuthSession]
+    [applyLocalMemberSession, finishAuthSession, apiReady, hydrateFromApi]
   );
 
   const signInGoogle = useCallback(async () => {
     if (!auth) {
-      throw new Error('Google sign-in requires Firebase. Use email sign-up or configure Firebase in .env');
+      throw new Error('Google sign-in requires Firebase. Configure VITE_FIREBASE_* in .env');
     }
     const provider = new GoogleAuthProvider();
     const cred = await signInWithPopup(auth, provider);
-    let session = firebaseToSession(cred.user);
+    let session: SessionUser;
     if (apiReady) {
-      const idToken = await cred.user.getIdToken();
       try {
-        const { user: apiUser, token } = await api.google(idToken);
-        if (token) setApiToken(token);
-        await applyApiSession(apiUser);
-        session = apiToSession(apiUser);
+        session = await hydrateFromApi(cred.user);
       } catch {
+        session = await buildSession(cred.user);
         setUser(session);
         syncLocalProfile(session);
       }
     } else {
+      session = await buildSession(cred.user);
       setUser(session);
       syncLocalProfile(session);
     }
     finishAuthSession(session, authPortal);
-  }, [apiReady, applyApiSession, syncLocalProfile, authPortal, finishAuthSession]);
+  }, [apiReady, authPortal, finishAuthSession, hydrateFromApi, syncLocalProfile]);
 
   const signOut = useCallback(async () => {
     localSignOut();
-    setApiToken(null);
     setUser(null);
     setProfile(null);
     setDashboardOpen(false);
@@ -437,7 +392,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const resetPassword = useCallback(async (email: string) => {
     if (authMode === 'local') {
-      throw new Error('Password reset is not available in demo mode. Create a new account or configure Firebase.');
+      throw new Error('Password reset is not available in demo mode. Configure Firebase in .env');
     }
     if (!auth) throw new Error('Password reset requires Firebase keys in .env');
     await sendPasswordResetEmail(auth, email.trim());
@@ -531,7 +486,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       dashboardOpen,
       adminOpen,
       openAuth,
-      setAuthPortal,
       closeAuth,
       openDashboard,
       closeDashboard,

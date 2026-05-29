@@ -1,15 +1,15 @@
 # CSI Platform API
 
-Express + MongoDB backend for events, registrations, dashboard, admin CMS, and CSI Nova.
+Express + MongoDB backend for events, registrations, CMS content, and CSI Nova.
+
+Authentication is **Firebase only**: the client sends a Firebase ID token; the server verifies it with Firebase Admin and loads the member from MongoDB.
 
 ## Setup
-
-You need MongoDB (local, Docker, or [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)).
 
 ```bash
 cd server
 cp .env.example .env
-# MONGODB_URI, JWT_SECRET, optional Firebase Admin for Google sign-in
+# Set MONGODB_URI and Firebase Admin credentials
 npm install
 npm run seed
 npm run dev
@@ -17,36 +17,40 @@ npm run dev
 
 API default: `http://localhost:5000`
 
-## Authentication
+## Auth flow
 
-Protected routes accept **either**:
+1. User signs in on the client with **Firebase** (email/password, Google, persistent session).
+2. Client calls `POST /api/auth/google` with `{ idToken }` to sync the user in MongoDB.
+3. Protected routes use `Authorization: Bearer <Firebase ID token>`.
 
-1. **JWT** — returned from `POST /api/auth/login`, `POST /api/auth/signup`, or `POST /api/auth/google` as `{ user, token }`. Send `Authorization: Bearer <token>`.
-2. **Firebase ID token** — when Firebase Admin is configured in `.env`.
+Roles for the UI are stored in **Firestore** (`users/{uid}`). The API uses the `role` field on the MongoDB user for admin-only routes (`ADMIN_EMAIL` is promoted to admin on sync).
 
-Email/password works without Firebase using JWT only.
-
-## Key endpoints
-
-| Area | Examples |
-|------|----------|
-| Auth | `POST /api/auth/signup`, `login`, `google` · `GET /api/auth/me` |
-| Events | `GET /api/events` · admin `POST/PATCH/DELETE /api/events` |
-| Registrations | `POST /api/registrations/events/:slug` · admin `PATCH /api/admin/registrations/:id` (attendance) |
-| Dashboard | `GET /api/dashboard` (registrations, certificates, notifications) |
-| CMS | `GET/POST /api/resources`, `/api/projects`, `/api/gallery` |
-| Admin | `/api/admin/analytics`, notifications, users, announcements |
-| Nova | `POST /api/assistant/chat` (live event data) |
-
-Default admin after seed: `ADMIN_EMAIL` / `ADMIN_PASSWORD` in `.env`.
-
-## Frontend
-
-Root `.env`:
+## Frontend `.env`
 
 ```
 VITE_API_URL=http://localhost:5000
-VITE_FIREBASE_*=...   # optional; JWT works via email login when API is set
+VITE_FIREBASE_API_KEY=...
+VITE_FIREBASE_AUTH_DOMAIN=...
+VITE_FIREBASE_PROJECT_ID=...
+VITE_FIREBASE_APP_ID=...
+VITE_ADMIN_EMAILS=admin@csi.vitc.edu
 ```
 
-Without `VITE_API_URL`, the site uses **local demo mode** (browser storage).
+Without `VITE_API_URL`, the site runs in **local demo mode** (browser storage, no cloud API).
+
+## Firestore rules (example)
+
+```text
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
+```
+
+Adjust for your chapter’s admin promotion workflow.
