@@ -7,6 +7,9 @@ import AdminDashboard from './components/auth/AdminDashboard';
 import AIAssistant from './components/AIAssistant';
 import BootSequence from './components/ecosystem/BootSequence';
 import LandingPage from './pages/LandingPage';
+import DashboardPage from './pages/DashboardPage';
+import AdminPage from './pages/AdminPage';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 
 function App() {
   return (
@@ -17,6 +20,22 @@ function App() {
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/gallery" element={<Navigate to="/#gallery" replace />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute requireAdmin>
+                  <AdminPage />
+                </ProtectedRoute>
+              }
+            />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
           <AIAssistant />

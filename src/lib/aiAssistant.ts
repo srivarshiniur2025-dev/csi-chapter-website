@@ -1,4 +1,5 @@
 import { api, isApiConfigured } from './api';
+import { loadAdminNovaEntries, mergeKnowledge } from './novaKnowledge';
 
 export interface QuickAction {
   id: string;
@@ -32,7 +33,7 @@ export function getQuickActionsForUser(isLoggedIn: boolean): QuickAction[] {
 const FALLBACK =
   'Ask about events, domains, teams, registration, or learning paths — or tap a quick action below.';
 
-type ResponseMatch = {
+export type ResponseMatch = {
   keywords: string[];
   response: string;
   scrollTo?: string;
@@ -161,10 +162,12 @@ export function getAssistantResponse(input: string): { text: string; scrollTo?: 
   const normalized = input.toLowerCase().trim();
   if (!normalized) return { text: FALLBACK };
 
+  const knowledge = mergeKnowledge(KNOWLEDGE, loadAdminNovaEntries());
+
   let best: ResponseMatch | null = null;
   let bestScore = 0;
 
-  for (const entry of KNOWLEDGE) {
+  for (const entry of knowledge) {
     let score = 0;
     for (const kw of entry.keywords) {
       if (normalized.includes(kw)) score += kw.length > 4 ? 2 : 1;

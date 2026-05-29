@@ -132,8 +132,46 @@ export const api = {
   adminAnalytics() {
     return request<{
       analytics: { users: number; events: number; registrations: number; announcements: number };
+      registrationTrend: Array<{ label: string; count: number }>;
+      topEvents: Array<{ title: string; count: number }>;
       recentRegistrations: unknown[];
     }>('/api/admin/analytics');
+  },
+
+  resources() {
+    return request<{
+      resources: Array<{
+        _id: string;
+        title: string;
+        description: string;
+        category: string;
+        url?: string;
+      }>;
+    }>('/api/resources', {}, false);
+  },
+
+  adminResources() {
+    return request<{
+      resources: Array<{
+        _id: string;
+        title: string;
+        description: string;
+        category: string;
+        url?: string;
+      }>;
+    }>('/api/admin/resources');
+  },
+
+  adminCreateResource(body: {
+    title: string;
+    description?: string;
+    category?: string;
+    url?: string;
+  }) {
+    return request<{ resource: { _id: string; title: string } }>('/api/admin/resources', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
   },
 
   events() {

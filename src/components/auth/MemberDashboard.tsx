@@ -14,8 +14,10 @@ import {
   Ticket,
   UserRound,
   Activity,
+  Download,
   X,
 } from 'lucide-react';
+import { downloadEventCertificate } from '../../lib/certificates';
 import SectionAmbient from '../ambient/SectionAmbient';
 import { CHAPTER_EVENTS_CATALOG, type EventCatalogItem } from '../../data/chapterEvents';
 import { dispatchOpenNova, useAuth } from '../../contexts/AuthContext';
@@ -531,7 +533,29 @@ export default function MemberDashboard() {
                                     <span>{new Date(ev.eventDate).toLocaleString()}</span>
                                   ) : null}
                                 </div>
-                                <Award size={16} className="pdash-list__icon" />
+                                <div className="pdash-list__actions">
+                                  <button
+                                    type="button"
+                                    className="pdash-link-btn"
+                                    onClick={() => {
+                                      downloadEventCertificate({
+                                        memberName:
+                                          profile?.displayName || user?.displayName || 'CSI Member',
+                                        eventTitle: ev.eventTitle,
+                                        registrationId: ev.registrationId,
+                                        eventDate: ev.eventDate
+                                          ? new Date(ev.eventDate).toLocaleString()
+                                          : undefined,
+                                        department: profile?.department,
+                                      });
+                                      toast.success('Certificate download started');
+                                    }}
+                                  >
+                                    <Download size={14} aria-hidden />
+                                    Certificate
+                                  </button>
+                                  <Award size={16} className="pdash-list__icon" aria-hidden />
+                                </div>
                               </li>
                             ))}
                           </ul>

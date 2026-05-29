@@ -15,6 +15,7 @@ const navLinks = [
   { label: 'Events', to: 'events', route: false },
   { label: 'Gallery', to: 'gallery', route: false },
   { label: 'Resources', to: 'resources', route: false },
+  { label: 'Community', to: 'community', route: false },
   { label: 'Journey', to: 'journey', route: false },
   { label: 'Team', to: 'team', route: false },
   { label: 'Contact Us', to: 'contact', route: false },

@@ -119,3 +119,33 @@ export const PLATFORM_JOURNEY: JourneyCard[] = [
     actionTarget: 'dashboard',
   },
 ];
+
+export const COMMUNITY_PROJECTS = [
+  {
+    id: 'smart-campus',
+    title: 'Smart Campus IoT',
+    domain: 'Robotics / IoT',
+    description: 'Sensor network for energy monitoring across VIT labs — chapter flagship build.',
+    highlight: 'National showcase 2025',
+  },
+  {
+    id: 'nova-hub',
+    title: 'CSI Nova Hub',
+    domain: 'AI / Platform',
+    description: 'Chapter AI assistant guiding members through events, resources, and domains.',
+    highlight: 'Live on chapter site',
+  },
+  {
+    id: 'webverse',
+    title: 'WebVerse Design System',
+    domain: 'Web Development',
+    description: 'Shared UI kit used across CSI event pages and member dashboards.',
+    highlight: 'Open source',
+  },
+] as const;
+
+export const COMMUNITY_HIGHLIGHTS = [
+  '500+ active members across CSE, IT, and ECE',
+  '50+ technical projects shipped in the last academic year',
+  'Hackathons, workshops, and national-level competition wins',
+] as const;

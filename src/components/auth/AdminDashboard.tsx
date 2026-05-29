@@ -3,9 +3,12 @@ import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   BarChart3,
+  BookOpen,
   Calendar,
+  Download,
   Image,
   Megaphone,
+  Sparkles,
   Ticket,
   Users,
   X,
@@ -15,7 +18,13 @@ import {
 import { dispatchOpenNova, useAuth } from '../../contexts/AuthContext';
 import { api, isApiConfigured, type ApiEvent } from '../../lib/api';
 import { addLocalGalleryItem, loadLocalGallery, removeLocalGalleryItem } from '../../lib/localGallery';
-import FuturisticSparkline from '../ecosystem/FuturisticSparkline';
+import AnalyticsBars from '../ecosystem/AnalyticsBars';
+import { downloadCsv } from '../../lib/exportCsv';
+import {
+  loadAdminNovaEntries,
+  saveAdminNovaEntries,
+} from '../../lib/novaKnowledge';
+import type { ResponseMatch } from '../../lib/aiAssistant';
 import { useToast } from '../../contexts/ToastContext';
 import EmptyState from '../ui/EmptyState';
 import { DashboardSkeleton } from '../ui/Skeleton';
@@ -23,7 +32,15 @@ import './AdminDashboard.css';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-type AdminTab = 'overview' | 'events' | 'registrations' | 'gallery' | 'users' | 'announcements';
+type AdminTab =
+  | 'overview'
+  | 'events'
+  | 'registrations'
+  | 'gallery'
+  | 'users'
+  | 'announcements'
+  | 'resources'
+  | 'nova';
 
 const emptyEvent = {
   slug: '',
@@ -64,6 +81,21 @@ export default function AdminDashboard() {
     Array<{ registrationId?: string; user?: { name?: string; email?: string }; event?: { title?: string }; createdAt?: string }>
   >([]);
   const [editingSlug, setEditingSlug] = useState<string | null>(null);
+  const [registrationTrend, setRegistrationTrend] = useState<Array<{ label: string; count: number }>>(
+    []
+  );
+  const [topEvents, setTopEvents] = useState<Array<{ title: string; count: number }>>([]);
+  const [chapterResources, setChapterResources] = useState<
+    Array<{ _id: string; title: string; description: string; category: string; url?: string }>
+  >([]);
+  const [resourceForm, setResourceForm] = useState({
+    title: '',
+    description: '',
+    category: 'General',
+    url: '',
+  });
+  const [novaEntries, setNovaEntries] = useState<ResponseMatch[]>(() => loadAdminNovaEntries());
+  const [novaForm, setNovaForm] = useState({ keywords: '', response: '', scrollTo: '' });
   const toast = useToast();
 
   const refresh = async () => {
@@ -71,15 +103,19 @@ export default function AdminDashboard() {
     setLoading(true);
     if (isApiConfigured()) {
       try {
-        const [a, ev, u, g, ann, regs] = await Promise.all([
+        const [a, ev, u, g, ann, regs, res] = await Promise.all([
           api.adminAnalytics(),
           api.events(),
           api.adminUsers(),
           api.adminGallery(),
           api.adminAnnouncements(),
           api.adminRegistrations(),
+          api.adminResources(),
         ]);
         setAnalytics(a.analytics);
+        setRegistrationTrend(a.registrationTrend ?? []);
+        setTopEvents(a.topEvents ?? []);
+        setChapterResources(res.resources ?? []);
         setRecent((a.recentRegistrations as typeof recent) ?? []);
         setRegistrations(regs.registrations ?? []);
         setEvents(ev.events);
@@ -238,6 +274,65 @@ export default function AdminDashboard() {
     void refresh();
   };
 
+  const onCreateResource = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!isApiConfigured()) {
+      setMsg('API required to publish resources.');
+      return;
+    }
+    try {
+      await api.adminCreateResource(resourceForm);
+      setResourceForm({ title: '', description: '', category: 'General', url: '' });
+      toast.success('Resource published.');
+      void refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to publish resource');
+    }
+  };
+
+  const onSaveNovaEntry = (e: FormEvent) => {
+    e.preventDefault();
+    const keywords = novaForm.keywords
+      .split(',')
+      .map((k) => k.trim().toLowerCase())
+      .filter(Boolean);
+    if (!keywords.length || !novaForm.response.trim()) {
+      toast.error('Add keywords and a reply for Nova.');
+      return;
+    }
+    const entry: ResponseMatch = {
+      keywords,
+      response: novaForm.response.trim(),
+      scrollTo: novaForm.scrollTo.trim() || undefined,
+    };
+    const next = [...novaEntries, entry];
+    saveAdminNovaEntries(next);
+    setNovaEntries(next);
+    setNovaForm({ keywords: '', response: '', scrollTo: '' });
+    toast.success('Nova knowledge entry saved.');
+  };
+
+  const onRemoveNovaEntry = (index: number) => {
+    const next = novaEntries.filter((_, i) => i !== index);
+    saveAdminNovaEntries(next);
+    setNovaEntries(next);
+    toast.success('Entry removed.');
+  };
+
+  const exportRegistrations = () => {
+    downloadCsv('csi-registrations.csv', [
+      ['Registration ID', 'Name', 'Email', 'Event', 'Created'],
+      ...registrations.map((r) => [
+        r.registrationId ?? '',
+        r.user?.name ?? '',
+        r.user?.email ?? '',
+        r.event?.title ?? '',
+        r.createdAt ? new Date(r.createdAt).toISOString() : '',
+      ]),
+    ]);
+    toast.success('Registrations exported.');
+  };
+
   if (typeof document === 'undefined') return null;
 
   const stats = analytics
@@ -257,17 +352,26 @@ export default function AdminDashboard() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          transition={{ duration: 0.32, ease: EASE }}
           data-lenis-prevent
         >
-          <motion.div className="adm-backdrop" onClick={closeAdmin} aria-hidden />
+          <motion.div
+            className="adm-backdrop"
+            onClick={closeAdmin}
+            aria-hidden
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.35, ease: EASE }}
+          />
           <motion.article
             className="adm-panel"
             role="dialog"
             aria-label="CSI Admin Dashboard"
-            initial={{ opacity: 0, scale: 0.94 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.96 }}
-            transition={{ duration: 0.35, ease: EASE }}
+            initial={{ opacity: 0, scale: 0.96, y: 12 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.97, y: 8 }}
+            transition={{ duration: 0.42, ease: EASE }}
             onClick={(e) => e.stopPropagation()}
           >
             <header className="adm-panel__header">
@@ -294,6 +398,8 @@ export default function AdminDashboard() {
                   ['gallery', 'Gallery', Image],
                   ['users', 'Users', Users],
                   ['announcements', 'Announce', Megaphone],
+                  ['resources', 'Resources', BookOpen],
+                  ['nova', 'Nova AI', Sparkles],
                 ] as const
               ).map(([id, label, Icon]) => (
                 <button
@@ -316,17 +422,32 @@ export default function AdminDashboard() {
               {!loading && tab === 'overview' && (
                 <>
                   <div className="adm-analytics-grid">
-                    {stats.map((s, i) => (
-                      <div key={s.label} className="adm-chart-card adm-card--os">
+                    {stats.map((s) => (
+                      <div key={s.label} className="adm-chart-card adm-card--os adm-chart-card--stat">
                         <s.icon size={16} />
                         <strong>{s.value}</strong>
                         <span>{s.label}</span>
-                        <FuturisticSparkline
-                          values={[4 + i * 3, 8 + i * 2, 6 + i, 12 + i, 10 + i * 2, 14 + i]}
-                        />
                       </div>
                     ))}
                   </div>
+                  {registrationTrend.length ? (
+                    <section className="adm-card--os">
+                      <AnalyticsBars
+                        title="Registrations (last 7 days)"
+                        labels={registrationTrend.map((d) => d.label)}
+                        values={registrationTrend.map((d) => d.count)}
+                      />
+                    </section>
+                  ) : null}
+                  {topEvents.length ? (
+                    <section className="adm-card--os">
+                      <AnalyticsBars
+                        title="Top events by registrations"
+                        labels={topEvents.map((e) => e.title.slice(0, 12))}
+                        values={topEvents.map((e) => e.count)}
+                      />
+                    </section>
+                  ) : null}
                   <section className="adm-card--os">
                     <h3 className="adm-section-title">Activity feed</h3>
                     <ul className="adm-feed">
@@ -396,7 +517,12 @@ export default function AdminDashboard() {
 
               {!loading && tab === 'registrations' && (
                 <section className="adm-card--os">
-                  <h3 className="adm-section-title">All registrations</h3>
+                  <div className="adm-section-head">
+                    <h3 className="adm-section-title">All registrations</h3>
+                    <button type="button" className="adm-btn-ghost" onClick={exportRegistrations}>
+                      <Download size={14} /> Export CSV
+                    </button>
+                  </div>
                   {registrations.length ? (
                     <ul className="adm-feed">
                       {registrations.map((r, i) => (
@@ -476,6 +602,104 @@ export default function AdminDashboard() {
                       <li key={a._id}>
                         <span>{a.title}</span>
                         <button type="button" onClick={() => void onDeleteAnnouncement(a._id)} aria-label="Delete">
+                          <Trash2 size={14} />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+
+              {!loading && tab === 'resources' && (
+                <>
+                  <form className="adm-form" onSubmit={onCreateResource}>
+                    <h3 className="adm-section-title">Publish learning resource</h3>
+                    <div className="adm-form__grid">
+                      <input
+                        placeholder="Title"
+                        required
+                        value={resourceForm.title}
+                        onChange={(e) => setResourceForm({ ...resourceForm, title: e.target.value })}
+                      />
+                      <input
+                        placeholder="Category"
+                        value={resourceForm.category}
+                        onChange={(e) => setResourceForm({ ...resourceForm, category: e.target.value })}
+                      />
+                      <input
+                        className="adm-form__wide"
+                        placeholder="URL"
+                        value={resourceForm.url}
+                        onChange={(e) => setResourceForm({ ...resourceForm, url: e.target.value })}
+                      />
+                    </div>
+                    <textarea
+                      placeholder="Description"
+                      rows={2}
+                      value={resourceForm.description}
+                      onChange={(e) => setResourceForm({ ...resourceForm, description: e.target.value })}
+                    />
+                    <button type="submit" className="adm-btn-primary">
+                      <BookOpen size={16} /> Add resource
+                    </button>
+                  </form>
+                  <ul className="adm-list">
+                    {chapterResources.length ? (
+                      chapterResources.map((r) => (
+                        <li key={r._id}>
+                          <div>
+                            <strong>{r.title}</strong>
+                            <span>
+                              {r.category}
+                              {r.url ? ` · ${r.url}` : ''}
+                            </span>
+                          </div>
+                        </li>
+                      ))
+                    ) : (
+                      <li className="adm-feed__empty">No API resources yet.</li>
+                    )}
+                  </ul>
+                </>
+              )}
+
+              {!loading && tab === 'nova' && (
+                <>
+                  <form className="adm-form" onSubmit={onSaveNovaEntry}>
+                    <h3 className="adm-section-title">CSI Nova knowledge base</h3>
+                    <p className="adm-form__hint">
+                      Comma-separated keywords trigger the reply. Optional scroll target jumps to a
+                      section (e.g. events, resources).
+                    </p>
+                    <input
+                      placeholder="Keywords: hackathon, register"
+                      value={novaForm.keywords}
+                      onChange={(e) => setNovaForm({ ...novaForm, keywords: e.target.value })}
+                    />
+                    <textarea
+                      placeholder="Nova reply"
+                      rows={3}
+                      required
+                      value={novaForm.response}
+                      onChange={(e) => setNovaForm({ ...novaForm, response: e.target.value })}
+                    />
+                    <input
+                      placeholder="Scroll target section id (optional)"
+                      value={novaForm.scrollTo}
+                      onChange={(e) => setNovaForm({ ...novaForm, scrollTo: e.target.value })}
+                    />
+                    <button type="submit" className="adm-btn-primary">
+                      <Sparkles size={16} /> Save entry
+                    </button>
+                  </form>
+                  <ul className="adm-list">
+                    {novaEntries.map((entry, i) => (
+                      <li key={`nova-${i}`}>
+                        <div>
+                          <strong>{entry.keywords.join(', ')}</strong>
+                          <span>{entry.response}</span>
+                        </div>
+                        <button type="button" onClick={() => onRemoveNovaEntry(i)} aria-label="Delete">
                           <Trash2 size={14} />
                         </button>
                       </li>

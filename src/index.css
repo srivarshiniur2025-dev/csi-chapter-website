@@ -112,6 +112,31 @@ section {
   }
 }
 
+.csi-route-loading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: #080616;
+  animation: csi-fade-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes csi-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .site-shell main > section {
+    scroll-margin-top: var(--csi-nav-height);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

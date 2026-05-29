@@ -13,6 +13,7 @@ import dashboardRoutes from './routes/dashboardRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import assistantRoutes from './routes/assistantRoutes.js';
 import galleryRoutes from './routes/galleryRoutes.js';
+import resourcesRoutes from './routes/resourcesRoutes.js';
 
 const app = express();
 
@@ -47,6 +48,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/assistant', assistantRoutes);
 app.use('/api/gallery', galleryRoutes);
+app.use('/api/resources', resourcesRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

@@ -16,7 +16,7 @@ export function scrollToSectionSmooth(id: string, offset = -80): void {
 
   const lenis = window.__csiLenis;
   if (lenis) {
-    lenis.scrollTo(el, { offset, duration: 1.35, easing: (t) => 1 - Math.pow(1 - t, 4) });
+    lenis.scrollTo(el, { offset, duration: 1.5, easing: (t) => 1 - Math.pow(1 - t, 4) });
     return;
   }
 

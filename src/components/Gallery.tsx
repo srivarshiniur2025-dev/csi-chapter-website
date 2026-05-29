@@ -19,18 +19,18 @@ const gridVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.05, delayChildren: 0.04 },
+    transition: { staggerChildren: 0.04, delayChildren: 0.06 },
   },
-  exit: { opacity: 0, transition: { duration: 0.22 } },
+  exit: { opacity: 0, transition: { duration: 0.28, ease: EASE } },
 };
 
 const cardVariants = {
-  hidden: { opacity: 0, y: 20, scale: 0.98 },
+  hidden: { opacity: 0, y: 18, scale: 0.98 },
   visible: {
     opacity: 1,
     y: 0,
     scale: 1,
-    transition: { duration: 0.45, ease: EASE },
+    transition: { duration: 0.52, ease: EASE },
   },
 };
 

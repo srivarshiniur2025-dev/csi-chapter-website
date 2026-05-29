@@ -330,7 +330,15 @@
   border: 1px solid transparent;
   border-radius: 0.5rem;
   cursor: pointer;
-  transition: color 0.2s, background 0.2s, border-color 0.2s;
+  transition:
+    color 0.28s ease,
+    background 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.28s ease,
+    transform 0.25s ease;
+}
+
+.pdash-tab:hover {
+  color: rgba(228, 241, 255, 0.9);
 }
 
 .pdash-tab--active {
@@ -751,4 +759,35 @@
     grid-template-columns: 1fr;
     gap: 0.25rem;
   }
+}
+
+.pdash-list__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.pdash-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.55rem;
+  font-size: 0.7rem;
+  border-radius: 0.35rem;
+  border: 1px solid rgba(148, 0, 255, 0.35);
+  background: rgba(148, 0, 255, 0.12);
+  color: #c4b5fd;
+  cursor: pointer;
+  transition:
+    border-color 0.28s ease,
+    background 0.28s ease,
+    color 0.28s ease,
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.pdash-link-btn:hover {
+  border-color: rgba(167, 139, 250, 0.55);
+  color: #e4f1ff;
+  transform: translateY(-1px);
 }

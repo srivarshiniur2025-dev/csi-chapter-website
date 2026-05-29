@@ -1,0 +1,51 @@
+.analytics-bars {
+  padding: 0.75rem 0;
+}
+
+.analytics-bars__title {
+  margin: 0 0 0.75rem;
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(174, 210, 255, 0.55);
+}
+
+.analytics-bars__chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  min-height: 120px;
+  padding: 0.5rem 0;
+}
+
+.analytics-bars__col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.analytics-bars__fill {
+  width: 100%;
+  max-width: 2.5rem;
+  min-height: 4px;
+  border-radius: 4px 4px 0 0;
+  background: linear-gradient(180deg, #c77dff, #6b8cff);
+  transition: height 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.analytics-bars__label {
+  font-size: 0.62rem;
+  color: rgba(174, 210, 255, 0.5);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.analytics-bars__val {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #c4b5fd;
+}

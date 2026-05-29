@@ -1,6 +1,17 @@
 import { useEffect, useState } from 'react';
 
-const DEFAULT_IDS = ['home', 'about', 'platform', 'events', 'gallery', 'resources', 'journey', 'team', 'contact'];
+const DEFAULT_IDS = [
+  'home',
+  'about',
+  'platform',
+  'events',
+  'gallery',
+  'resources',
+  'community',
+  'journey',
+  'team',
+  'contact',
+];
 
 /** Tracks which landing section is most visible for navbar highlighting */
 export function useActiveSection(sectionIds: string[] = DEFAULT_IDS) {

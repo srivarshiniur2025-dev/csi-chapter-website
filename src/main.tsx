@@ -15,12 +15,13 @@ const Root = () => {
     }
 
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: 1.35,
       easing: (t) => 1 - Math.pow(1 - t, 4),
-      wheelMultiplier: 0.85,
-      touchMultiplier: 1.35,
+      wheelMultiplier: 0.9,
+      touchMultiplier: 1.2,
       smoothWheel: true,
       syncTouch: true,
+      lerp: 0.085,
     });
 
     setLenisInstance(lenis);
