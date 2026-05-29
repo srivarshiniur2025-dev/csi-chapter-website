@@ -12,12 +12,14 @@ import { Event } from '../src/models/Event.js';
 import { Resource } from '../src/models/Resource.js';
 import { Announcement } from '../src/models/Announcement.js';
 import { GalleryItem } from '../src/models/GalleryItem.js';
+import { Project } from '../src/models/Project.js';
 
 const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/csi_platform';
 
 const events = [
   {
     slug: 'ai-nexus',
+    featured: true,
     title: 'AI Nexus Workshop',
     dateLabel: 'March 18, 2026',
     venue: 'AB-II, Lab 304 · VIT Chennai',
@@ -37,6 +39,7 @@ const events = [
   },
   {
     slug: 'codestorm',
+    featured: true,
     title: 'CodeStorm Hackathon',
     dateLabel: 'April 2–3, 2026',
     venue: 'Technology Tower · Main Hall',
@@ -221,6 +224,34 @@ async function seed() {
     );
   }
   console.log(`Seeded ${gallerySeed.length} gallery items`);
+
+  const projectSeed = [
+    {
+      slug: 'smart-campus',
+      title: 'Smart Campus IoT',
+      description: 'Sensor network for energy monitoring across VIT labs.',
+      domain: 'Robotics / IoT',
+      stack: ['Arduino', 'MQTT', 'React'],
+      github: 'https://github.com',
+      category: 'Team',
+      featured: true,
+    },
+    {
+      slug: 'nova-hub',
+      title: 'CSI Nova Hub',
+      description: 'Chapter AI assistant for events and resources.',
+      domain: 'AI / Platform',
+      stack: ['React', 'TypeScript', 'MongoDB'],
+      github: 'https://github.com',
+      category: 'Featured',
+      featured: true,
+    },
+  ];
+
+  for (const p of projectSeed) {
+    await Project.findOneAndUpdate({ slug: p.slug }, { ...p, isPublished: true, createdBy: admin._id }, { upsert: true });
+  }
+  console.log(`Seeded ${projectSeed.length} projects`);
 
   console.log('Seed complete');
   await mongoose.disconnect();

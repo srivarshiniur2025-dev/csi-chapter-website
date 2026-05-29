@@ -18,6 +18,8 @@ const registrationSchema = new mongoose.Schema(
       message: String,
     },
     qrPayload: { type: String, default: '' },
+    attended: { type: Boolean, default: false },
+    attendedAt: { type: Date },
   },
   { timestamps: true }
 );

@@ -19,6 +19,7 @@ const eventSchema = new mongoose.Schema(
       role: { type: String, default: 'CSI VIT Chennai' },
     },
     techIcons: { type: [String], default: [] },
+    featured: { type: Boolean, default: false },
     isPublished: { type: Boolean, default: true },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   },
@@ -47,6 +48,7 @@ eventSchema.methods.toPublicJSON = function toPublicJSON() {
     spotsLeft: this.spotsLeft,
     speaker: this.speaker,
     techIcons: this.techIcons,
+    featured: this.featured,
     isPublished: this.isPublished,
   };
 };

@@ -21,6 +21,7 @@
   z-index: 1;
   width: min(100%, 56rem);
   max-height: min(92vh, 44rem);
+  max-width: calc(100vw - 1.5rem);
   display: flex;
   flex-direction: column;
   border-radius: 20px;
@@ -185,9 +186,19 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-wrap: wrap;
   padding: 0.6rem 0;
   border-bottom: 1px solid rgba(167, 139, 250, 0.1);
   font-size: 0.85rem;
+}
+
+.adm-feed__row {
+  justify-content: space-between;
+}
+
+.adm-btn-ghost--sm {
+  font-size: 0.7rem;
+  padding: 0.25rem 0.5rem;
 }
 
 .adm-form__grid {
@@ -195,6 +206,16 @@
   grid-template-columns: 1fr 1fr;
   gap: 0.5rem;
   margin-bottom: 0.5rem;
+}
+
+.adm-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  grid-column: 1 / -1;
+  font-size: 0.85rem;
+  color: rgba(228, 241, 255, 0.85);
+  cursor: pointer;
 }
 
 .adm-form__wide {

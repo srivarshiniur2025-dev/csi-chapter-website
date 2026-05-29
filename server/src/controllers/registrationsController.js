@@ -1,9 +1,23 @@
 import { Event } from '../models/Event.js';
 import { Registration } from '../models/Registration.js';
 import { Notification } from '../models/Notification.js';
-import { User } from '../models/User.js';
+import { Certificate } from '../models/Certificate.js';
 import { generateRegistrationId } from '../utils/registrationId.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+
+async function issueCertificate(reg, event, user) {
+  const existing = await Certificate.findOne({ user: user._id, event: event._id });
+  if (existing) return existing;
+  return Certificate.create({
+    user: user._id,
+    event: event._id,
+    registration: reg._id,
+    registrationId: reg.registrationId,
+    eventTitle: event.title,
+    memberName: user.name,
+    verifyCode: reg.registrationId,
+  });
+}
 
 export const registerForEvent = asyncHandler(async (req, res) => {
   const event = await Event.findOne({ slug: req.params.slug, isPublished: true });
@@ -14,7 +28,15 @@ export const registerForEvent = asyncHandler(async (req, res) => {
 
   const existing = await Registration.findOne({ user: req.user._id, event: event._id });
   if (existing) {
-    return res.status(409).json({ message: 'Already registered', registration: existing });
+    return res.status(409).json({
+      message: 'Already registered',
+      registration: {
+        registrationId: existing.registrationId,
+        status: existing.status,
+        attended: existing.attended,
+        event: event.toPublicJSON(),
+      },
+    });
   }
 
   const registrationId = generateRegistrationId(event.slug);
@@ -46,7 +68,7 @@ export const registerForEvent = asyncHandler(async (req, res) => {
   await Notification.create({
     user: req.user._id,
     title: 'Registration confirmed',
-    message: `You are registered for ${event.title}. ID: ${registrationId}`,
+    message: `You are registered for ${event.title}. Pass ID: ${registrationId}`,
     type: 'event',
   });
 
@@ -57,6 +79,7 @@ export const registerForEvent = asyncHandler(async (req, res) => {
       event: event.toPublicJSON(),
       form,
       status: registration.status,
+      attended: registration.attended,
       createdAt: registration.createdAt,
     },
   });
@@ -71,6 +94,8 @@ export const myRegistrations = asyncHandler(async (req, res) => {
       id: r._id,
       registrationId: r.registrationId,
       status: r.status,
+      attended: r.attended,
+      attendedAt: r.attendedAt,
       form: r.form,
       createdAt: r.createdAt,
       event: r.event?.toPublicJSON?.() || null,
@@ -88,11 +113,23 @@ export const adminListRegistrations = asyncHandler(async (req, res) => {
 });
 
 export const updateRegistrationStatus = asyncHandler(async (req, res) => {
-  const reg = await Registration.findByIdAndUpdate(
-    req.params.id,
-    { status: req.body.status },
-    { new: true }
-  );
+  const reg = await Registration.findById(req.params.id).populate('event').populate('user');
   if (!reg) return res.status(404).json({ message: 'Registration not found' });
+
+  if (req.body.status) reg.status = req.body.status;
+  if (typeof req.body.attended === 'boolean') {
+    reg.attended = req.body.attended;
+    reg.attendedAt = req.body.attended ? new Date() : undefined;
+    if (req.body.attended && reg.event && reg.user) {
+      await issueCertificate(reg, reg.event, reg.user);
+      await Notification.create({
+        user: reg.user._id,
+        title: 'Attendance confirmed',
+        message: `Your attendance for ${reg.event.title} was recorded. Certificate is available in your dashboard.`,
+        type: 'achievement',
+      });
+    }
+  }
+  await reg.save();
   res.json({ registration: reg });
 });

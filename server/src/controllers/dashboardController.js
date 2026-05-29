@@ -3,18 +3,21 @@ import { Event } from '../models/Event.js';
 import { Resource } from '../models/Resource.js';
 import { Announcement } from '../models/Announcement.js';
 import { Notification } from '../models/Notification.js';
+import { Certificate } from '../models/Certificate.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
 export const getDashboard = asyncHandler(async (req, res) => {
-  const [registrations, bookmarks, resources, announcements, notifications] = await Promise.all([
-    Registration.find({ user: req.user._id }).populate('event').sort({ createdAt: -1 }).limit(20),
-    Event.find({ _id: { $in: req.user.bookmarkedEvents } }),
-    Resource.find({ isPublished: true }).sort({ createdAt: -1 }).limit(12),
-    Announcement.find({ isPublished: true, audience: { $in: ['all', 'members'] } })
-      .sort({ createdAt: -1 })
-      .limit(10),
-    Notification.find({ user: req.user._id }).sort({ createdAt: -1 }).limit(20),
-  ]);
+  const [registrations, bookmarks, resources, announcements, notifications, certificates] =
+    await Promise.all([
+      Registration.find({ user: req.user._id }).populate('event').sort({ createdAt: -1 }).limit(20),
+      Event.find({ _id: { $in: req.user.bookmarkedEvents } }),
+      Resource.find({ isPublished: true }).sort({ createdAt: -1 }).limit(12),
+      Announcement.find({ isPublished: true, audience: { $in: ['all', 'members'] } })
+        .sort({ createdAt: -1 })
+        .limit(10),
+      Notification.find({ user: req.user._id }).sort({ createdAt: -1 }).limit(20),
+      Certificate.find({ user: req.user._id }).sort({ issuedAt: -1 }).limit(20),
+    ]);
 
   const stats = {
     eventsRegistered: registrations.length,
@@ -29,8 +32,18 @@ export const getDashboard = asyncHandler(async (req, res) => {
     registeredEvents: registrations.map((r) => ({
       registrationId: r.registrationId,
       status: r.status,
+      attended: r.attended,
+      attendedAt: r.attendedAt,
       event: r.event?.toPublicJSON?.() || null,
       createdAt: r.createdAt,
+    })),
+    certificates: certificates.map((c) => ({
+      _id: c._id,
+      registrationId: c.registrationId,
+      eventTitle: c.eventTitle,
+      memberName: c.memberName,
+      verifyCode: c.verifyCode,
+      issuedAt: c.issuedAt,
     })),
     bookmarks: bookmarks.map((e) => e.toPublicJSON()),
     resources,

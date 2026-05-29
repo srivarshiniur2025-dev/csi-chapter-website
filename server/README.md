@@ -1,56 +1,52 @@
 # CSI Platform API
 
-Express + MongoDB backend for events, registrations, dashboard, and admin.
+Express + MongoDB backend for events, registrations, dashboard, admin CMS, and CSI Nova.
 
 ## Setup
 
-You need a MongoDB database (local install, Docker, or [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) free tier).
+You need MongoDB (local, Docker, or [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)).
 
 ```bash
 cd server
 cp .env.example .env
-# Set MONGODB_URI (e.g. mongodb://127.0.0.1:27017/csi_platform or Atlas connection string)
-# Set Firebase Admin credentials (same project as frontend Firebase) for protected routes
+# MONGODB_URI, JWT_SECRET, optional Firebase Admin for Google sign-in
 npm install
 npm run seed
 npm run dev
 ```
 
-**Atlas quick steps:** create cluster → Database Access user → Network Access (allow your IP) → Connect → copy connection string into `MONGODB_URI`.
-
-API runs at `http://localhost:5000` by default.
+API default: `http://localhost:5000`
 
 ## Authentication
 
-Protected routes use **Firebase ID tokens** from the client (`Authorization: Bearer <firebaseIdToken>`). There is no JWT layer on this API.
+Protected routes accept **either**:
 
-Configure `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, and `FIREBASE_PRIVATE_KEY` in `.env` (Firebase Console → Project settings → Service accounts).
+1. **JWT** — returned from `POST /api/auth/login`, `POST /api/auth/signup`, or `POST /api/auth/google` as `{ user, token }`. Send `Authorization: Bearer <token>`.
+2. **Firebase ID token** — when Firebase Admin is configured in `.env`.
 
-The frontend signs in with Firebase; the API verifies each request with Firebase Admin.
+Email/password works without Firebase using JWT only.
 
-## Endpoints
+## Key endpoints
 
-| Method | Path | Auth |
-|--------|------|------|
-| GET | `/api/health` | — |
-| POST | `/api/auth/signup` | — (creates user record; client should use Firebase sign-in) |
-| POST | `/api/auth/login` | — |
-| POST | `/api/auth/google` | Firebase `idToken` in body |
-| GET | `/api/auth/me` | Firebase Bearer |
-| GET | `/api/events` | optional |
-| POST | `/api/registrations/events/:slug` | Firebase Bearer |
-| GET | `/api/dashboard` | Firebase Bearer |
-| GET | `/api/admin/analytics` | admin + Firebase Bearer |
+| Area | Examples |
+|------|----------|
+| Auth | `POST /api/auth/signup`, `login`, `google` · `GET /api/auth/me` |
+| Events | `GET /api/events` · admin `POST/PATCH/DELETE /api/events` |
+| Registrations | `POST /api/registrations/events/:slug` · admin `PATCH /api/admin/registrations/:id` (attendance) |
+| Dashboard | `GET /api/dashboard` (registrations, certificates, notifications) |
+| CMS | `GET/POST /api/resources`, `/api/projects`, `/api/gallery` |
+| Admin | `/api/admin/analytics`, notifications, users, announcements |
+| Nova | `POST /api/assistant/chat` (live event data) |
 
-Default admin (after seed): see `ADMIN_EMAIL` / `ADMIN_PASSWORD` in `.env`. Use the same email with Firebase (or demo local admin without API).
+Default admin after seed: `ADMIN_EMAIL` / `ADMIN_PASSWORD` in `.env`.
 
 ## Frontend
 
-Set in project root `.env`:
+Root `.env`:
 
 ```
 VITE_API_URL=http://localhost:5000
-VITE_FIREBASE_*=...
+VITE_FIREBASE_*=...   # optional; JWT works via email login when API is set
 ```
 
-Without Firebase, the site runs in **local demo mode** (browser storage). Public API routes (e.g. events list) still work without auth.
+Without `VITE_API_URL`, the site uses **local demo mode** (browser storage).

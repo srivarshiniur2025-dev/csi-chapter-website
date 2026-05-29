@@ -1,21 +1,65 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Code2, ExternalLink } from 'lucide-react';
 import SectionAmbient from '../ambient/SectionAmbient';
 import SectionReveal from '../immersive/SectionReveal';
 import { SHOWCASE_PROJECTS } from '../../lib/platformContent';
+import { api, isApiConfigured } from '../../lib/api';
 import './ProjectShowcase.css';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const CATEGORIES = ['All', 'Featured', 'Team', 'Student', 'Workshop', 'Open Source'] as const;
 
+type ProjectCard = {
+  id: string;
+  title: string;
+  domain: string;
+  description: string;
+  stack: readonly string[] | string[];
+  github?: string;
+  demo?: string;
+  category: string;
+  featured?: boolean;
+};
+
 export default function ProjectShowcase() {
   const [category, setCategory] = useState<(typeof CATEGORIES)[number]>('All');
+  const [apiProjects, setApiProjects] = useState<ProjectCard[]>([]);
+
+  useEffect(() => {
+    if (!isApiConfigured()) return;
+    void api
+      .projects()
+      .then((res) => {
+        setApiProjects(
+          res.projects.map((p) => ({
+            id: p.id,
+            title: p.title,
+            description: p.description,
+            domain: p.domain,
+            stack: p.stack,
+            github: p.github,
+            demo: p.demo,
+            category: p.category,
+            featured: p.featured,
+          }))
+        );
+      })
+      .catch(() => {
+        /* fallback */
+      });
+  }, []);
+
+  const projects = useMemo<ProjectCard[]>(() => {
+    if (apiProjects.length) return apiProjects;
+    return SHOWCASE_PROJECTS.map((p) => ({ ...p, stack: [...p.stack] }));
+  }, [apiProjects]);
 
   const filtered = useMemo(() => {
-    if (category === 'All') return [...SHOWCASE_PROJECTS];
-    return SHOWCASE_PROJECTS.filter((p) => p.category === category);
-  }, [category]);
+    if (category === 'All') return projects;
+    if (category === 'Featured') return projects.filter((p) => p.featured);
+    return projects.filter((p) => p.category === category);
+  }, [projects, category]);
 
   return (
     <section id="projects" className="csi-projects text-csi-pale" aria-labelledby="projects-heading">
@@ -27,8 +71,8 @@ export default function ProjectShowcase() {
             Project <span className="csi-projects__accent">showcase</span>
           </h2>
           <p className="csi-projects__desc">
-            Flagship chapter builds, open-source tools, and workshop demos — with stacks and links to
-            explore.
+            Flagship chapter builds, open-source tools, and workshop demos — managed from the admin
+            console when the API is connected.
           </p>
         </header>
 
@@ -62,7 +106,7 @@ export default function ProjectShowcase() {
               <h3>{project.title}</h3>
               <p>{project.description}</p>
               <div className="csi-projects__stack">
-                {project.stack.map((t) => (
+                {(Array.isArray(project.stack) ? project.stack : []).map((t) => (
                   <span key={t}>{t}</span>
                 ))}
               </div>

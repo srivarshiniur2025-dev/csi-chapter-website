@@ -21,7 +21,7 @@ import { downloadEventCertificate } from '../../lib/certificates';
 import SectionAmbient from '../ambient/SectionAmbient';
 import { CHAPTER_EVENTS_CATALOG, type EventCatalogItem } from '../../data/chapterEvents';
 import { dispatchOpenNova, useAuth } from '../../contexts/AuthContext';
-import { api, isApiConfigured } from '../../lib/api';
+import { api, isApiConfigured, type ApiCertificate } from '../../lib/api';
 import { useToast } from '../../contexts/ToastContext';
 import EmptyState from '../ui/EmptyState';
 import { DashboardSkeleton } from '../ui/Skeleton';
@@ -77,6 +77,7 @@ export default function MemberDashboard() {
   const [notifications, setNotifications] = useState<
     Array<{ _id: string; title: string; message: string; read?: boolean }>
   >([]);
+  const [apiCertificates, setApiCertificates] = useState<ApiCertificate[]>([]);
   const toast = useToast();
 
   useEffect(() => {
@@ -92,6 +93,7 @@ export default function MemberDashboard() {
       .then((d) => {
         setAnnouncements(d.announcements ?? []);
         setNotifications(d.notifications ?? []);
+        setApiCertificates(d.certificates ?? []);
       })
       .catch(() => {});
   }, [dashboardOpen, apiReady]);
@@ -571,6 +573,42 @@ export default function MemberDashboard() {
                           />
                         )}
                       </section>
+                      {apiCertificates.length ? (
+                        <section className="pdash-card">
+                          <h3>Official certificates</h3>
+                          <p className="pdash-card__hint">
+                            Issued after event attendance is confirmed by admins.
+                          </p>
+                          <ul className="pdash-list">
+                            {apiCertificates.map((c) => (
+                              <li key={c._id}>
+                                <div>
+                                  <strong>{c.eventTitle}</strong>
+                                  <span className="pdash-pass-id">ID {c.verifyCode}</span>
+                                  <span>
+                                    Issued {new Date(c.issuedAt).toLocaleDateString()}
+                                  </span>
+                                </div>
+                                <button
+                                  type="button"
+                                  className="pdash-link-btn"
+                                  onClick={() => {
+                                    downloadEventCertificate({
+                                      memberName: c.memberName,
+                                      eventTitle: c.eventTitle,
+                                      registrationId: c.registrationId,
+                                    });
+                                    toast.success('Certificate download started');
+                                  }}
+                                >
+                                  <Download size={14} aria-hidden />
+                                  Download
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        </section>
+                      ) : null}
                     </motion.div>
                   )}
 

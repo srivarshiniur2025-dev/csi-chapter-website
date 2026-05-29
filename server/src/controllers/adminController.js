@@ -3,15 +3,21 @@ import { Event } from '../models/Event.js';
 import { Registration } from '../models/Registration.js';
 import { Announcement } from '../models/Announcement.js';
 import { Resource } from '../models/Resource.js';
+import { Notification } from '../models/Notification.js';
+import { Certificate } from '../models/Certificate.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
 export const analytics = asyncHandler(async (req, res) => {
-  const [users, events, registrations, announcements] = await Promise.all([
-    User.countDocuments(),
-    Event.countDocuments(),
-    Registration.countDocuments(),
-    Announcement.countDocuments({ isPublished: true }),
-  ]);
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const [users, events, registrations, announcements, activeUsers, certificates] =
+    await Promise.all([
+      User.countDocuments(),
+      Event.countDocuments(),
+      Registration.countDocuments(),
+      Announcement.countDocuments({ isPublished: true }),
+      User.countDocuments({ lastLoginAt: { $gte: thirtyDaysAgo } }),
+      Certificate.countDocuments(),
+    ]);
   const recentRegs = await Registration.find()
     .populate('user', 'name email')
     .populate('event', 'title')
@@ -47,7 +53,7 @@ export const analytics = asyncHandler(async (req, res) => {
   }));
 
   res.json({
-    analytics: { users, events, registrations, announcements },
+    analytics: { users, events, registrations, announcements, activeUsers, certificates },
     registrationTrend,
     topEvents,
     recentRegistrations: recentRegs,
@@ -107,4 +113,40 @@ export const listAnnouncements = asyncHandler(async (req, res) => {
 export const deleteAnnouncement = asyncHandler(async (req, res) => {
   await Announcement.findByIdAndDelete(req.params.id);
   res.json({ message: 'Announcement deleted' });
+});
+
+export const updateResource = asyncHandler(async (req, res) => {
+  const item = await Resource.findByIdAndUpdate(req.params.id, req.body, { new: true });
+  if (!item) return res.status(404).json({ message: 'Resource not found' });
+  res.json({ resource: item });
+});
+
+export const deleteResource = asyncHandler(async (req, res) => {
+  await Resource.findByIdAndDelete(req.params.id);
+  res.json({ message: 'Resource deleted' });
+});
+
+export const sendNotification = asyncHandler(async (req, res) => {
+  const { title, message, type = 'system' } = req.body;
+  if (!title || !message) {
+    return res.status(400).json({ message: 'Title and message required' });
+  }
+  const users = await User.find({ isActive: true }).select('_id');
+  const docs = users.map((u) => ({
+    user: u._id,
+    title,
+    message,
+    type,
+  }));
+  await Notification.insertMany(docs);
+  res.status(201).json({ sent: docs.length });
+});
+
+export const listCertificates = asyncHandler(async (req, res) => {
+  const certificates = await Certificate.find()
+    .populate('user', 'name email')
+    .populate('event', 'title slug')
+    .sort({ issuedAt: -1 })
+    .limit(100);
+  res.json({ certificates });
 });

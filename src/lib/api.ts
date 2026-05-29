@@ -1,4 +1,7 @@
 import { auth, isFirebaseConfigured } from './firebase';
+import { getApiToken, setApiToken } from './apiToken';
+
+export { setApiToken, getApiToken };
 import type { DomainInterest, UserProfile, RegisteredEventRecord } from './userDashboard';
 
 const API_URL = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') || '';
@@ -54,6 +57,11 @@ export class ApiError extends Error {
 }
 
 async function attachAuthHeader(headers: Record<string, string>) {
+  const jwt = getApiToken();
+  if (jwt) {
+    headers.Authorization = `Bearer ${jwt}`;
+    return;
+  }
   if (!isFirebaseConfigured() || !auth?.currentUser) return;
   const idToken = await auth.currentUser.getIdToken();
   headers.Authorization = `Bearer ${idToken}`;
@@ -72,7 +80,7 @@ async function request<T>(
   if (authRequired) {
     await attachAuthHeader(headers);
     if (!headers.Authorization) {
-      throw new ApiError('Sign in with Firebase to use cloud features', 401);
+      throw new ApiError('Sign in to use cloud features (email login or Firebase)', 401);
     }
   }
   let res: Response;
@@ -99,21 +107,21 @@ export const api = {
     department?: string;
     domainInterests?: DomainInterest[];
   }) {
-    return request<{ user: ApiUser }>('/api/auth/signup', {
+    return request<{ user: ApiUser; token: string }>('/api/auth/signup', {
       method: 'POST',
       body: JSON.stringify(body),
     }, false);
   },
 
   login(email: string, password: string) {
-    return request<{ user: ApiUser }>('/api/auth/login', {
+    return request<{ user: ApiUser; token: string }>('/api/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     }, false);
   },
 
   google(idToken: string) {
-    return request<{ user: ApiUser }>('/api/auth/google', {
+    return request<{ user: ApiUser; token: string }>('/api/auth/google', {
       method: 'POST',
       body: JSON.stringify({ idToken }),
     }, false);
@@ -132,7 +140,14 @@ export const api = {
 
   adminAnalytics() {
     return request<{
-      analytics: { users: number; events: number; registrations: number; announcements: number };
+      analytics: {
+        users: number;
+        events: number;
+        registrations: number;
+        announcements: number;
+        activeUsers?: number;
+        certificates?: number;
+      };
       registrationTrend: Array<{ label: string; count: number }>;
       topEvents: Array<{ title: string; count: number }>;
       recentRegistrations: unknown[];
@@ -161,6 +176,61 @@ export const api = {
         url?: string;
       }>;
     }>('/api/admin/resources');
+  },
+
+  projects() {
+    return request<{ projects: ApiProject[] }>('/api/projects', {}, false);
+  },
+
+  adminProjects() {
+    return request<{ projects: ApiProject[] }>('/api/admin/projects');
+  },
+
+  adminCreateProject(body: Record<string, unknown>) {
+    return request<{ project: ApiProject }>('/api/admin/projects', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+  },
+
+  adminUpdateProject(slug: string, body: Record<string, unknown>) {
+    return request<{ project: ApiProject }>(`/api/admin/projects/${slug}`, {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+    });
+  },
+
+  adminDeleteProject(slug: string) {
+    return request(`/api/admin/projects/${slug}`, { method: 'DELETE' });
+  },
+
+  adminUpdateResource(id: string, body: Record<string, unknown>) {
+    return request(`/api/admin/resources/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+    });
+  },
+
+  adminDeleteResource(id: string) {
+    return request(`/api/admin/resources/${id}`, { method: 'DELETE' });
+  },
+
+  adminSendNotification(body: { title: string; message: string; type?: string }) {
+    return request<{ sent: number }>('/api/admin/notifications', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+  },
+
+  adminPatchRegistration(id: string, body: { status?: string; attended?: boolean }) {
+    return request(`/api/admin/registrations/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+    });
+  },
+
+  adminCertificates() {
+    return request<{ certificates: ApiCertificate[] }>('/api/admin/certificates');
   },
 
   adminCreateResource(body: {
@@ -192,9 +262,12 @@ export const api = {
       stats: { eventsRegistered: number; bookmarks: number; achievements: number };
       registeredEvents: Array<{
         registrationId: string;
+        status?: string;
+        attended?: boolean;
         event: ApiEvent | null;
         createdAt: string;
       }>;
+      certificates?: ApiCertificate[];
       bookmarks: ApiEvent[];
       resources: Array<{ title: string; description: string; category: string }>;
       announcements: Array<{ title: string; body: string }>;
@@ -220,7 +293,7 @@ export const api = {
   },
 
   assistantChat(message: string) {
-    return request<{ reply: string }>('/api/assistant/chat', {
+    return request<{ reply: string; scrollTo?: string }>('/api/assistant/chat', {
       method: 'POST',
       body: JSON.stringify({ message }),
     }, false);
@@ -309,10 +382,34 @@ export interface AnnouncementItem {
 }
 
 export interface AdminRegistration {
+  _id?: string;
   registrationId?: string;
+  status?: string;
+  attended?: boolean;
   user?: { name?: string; email?: string };
   event?: { title?: string; slug?: string };
   createdAt?: string;
+}
+
+export interface ApiProject {
+  id: string;
+  title: string;
+  description: string;
+  domain: string;
+  stack: string[];
+  github?: string;
+  demo?: string;
+  category: string;
+  featured?: boolean;
+}
+
+export interface ApiCertificate {
+  _id: string;
+  registrationId: string;
+  eventTitle: string;
+  memberName: string;
+  verifyCode: string;
+  issuedAt: string;
 }
 
 export function apiUserToProfile(user: ApiUser, extra?: Partial<UserProfile>): UserProfile {

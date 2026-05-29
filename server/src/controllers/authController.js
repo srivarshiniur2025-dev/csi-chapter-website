@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { User } from '../models/User.js';
 import { getFirebaseAdmin } from '../config/firebaseAdmin.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import { signUserToken } from '../utils/jwt.js';
 
 const signupSchema = z.object({
   name: z.string().min(2),
@@ -18,7 +19,7 @@ const loginSchema = z.object({
 });
 
 function authResponse(user) {
-  return { user: user.toSafeJSON() };
+  return { user: user.toSafeJSON(), token: signUserToken(user) };
 }
 
 export const signup = asyncHandler(async (req, res) => {

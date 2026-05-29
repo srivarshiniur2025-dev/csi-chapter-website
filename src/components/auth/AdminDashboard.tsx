@@ -2,8 +2,10 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
+  Award,
   BarChart3,
   BookOpen,
+  Bell,
   Calendar,
   Download,
   Image,
@@ -11,6 +13,7 @@ import {
   Sparkles,
   Ticket,
   Users,
+  FolderKanban,
   X,
   Plus,
   Trash2,
@@ -40,6 +43,9 @@ type AdminTab =
   | 'users'
   | 'announcements'
   | 'resources'
+  | 'projects'
+  | 'notifications'
+  | 'certificates'
   | 'nova';
 
 const emptyEvent = {
@@ -53,6 +59,19 @@ const emptyEvent = {
   fullDescription: '',
   startISO: '',
   totalSeats: 80,
+  featured: false,
+};
+
+const emptyProject = {
+  slug: '',
+  title: '',
+  description: '',
+  domain: 'Web Development',
+  category: 'Student',
+  github: '',
+  demo: '',
+  stack: '',
+  featured: false,
 };
 
 export default function AdminDashboard() {
@@ -65,6 +84,8 @@ export default function AdminDashboard() {
     events: number;
     registrations: number;
     announcements: number;
+    activeUsers?: number;
+    certificates?: number;
   } | null>(null);
   const [recent, setRecent] = useState<Array<{ registrationId?: string; user?: { name?: string }; event?: { title?: string } }>>([]);
   const [events, setEvents] = useState<ApiEvent[]>([]);
@@ -78,8 +99,21 @@ export default function AdminDashboard() {
   const [msg, setMsg] = useState('');
   const [loading, setLoading] = useState(false);
   const [registrations, setRegistrations] = useState<
-    Array<{ registrationId?: string; user?: { name?: string; email?: string }; event?: { title?: string }; createdAt?: string }>
+    Array<{
+      _id?: string;
+      registrationId?: string;
+      status?: string;
+      attended?: boolean;
+      user?: { name?: string; email?: string };
+      event?: { title?: string };
+      createdAt?: string;
+    }>
   >([]);
+  const [projects, setProjects] = useState<
+    Array<{ id: string; title: string; domain: string; category: string }>
+  >([]);
+  const [projectForm, setProjectForm] = useState(emptyProject);
+  const [notifyForm, setNotifyForm] = useState({ title: '', message: '' });
   const [editingSlug, setEditingSlug] = useState<string | null>(null);
   const [registrationTrend, setRegistrationTrend] = useState<Array<{ label: string; count: number }>>(
     []
@@ -96,6 +130,9 @@ export default function AdminDashboard() {
   });
   const [novaEntries, setNovaEntries] = useState<ResponseMatch[]>(() => loadAdminNovaEntries());
   const [novaForm, setNovaForm] = useState({ keywords: '', response: '', scrollTo: '' });
+  const [certificates, setCertificates] = useState<
+    Array<{ _id: string; eventTitle: string; memberName: string; verifyCode: string; issuedAt: string }>
+  >([]);
   const toast = useToast();
 
   const refresh = async () => {
@@ -103,7 +140,7 @@ export default function AdminDashboard() {
     setLoading(true);
     if (isApiConfigured()) {
       try {
-        const [a, ev, u, g, ann, regs, res] = await Promise.all([
+        const [a, ev, u, g, ann, regs, res, proj, certs] = await Promise.all([
           api.adminAnalytics(),
           api.events(),
           api.adminUsers(),
@@ -111,7 +148,11 @@ export default function AdminDashboard() {
           api.adminAnnouncements(),
           api.adminRegistrations(),
           api.adminResources(),
+          api.projects(),
+          api.adminCertificates(),
         ]);
+        setCertificates(certs.certificates ?? []);
+        setProjects(proj.projects.map((p) => ({ id: p.id, title: p.title, domain: p.domain, category: p.category })));
         setAnalytics(a.analytics);
         setRegistrationTrend(a.registrationTrend ?? []);
         setTopEvents(a.topEvents ?? []);
@@ -214,8 +255,20 @@ export default function AdminDashboard() {
       fullDescription: ev.fullDescription,
       startISO: ev.startISO.slice(0, 16),
       totalSeats: ev.totalSeats,
+      featured: ev.featured ?? false,
     });
     setTab('events');
+  };
+
+  const onDeleteResource = async (id: string) => {
+    if (!isApiConfigured() || !confirm('Remove this resource?')) return;
+    try {
+      await api.adminDeleteResource(id);
+      toast.success('Resource removed.');
+      void refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Delete failed');
+    }
   };
 
   const onDeleteEvent = async (slug: string) => {
@@ -335,12 +388,52 @@ export default function AdminDashboard() {
 
   if (typeof document === 'undefined') return null;
 
+  const markAttended = async (id: string, attended: boolean) => {
+    if (!isApiConfigured()) return;
+    try {
+      await api.adminPatchRegistration(id, { attended });
+      toast.success(attended ? 'Marked attended' : 'Attendance cleared');
+      void refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Update failed');
+    }
+  };
+
+  const onSendNotification = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!isApiConfigured()) return;
+    try {
+      const { sent } = await api.adminSendNotification(notifyForm);
+      setNotifyForm({ title: '', message: '' });
+      toast.success(`Sent to ${sent} members`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Send failed');
+    }
+  };
+
+  const onCreateProject = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!isApiConfigured()) return;
+    try {
+      await api.adminCreateProject({
+        ...projectForm,
+        stack: projectForm.stack.split(',').map((s) => s.trim()).filter(Boolean),
+      });
+      setProjectForm(emptyProject);
+      toast.success('Project published');
+      void refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed');
+    }
+  };
+
   const stats = analytics
     ? [
         { label: 'Members', value: analytics.users, icon: Users },
+        { label: 'Active (30d)', value: analytics.activeUsers ?? 0, icon: Users },
         { label: 'Events', value: analytics.events, icon: Calendar },
         { label: 'Registrations', value: analytics.registrations, icon: Ticket },
-        { label: 'Announcements', value: analytics.announcements, icon: Megaphone },
+        { label: 'Certificates', value: analytics.certificates ?? 0, icon: Award },
       ]
     : [];
 
@@ -399,6 +492,9 @@ export default function AdminDashboard() {
                   ['users', 'Users', Users],
                   ['announcements', 'Announce', Megaphone],
                   ['resources', 'Resources', BookOpen],
+                  ['projects', 'Projects', FolderKanban],
+                  ['notifications', 'Notify', Bell],
+                  ['certificates', 'Certs', Award],
                   ['nova', 'Nova AI', Sparkles],
                 ] as const
               ).map(([id, label, Icon]) => (
@@ -479,6 +575,14 @@ export default function AdminDashboard() {
                       <input placeholder="Banner image URL" value={eventForm.image} onChange={(e) => setEventForm({ ...eventForm, image: e.target.value })} />
                       <input type="datetime-local" value={eventForm.startISO} onChange={(e) => setEventForm({ ...eventForm, startISO: e.target.value })} />
                       <input type="number" placeholder="Seats" value={eventForm.totalSeats} onChange={(e) => setEventForm({ ...eventForm, totalSeats: Number(e.target.value) })} />
+                      <label className="adm-check">
+                        <input
+                          type="checkbox"
+                          checked={eventForm.featured}
+                          onChange={(e) => setEventForm({ ...eventForm, featured: e.target.checked })}
+                        />
+                        Featured on homepage
+                      </label>
                     </div>
                     <textarea placeholder="Short description" rows={2} value={eventForm.shortDescription} onChange={(e) => setEventForm({ ...eventForm, shortDescription: e.target.value })} />
                     <button type="submit" className="adm-btn-primary">
@@ -526,13 +630,24 @@ export default function AdminDashboard() {
                   {registrations.length ? (
                     <ul className="adm-feed">
                       {registrations.map((r, i) => (
-                        <li key={r.registrationId ?? i}>
+                        <li key={r._id ?? r.registrationId ?? i} className="adm-feed__row">
                           <Ticket size={14} />
                           <span>
                             <strong>{r.user?.name ?? 'Member'}</strong> ({r.user?.email ?? '—'}) →{' '}
                             {r.event?.title ?? 'Event'}
+                            {r.status ? ` · ${r.status}` : ''}
+                            {r.attended ? ' · ✓ attended' : ''}
                             {r.createdAt ? ` · ${new Date(r.createdAt).toLocaleString()}` : ''}
                           </span>
+                          {r._id ? (
+                            <button
+                              type="button"
+                              className="adm-btn-ghost adm-btn-ghost--sm"
+                              onClick={() => void markAttended(r._id!, !r.attended)}
+                            >
+                              {r.attended ? 'Clear attendance' : 'Mark attended'}
+                            </button>
+                          ) : null}
                         </li>
                       ))}
                     </ul>
@@ -654,6 +769,9 @@ export default function AdminDashboard() {
                               {r.url ? ` · ${r.url}` : ''}
                             </span>
                           </div>
+                          <button type="button" onClick={() => void onDeleteResource(r._id)} aria-label="Delete resource">
+                            <Trash2 size={14} />
+                          </button>
                         </li>
                       ))
                     ) : (
@@ -661,6 +779,72 @@ export default function AdminDashboard() {
                     )}
                   </ul>
                 </>
+              )}
+
+              {!loading && tab === 'projects' && (
+                <>
+                  <form className="adm-form" onSubmit={onCreateProject}>
+                    <h3 className="adm-section-title">Add project showcase</h3>
+                    <div className="adm-form__grid">
+                      <input placeholder="Slug" value={projectForm.slug} onChange={(e) => setProjectForm({ ...projectForm, slug: e.target.value })} />
+                      <input placeholder="Title" required value={projectForm.title} onChange={(e) => setProjectForm({ ...projectForm, title: e.target.value })} />
+                      <input placeholder="Domain" value={projectForm.domain} onChange={(e) => setProjectForm({ ...projectForm, domain: e.target.value })} />
+                      <input placeholder="Category" value={projectForm.category} onChange={(e) => setProjectForm({ ...projectForm, category: e.target.value })} />
+                      <input className="adm-form__wide" placeholder="GitHub URL" value={projectForm.github} onChange={(e) => setProjectForm({ ...projectForm, github: e.target.value })} />
+                    </div>
+                    <input placeholder="Stack (comma separated)" value={projectForm.stack} onChange={(e) => setProjectForm({ ...projectForm, stack: e.target.value })} />
+                    <textarea placeholder="Description" rows={2} value={projectForm.description} onChange={(e) => setProjectForm({ ...projectForm, description: e.target.value })} />
+                    <button type="submit" className="adm-btn-primary">
+                      <FolderKanban size={16} /> Publish project
+                    </button>
+                  </form>
+                  <ul className="adm-list">
+                    {projects.map((p) => (
+                      <li key={p.id}>
+                        <span>{p.title}</span>
+                        <button type="button" onClick={() => isApiConfigured() && void api.adminDeleteProject(p.id).then(() => refresh())}>
+                          <Trash2 size={14} />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+
+              {!loading && tab === 'notifications' && (
+                <form className="adm-form adm-card--os" onSubmit={onSendNotification}>
+                  <h3 className="adm-section-title">Broadcast notification</h3>
+                  <p className="adm-form__hint">Sends an in-app alert to every active member.</p>
+                  <input placeholder="Title" required value={notifyForm.title} onChange={(e) => setNotifyForm({ ...notifyForm, title: e.target.value })} />
+                  <textarea placeholder="Message" rows={3} required value={notifyForm.message} onChange={(e) => setNotifyForm({ ...notifyForm, message: e.target.value })} />
+                  <button type="submit" className="adm-btn-primary">
+                    <Bell size={16} /> Send to all members
+                  </button>
+                </form>
+              )}
+
+              {!loading && tab === 'certificates' && (
+                <section className="adm-card--os">
+                  <h3 className="adm-section-title">Issued certificates</h3>
+                  <p className="adm-form__hint">Certificates are created when you mark a registration as attended.</p>
+                  <p className="adm-form__hint">Total issued: {analytics?.certificates ?? certificates.length}</p>
+                  <ul className="adm-list">
+                    {certificates.length ? (
+                      certificates.map((c) => (
+                        <li key={c._id}>
+                          <div>
+                            <strong>{c.eventTitle}</strong>
+                            <span>
+                              {c.memberName} · {c.verifyCode} · {new Date(c.issuedAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </li>
+                      ))
+                    ) : (
+                      <li className="adm-feed__empty">No certificates issued yet.</li>
+                    )}
+                  </ul>
+                </section>
               )}
 
               {!loading && tab === 'nova' && (

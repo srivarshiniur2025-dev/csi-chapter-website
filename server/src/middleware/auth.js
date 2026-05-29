@@ -1,5 +1,12 @@
 import { User } from '../models/User.js';
 import { getFirebaseAdmin } from '../config/firebaseAdmin.js';
+import { verifyUserToken } from '../utils/jwt.js';
+
+async function resolveUserFromJwt(token) {
+  const payload = verifyUserToken(token);
+  const user = await User.findById(payload.sub);
+  return user;
+}
 
 async function resolveUserFromIdToken(idToken) {
   const app = getFirebaseAdmin();
@@ -27,14 +34,24 @@ async function resolveUserFromIdToken(idToken) {
   return user;
 }
 
+async function resolveUserFromBearer(token) {
+  try {
+    const user = await resolveUserFromJwt(token);
+    if (user) return user;
+  } catch {
+    /* not a platform JWT — try Firebase */
+  }
+  return resolveUserFromIdToken(token);
+}
+
 export async function requireAuth(req, res, next) {
   try {
     const header = req.headers.authorization || '';
-    const idToken = header.startsWith('Bearer ') ? header.slice(7) : null;
-    if (!idToken) {
+    const bearer = header.startsWith('Bearer ') ? header.slice(7) : null;
+    if (!bearer) {
       return res.status(401).json({ message: 'Authentication required' });
     }
-    const user = await resolveUserFromIdToken(idToken);
+    const user = await resolveUserFromBearer(bearer);
     if (!user || !user.isActive) {
       return res.status(401).json({ message: 'Invalid session' });
     }
@@ -42,7 +59,9 @@ export async function requireAuth(req, res, next) {
     next();
   } catch (err) {
     if (err.message === 'FIREBASE_NOT_CONFIGURED') {
-      return res.status(503).json({ message: 'Server auth requires Firebase Admin configuration' });
+      return res.status(401).json({
+        message: 'Invalid session. Use email login for API JWT or configure Firebase Admin.',
+      });
     }
     return res.status(401).json({ message: 'Invalid or expired session' });
   }
@@ -50,13 +69,13 @@ export async function requireAuth(req, res, next) {
 
 export async function optionalAuth(req, res, next) {
   const header = req.headers.authorization || '';
-  const idToken = header.startsWith('Bearer ') ? header.slice(7) : null;
-  if (!idToken) {
+  const bearer = header.startsWith('Bearer ') ? header.slice(7) : null;
+  if (!bearer) {
     req.user = null;
     return next();
   }
   try {
-    const user = await resolveUserFromIdToken(idToken);
+    const user = await resolveUserFromBearer(bearer);
     req.user = user && user.isActive ? user : null;
   } catch {
     req.user = null;

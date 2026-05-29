@@ -169,8 +169,8 @@ export async function getAssistantResponseAsync(
   const local = getAssistantResponse(input);
   if (isApiConfigured()) {
     try {
-      const { reply } = await api.assistantChat(input);
-      return { text: reply, scrollTo: local.scrollTo };
+      const { reply, scrollTo } = await api.assistantChat(input);
+      return { text: reply, scrollTo: scrollTo ?? local.scrollTo };
     } catch {
       /* fall through to local knowledge */
     }

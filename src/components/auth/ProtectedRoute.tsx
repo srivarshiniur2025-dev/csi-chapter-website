@@ -8,7 +8,7 @@ interface ProtectedRouteProps {
   requireAdmin?: boolean;
 }
 
-/** Route guard — uses Firebase/local session (not JWT). */
+/** Route guard — Firebase, JWT API session, or local demo. */
 export default function ProtectedRoute({ children, requireAdmin = false }: ProtectedRouteProps) {
   const { user, loading, authReady } = useAuth();
   const location = useLocation();
