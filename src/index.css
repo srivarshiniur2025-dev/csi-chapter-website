@@ -40,6 +40,7 @@
 html {
   scroll-behavior: auto;
   overflow-x: clip;
+  scroll-padding-top: var(--csi-nav-height);
 }
 
 html.native-smooth-scroll {
@@ -48,6 +49,10 @@ html.native-smooth-scroll {
 
 html.lenis-scrolling {
   scroll-behavior: auto;
+}
+
+html.lenis-scrolling body {
+  overscroll-behavior-y: none;
 }
 
 html.lenis-scrolling.lenis-smooth [data-lenis-prevent] {
@@ -70,12 +75,19 @@ body {
 a,
 button {
   transition:
-    color 0.2s ease,
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    transform 0.2s ease,
-    opacity 0.2s ease;
+    color 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.28s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  a,
+  button {
+    transition: none;
+  }
 }
 
 section {
@@ -102,14 +114,6 @@ section {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--csi-light);
-}
-
-/* Defer off-screen section layout/paint (desktop only — can glitch on mobile scroll) */
-@media (min-width: 768px) {
-  .site-shell main > section:not(.hero-section) {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 520px;
-  }
 }
 
 .csi-skip-link {

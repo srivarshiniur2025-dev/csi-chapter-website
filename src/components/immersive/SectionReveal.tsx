@@ -1,15 +1,7 @@
 import type { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { prefersReducedMotion } from '../../lib/performance';
-
-const REVEAL = {
-  hidden: { opacity: 0, y: 48 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.75, ease: [0.22, 1, 0.36, 1] as const },
-  },
-};
+import { REVEAL_MOTION } from '../../lib/motion';
 
 interface SectionRevealProps {
   children: ReactNode;
@@ -27,8 +19,8 @@ export default function SectionReveal({ children, className }: SectionRevealProp
       className={className}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: '-80px 0px -60px 0px', amount: 0.12 }}
-      variants={REVEAL}
+      viewport={{ once: true, margin: '-60px 0px -40px 0px', amount: 0.08 }}
+      variants={REVEAL_MOTION}
     >
       {children}
     </motion.div>

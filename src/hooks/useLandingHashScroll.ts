@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { scrollToSectionSmooth } from '../lib/lenisScroll';
+import { scrollToSectionWhenReady } from '../lib/lenisScroll';
 
 const NAV_OFFSET = -80;
 
@@ -9,12 +9,15 @@ export function useLandingHashScroll() {
     const go = () => {
       const id = window.location.hash.replace(/^#/, '');
       if (!id) return;
-      window.setTimeout(() => scrollToSectionSmooth(id, NAV_OFFSET), 120);
+      scrollToSectionWhenReady(id, NAV_OFFSET);
     };
 
-    go();
+    const t = window.setTimeout(go, 80);
     window.addEventListener('hashchange', go);
-    return () => window.removeEventListener('hashchange', go);
+    return () => {
+      window.clearTimeout(t);
+      window.removeEventListener('hashchange', go);
+    };
   }, []);
 }
 

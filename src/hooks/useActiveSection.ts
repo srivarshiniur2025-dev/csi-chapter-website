@@ -33,7 +33,7 @@ export function useActiveSection(sectionIds: string[] = DEFAULT_IDS) {
         const top = visible[0];
         if (top?.target.id) setActive(top.target.id);
       },
-      { rootMargin: '-42% 0px -42% 0px', threshold: [0.08, 0.2, 0.35, 0.5, 0.65] }
+      { rootMargin: '-38% 0px -38% 0px', threshold: [0.1, 0.25, 0.4, 0.55] }
     );
 
     elements.forEach((el) => observer.observe(el));

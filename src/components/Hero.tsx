@@ -18,12 +18,11 @@ const heroStagger = {
   },
 };
 const heroItem = {
-  hidden: { opacity: 0, y: 22, filter: 'blur(6px)' },
+  hidden: { opacity: 0, y: 18 },
   show: {
     opacity: 1,
     y: 0,
-    filter: 'blur(0px)',
-    transition: { duration: 0.75, ease: CINEMATIC },
+    transition: { duration: 0.7, ease: CINEMATIC },
   },
 };
 

@@ -222,7 +222,7 @@
   height: 2px;
   background: #9400ff;
   box-shadow: 0 0 8px #9400ff;
-  transition: width 0.25s ease;
+  transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   border-radius: 2px;
 }
 

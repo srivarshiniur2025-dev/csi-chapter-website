@@ -557,7 +557,7 @@ const Events = () => {
                       filter: cardMotion.filter,
                     }}
                     transition={{
-                      duration: 0.72,
+                      duration: 0.58,
                       ease: CINEMATIC_EASE,
                     }}
                     style={{

@@ -1,10 +1,7 @@
-/** Lenis on desktop; mobile uses native smooth scroll (better touch performance). */
+/** Lenis on all devices except reduced-motion; mobile uses lighter interpolation. */
 export function shouldUseSmoothScroll(): boolean {
   if (typeof window === 'undefined') return false;
-  return (
-    !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
-    window.matchMedia('(min-width: 768px)').matches
-  );
+  return !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
 export function prefersReducedMotion(): boolean {
@@ -21,13 +18,16 @@ export function isLowPowerDevice(): boolean {
   );
 }
 
-/** Smaller globe mesh on phones — still WebGL, not the CSS fallback. */
 export function isLiteGlobeDevice(): boolean {
   if (typeof window === 'undefined') return false;
   return !window.matchMedia('(min-width: 768px)').matches;
 }
 
-/** CSS orb only when user prefers reduced motion. */
 export function shouldUseStaticGlobe(): boolean {
   return prefersReducedMotion();
+}
+
+export function isTouchDevice(): boolean {
+  if (typeof window === 'undefined') return false;
+  return window.matchMedia('(pointer: coarse)').matches;
 }

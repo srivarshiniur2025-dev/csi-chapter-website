@@ -53,7 +53,7 @@ export default function BootSequence({ children }: BootSequenceProps) {
             aria-label="Loading CSI platform"
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.65, ease: CINEMATIC }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           >
             <div className="csi-boot__grid" aria-hidden />
             <div className="csi-boot__scan" aria-hidden />
