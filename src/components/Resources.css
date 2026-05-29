@@ -17,20 +17,26 @@
 
 .csi-resources__eyebrow {
   margin: 0;
-  font-size: 0.72rem;
-  letter-spacing: 0.2em;
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.32em;
   text-transform: uppercase;
-  color: rgba(167, 139, 250, 0.85);
+  color: rgba(174, 210, 255, 0.55);
 }
 
 .csi-resources__title {
   margin: 0.5rem 0;
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-family: 'Orbitron', 'Inter', system-ui, sans-serif;
+  font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.15;
+  color: #eef6ff;
 }
 
 .csi-resources__accent {
-  background: linear-gradient(90deg, #c77dff, #aed2ff);
+  background: linear-gradient(90deg, #c77dff, #6b8cff);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -38,9 +44,9 @@
 
 .csi-resources__desc {
   margin: 0;
-  font-size: 0.9rem;
-  line-height: 1.6;
-  color: rgba(174, 210, 255, 0.68);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: rgba(174, 210, 255, 0.55);
 }
 
 .csi-resources__grid {
@@ -57,18 +63,35 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.35s ease,
+    background 0.35s ease,
+    box-shadow 0.4s ease;
+}
+
+.csi-resources__card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(167, 139, 250, 0.38);
+  background: rgba(12, 8, 28, 0.62);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28), 0 0 24px rgba(148, 0, 255, 0.1);
 }
 
 .csi-resources__cat {
-  font-size: 0.68rem;
-  letter-spacing: 0.1em;
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(167, 139, 250, 0.85);
 }
 
 .csi-resources__card-title {
   margin: 0;
-  font-size: 1rem;
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
   color: #e4f1ff;
 }
 
@@ -88,12 +111,17 @@
   padding: 0;
   border: none;
   background: none;
-  font-size: 0.78rem;
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-size: 0.68rem;
   font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: #c4b5fd;
   cursor: pointer;
+  transition: color 0.25s ease, transform 0.25s ease;
 }
 
 .csi-resources__link:hover {
   color: #e4f1ff;
+  transform: translateX(2px);
 }
