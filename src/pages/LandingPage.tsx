@@ -13,6 +13,8 @@ import PlatformGuide from '../components/platform/PlatformGuide';
 import Events from '../components/Events';
 import Resources from '../components/Resources';
 import Community from '../components/community/Community';
+import ProjectShowcase from '../components/projects/ProjectShowcase';
+import Achievements from '../components/achievements/Achievements';
 import Gallery from '../components/Gallery';
 import TechTimeline from '../components/TechTimeline';
 import Team from '../components/Team';
@@ -45,7 +47,7 @@ export default function LandingPage() {
       <div className="site-chrome" role="presentation">
         <Navbar />
       </div>
-      <main className="site-main">
+      <main id="main-content" className="site-main" tabIndex={-1}>
         <Hero />
         <SectionDivider variant="subtle" />
         <About />
@@ -54,9 +56,13 @@ export default function LandingPage() {
         <SectionDivider />
         <Events />
         <SectionDivider />
+        <ProjectShowcase />
+        <SectionDivider />
         <Gallery />
         <SectionDivider />
         <Resources />
+        <SectionDivider />
+        <Achievements />
         <SectionDivider />
         <Community />
         <SectionDivider variant="strong" />

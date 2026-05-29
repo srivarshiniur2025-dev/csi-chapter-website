@@ -1,0 +1,165 @@
+.csi-projects {
+  position: relative;
+  padding: 5rem 0;
+}
+
+.csi-projects__inner {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 4vw, 2rem);
+}
+
+.csi-projects__header {
+  text-align: center;
+  max-width: 40rem;
+  margin: 0 auto 1.5rem;
+}
+
+.csi-projects__eyebrow {
+  margin: 0;
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(174, 210, 255, 0.55);
+}
+
+.csi-projects__title {
+  margin: 0.5rem 0;
+  font-family: 'Orbitron', 'Inter', system-ui, sans-serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: #eef6ff;
+}
+
+.csi-projects__accent {
+  background: linear-gradient(90deg, #c77dff, #6b8cff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.csi-projects__desc {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: rgba(174, 210, 255, 0.55);
+}
+
+.csi-projects__filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-bottom: 1.5rem;
+}
+
+.csi-projects__filter {
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 0, 255, 0.25);
+  background: transparent;
+  font-size: 0.72rem;
+  color: rgba(174, 210, 255, 0.65);
+  cursor: pointer;
+  transition: all 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.csi-projects__filter--active,
+.csi-projects__filter:hover {
+  border-color: rgba(167, 139, 250, 0.5);
+  background: rgba(148, 0, 255, 0.15);
+  color: #e4f1ff;
+}
+
+.csi-projects__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.csi-projects__card {
+  position: relative;
+  padding: 1.15rem 1.2rem;
+  border-radius: 0.65rem;
+  background: rgba(8, 6, 22, 0.5);
+  border: 1px solid rgba(148, 0, 255, 0.16);
+  transition:
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.35s ease,
+    box-shadow 0.45s ease;
+}
+
+.csi-projects__card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(167, 139, 250, 0.38);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+}
+
+.csi-projects__badge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  font-size: 0.6rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(148, 0, 255, 0.3);
+  color: #e4f1ff;
+}
+
+.csi-projects__domain {
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(167, 139, 250, 0.85);
+}
+
+.csi-projects__card h3 {
+  margin: 0.4rem 0 0.35rem;
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-size: 0.95rem;
+  color: #e4f1ff;
+}
+
+.csi-projects__card p {
+  margin: 0 0 0.65rem;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: rgba(174, 210, 255, 0.62);
+}
+
+.csi-projects__stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.65rem;
+}
+
+.csi-projects__stack span {
+  font-size: 0.62rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  border: 1px solid rgba(107, 140, 255, 0.3);
+  color: rgba(174, 210, 255, 0.7);
+}
+
+.csi-projects__links {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.csi-projects__links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  color: #c4b5fd;
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+
+.csi-projects__links a:hover {
+  color: #e4f1ff;
+}

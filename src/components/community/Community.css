@@ -67,11 +67,49 @@
   color: rgba(174, 210, 255, 0.72);
 }
 
-.csi-community__grid {
+.csi-community__engage {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.csi-community__testimonials {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 1rem;
   margin-bottom: 1.5rem;
+}
+
+.csi-community__quote {
+  margin: 0;
+  padding: 1rem 1.1rem;
+  border-radius: 0.65rem;
+  border: 1px solid rgba(107, 140, 255, 0.2);
+  background: rgba(8, 6, 22, 0.45);
+}
+
+.csi-community__quote p {
+  margin: 0 0 0.65rem;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: rgba(228, 241, 255, 0.85);
+  font-style: italic;
+}
+
+.csi-community__quote footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  font-size: 0.75rem;
+}
+
+.csi-community__quote strong {
+  color: #c4b5fd;
+}
+
+.csi-community__quote span {
+  color: rgba(174, 210, 255, 0.5);
 }
 
 .csi-community__card {

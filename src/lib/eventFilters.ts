@@ -56,3 +56,7 @@ export function getSpotsLeft(event: ChapterEvent): number {
   const taken = event.seatsTaken ?? 0;
   return Math.max(0, event.totalSeats - taken);
 }
+
+export function getFeaturedEvents(events: ChapterEvent[]): ChapterEvent[] {
+  return events.filter((e) => e.featured);
+}

@@ -1114,8 +1114,10 @@
   gap: 0.45rem;
   flex-shrink: 0;
   padding: 0.55rem 1rem;
+  font: inherit;
   font-size: 0.7rem;
   font-weight: 700;
+  cursor: pointer;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   white-space: nowrap;

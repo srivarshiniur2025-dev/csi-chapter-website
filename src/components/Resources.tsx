@@ -3,8 +3,9 @@ import { motion } from 'framer-motion';
 import { ExternalLink, Sparkles } from 'lucide-react';
 import SectionAmbient from './ambient/SectionAmbient';
 import SectionReveal from './immersive/SectionReveal';
+import ResourcesToolbar from './resources/ResourcesToolbar';
 import { dispatchOpenNova } from '../contexts/AuthContext';
-import { PUBLIC_RESOURCES } from '../lib/platformContent';
+import { PUBLIC_RESOURCES, type ResourceCategory } from '../lib/platformContent';
 import { api, isApiConfigured } from '../lib/api';
 import { scrollToSectionSmooth } from '../lib/lenisScroll';
 import { getNavScrollOffset } from '../hooks/useLandingHashScroll';
@@ -23,6 +24,8 @@ type ResourceCard = {
 
 export default function Resources() {
   const [apiItems, setApiItems] = useState<ResourceCard[]>([]);
+  const [search, setSearch] = useState('');
+  const [category, setCategory] = useState<ResourceCategory>('All');
 
   useEffect(() => {
     if (!isApiConfigured()) return;
@@ -62,6 +65,21 @@ export default function Resources() {
     return merged;
   }, [apiItems]);
 
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return resources.filter((r) => {
+      const catOk =
+        category === 'All' || r.category.toLowerCase() === category.toLowerCase();
+      if (!catOk) return false;
+      if (!q) return true;
+      return (
+        r.title.toLowerCase().includes(q) ||
+        r.description.toLowerCase().includes(q) ||
+        r.category.toLowerCase().includes(q)
+      );
+    });
+  }, [resources, search, category]);
+
   const handleOpen = (resource: ResourceCard) => {
     if (resource.action === 'nova' || resource.id === 'nova') {
       dispatchOpenNova();
@@ -85,13 +103,21 @@ export default function Resources() {
             Chapter <span className="csi-resources__accent">Resources</span>
           </h2>
           <p className="csi-resources__desc">
-            Curated paths for workshops and self-study. Sign in to save favorites in your member
-            dashboard.
+            Curated learning portal for every CSI domain — roadmaps, interview prep, and workshop
+            materials. Sign in to save favorites in your dashboard.
           </p>
         </header>
 
+        <ResourcesToolbar
+          search={search}
+          onSearchChange={setSearch}
+          category={category}
+          onCategoryChange={setCategory}
+          resultCount={filtered.length}
+        />
+
         <div className="csi-resources__grid">
-          {resources.map((r, index) => (
+          {filtered.map((r, index) => (
             <motion.article
               key={r.id}
               className="csi-resources__card"

@@ -41,6 +41,7 @@ export interface ApiEvent {
   spotsLeft: number;
   speaker: { name: string; role: string };
   techIcons: string[];
+  featured?: boolean;
 }
 
 export class ApiError extends Error {

@@ -27,6 +27,7 @@ import { api, isApiConfigured, type ApiEvent } from '../lib/api';
 import {
   filterEventsByCategory,
   filterEventsByTime,
+  getFeaturedEvents,
   getSpotsLeft,
   searchEvents,
   type EventCategoryFilter,
@@ -37,6 +38,8 @@ import { useToast } from '../contexts/ToastContext';
 import EmptyState from './ui/EmptyState';
 import { EventsCarouselSkeleton } from './ui/Skeleton';
 import EventsToolbar from './events/EventsToolbar';
+import FeaturedEventsStrip from './events/FeaturedEventsStrip';
+import EventDetailPanel from './events/EventDetailPanel';
 import EventRegistrationModal from './EventRegistrationModal';
 import './Events.css';
 
@@ -68,6 +71,7 @@ function mapApiEvent(e: ApiEvent): ChapterEvent {
     startISO: e.startISO,
     totalSeats: e.totalSeats,
     seatsTaken: e.seatsTaken,
+    featured: e.featured,
     speaker: e.speaker,
     techIcons: icons.length ? icons : [Code2, Layers],
   };
@@ -86,6 +90,7 @@ export interface ChapterEvent {
   startISO: string;
   totalSeats: number;
   seatsTaken?: number;
+  featured?: boolean;
   speaker: { name: string; role: string };
   techIcons: LucideIcon[];
 }
@@ -106,6 +111,7 @@ const eventsData: ChapterEvent[] = [
       'A guided workshop covering ML pipelines, practical AI tooling, and deploying intelligent features. Includes live labs, mentor feedback, and a closing demo session for all participants.',
     startISO: '2026-03-18T09:30:00+05:30',
     totalSeats: 80,
+    featured: true,
     speaker: { name: 'Dr. Priya Nair', role: 'AI Research Mentor · CSI VITC' },
     techIcons: [Brain, Star, Cpu, Layers],
   },
@@ -124,6 +130,7 @@ const eventsData: ChapterEvent[] = [
       'Teams tackle real-world tracks overnight with mentor support, pitch coaching, and industry judging. Prizes and internship referrals for standout projects.',
     startISO: '2026-04-02T18:00:00+05:30',
     totalSeats: 120,
+    featured: true,
     speaker: { name: 'Alex Johnson', role: 'Events Head · CSI VITC' },
     techIcons: [Code2, Globe, Terminal, Layers],
   },
@@ -256,6 +263,7 @@ const Events = () => {
   const [search, setSearch] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
   const [switchFlash, setSwitchFlash] = useState(0);
+  const [detailEvent, setDetailEvent] = useState<ChapterEvent | null>(null);
   const [selected, setSelected] = useState<ChapterEvent | null>(null);
   const [cardSpread, setCardSpread] = useState(getCardSpread);
   const [bookmarkBusy, setBookmarkBusy] = useState(false);
@@ -276,6 +284,8 @@ const Events = () => {
     const byCategory = filterEventsByCategory(byTime, categoryFilter);
     return searchEvents(byCategory, search);
   }, [events, timeFilter, categoryFilter, search]);
+
+  const featuredEvents = useMemo(() => getFeaturedEvents(events), [events]);
 
   const total = filteredEvents.length;
   const activeEvent = filteredEvents[activeIndex];
@@ -366,6 +376,16 @@ const Events = () => {
   }, [total]);
 
   const closeModal = useCallback(() => setSelected(null), []);
+  const closeDetail = useCallback(() => setDetailEvent(null), []);
+
+  const jumpToEvent = useCallback(
+    (event: ChapterEvent) => {
+      const idx = filteredEvents.findIndex((e) => e.id === event.id);
+      if (idx >= 0) setActiveIndex(idx);
+      else setDetailEvent(event);
+    },
+    [filteredEvents]
+  );
 
   const applyStageParallax = useCallback((x: number, y: number) => {
     const track = trackRef.current;
@@ -402,13 +422,13 @@ const Events = () => {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (selected) return;
+      if (selected || detailEvent) return;
       if (e.key === 'ArrowLeft') goPrev();
       if (e.key === 'ArrowRight') goNext();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [goPrev, goNext, selected]);
+  }, [goPrev, goNext, selected, detailEvent]);
 
   return (
     <section id="events" className="events-section text-csi-pale">
@@ -445,6 +465,14 @@ const Events = () => {
           onCategoryFilterChange={setCategoryFilter}
           resultCount={total}
         />
+
+        {!loading && featuredEvents.length > 0 ? (
+          <FeaturedEventsStrip
+            events={featuredEvents}
+            activeId={activeEvent?.id}
+            onSelect={(ev) => jumpToEvent(ev)}
+          />
+        ) : null}
 
         {loading ? (
           <EventsCarouselSkeleton />
@@ -526,7 +554,7 @@ const Events = () => {
                       zIndex: cardMotion.zIndex,
                       transformOrigin: 'center center',
                     }}
-                    onClick={() => (isActive ? setSelected(event) : setActiveIndex(index))}
+                    onClick={() => (isActive ? setDetailEvent(event) : setActiveIndex(index))}
                     whileHover={
                       !isTouch && isActive
                         ? { y: -12, scale: 1.03, transition: { duration: 0.35, ease: CINEMATIC_EASE } }
@@ -622,10 +650,17 @@ const Events = () => {
                                 >
                                   <Bookmark size={14} strokeWidth={1.5} />
                                 </button>
-                                <span className="events-carousel__action">
+                                <button
+                                  type="button"
+                                  className="events-carousel__action"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelected(event);
+                                  }}
+                                >
                                   Register
                                   <Ticket size={15} strokeWidth={2} />
-                                </span>
+                                </button>
                               </div>
                             </div>
                           </>
@@ -676,6 +711,18 @@ const Events = () => {
         </>
         )}
       </SectionReveal>
+
+      <EventDetailPanel
+        event={detailEvent}
+        registered={detailEvent ? registeredIds.has(detailEvent.id) : false}
+        onClose={closeDetail}
+        onRegister={() => {
+          if (detailEvent) {
+            setSelected(detailEvent);
+            closeDetail();
+          }
+        }}
+      />
 
       <AnimatePresence>
         {selected && (

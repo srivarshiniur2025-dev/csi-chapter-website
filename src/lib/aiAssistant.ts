@@ -17,6 +17,9 @@ export const QUICK_ACTIONS: QuickAction[] = [
   { id: 'resources', label: 'Learning resources', query: 'What learning resources does CSI provide?' },
   { id: 'domains', label: 'CSI domains', query: 'Tell me about CSI domains and which I should choose' },
   { id: 'gallery', label: 'Chapter gallery', query: 'Show me the CSI gallery' },
+  { id: 'projects', label: 'Project showcase', query: 'What projects has CSI built?' },
+  { id: 'achievements', label: 'Achievements', query: 'What has CSI achieved?' },
+  { id: 'search', label: 'Find anything', query: 'How do I search the CSI platform?' },
   { id: 'contact', label: 'Contact CSI', query: 'How can I contact CSI?' },
 ];
 
@@ -113,10 +116,27 @@ const KNOWLEDGE: ResponseMatch[] = [
     scrollTo: 'resources',
   },
   {
-    keywords: ['project', 'showcase', 'journey', 'achievement', 'portfolio'],
+    keywords: ['project', 'showcase', 'portfolio', 'github', 'built'],
     response:
-      'Explore milestones in Journey — workshops, hackathons, and national wins. About covers 500+ members and 50+ projects.',
-    scrollTo: 'journey',
+      'See the Project Showcase for flagship chapter builds — stacks, GitHub links, and featured demos from each domain.',
+    scrollTo: 'projects',
+  },
+  {
+    keywords: ['achievement', 'achievements', 'award', 'win', 'milestone', 'hackathon win'],
+    response:
+      'Achievements & milestones — SIH finals, ICPC, research showcases, and chapter records. Open the Achievements section.',
+    scrollTo: 'achievements',
+  },
+  {
+    keywords: ['search', 'find', 'ctrl+k', 'command k', 'navigate'],
+    response:
+      'Press Ctrl+K (or Cmd+K) or tap Search in the navbar to jump to events, resources, sections, and dashboard actions instantly.',
+  },
+  {
+    keywords: ['community', 'collaborate', 'testimonial', 'spotlight'],
+    response:
+      'Community covers project collaboration, member spotlights, and how to connect with domain teams via Contact.',
+    scrollTo: 'community',
   },
   {
     keywords: ['beginner', 'start', 'learn', 'roadmap', 'confused', 'new'],

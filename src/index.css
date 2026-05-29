@@ -112,6 +112,30 @@ section {
   }
 }
 
+.csi-skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100000;
+  padding: 0.65rem 1rem;
+  background: #9400ff;
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 0 0 8px 0;
+}
+
+.csi-skip-link:focus {
+  left: 0;
+  outline: 2px solid #aed2ff;
+  outline-offset: 2px;
+}
+
+:focus-visible {
+  outline: 2px solid rgba(174, 210, 255, 0.85);
+  outline-offset: 2px;
+}
+
 .csi-route-loading {
   min-height: 100vh;
   display: flex;

@@ -1,8 +1,9 @@
 import { useState, useCallback, useEffect, type CSSProperties, type MouseEvent } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { LayoutDashboard, Menu, Search, Sparkles, X } from 'lucide-react';
+import SiteSearch, { useSiteSearchHotkey } from './navigation/SiteSearch';
 import VitChennaiLogo from './VitChennaiLogo';
-import { useAuth } from '../contexts/AuthContext';
+import { dispatchOpenNova, useAuth } from '../contexts/AuthContext';
 import { useActiveSection } from '../hooks/useActiveSection';
 import { getNavScrollOffset } from '../hooks/useLandingHashScroll';
 import { scrollToSectionSmooth } from '../lib/lenisScroll';
@@ -13,12 +14,12 @@ const navLinks = [
   { label: 'About', to: 'about', route: false },
   { label: 'Platform', to: 'platform', route: false },
   { label: 'Events', to: 'events', route: false },
-  { label: 'Gallery', to: 'gallery', route: false },
+  { label: 'Projects', to: 'projects', route: false },
   { label: 'Resources', to: 'resources', route: false },
-  { label: 'Community', to: 'community', route: false },
-  { label: 'Journey', to: 'journey', route: false },
+  { label: 'Gallery', to: 'gallery', route: false },
+  { label: 'Achievements', to: 'achievements', route: false },
   { label: 'Team', to: 'team', route: false },
-  { label: 'Contact Us', to: 'contact', route: false },
+  { label: 'Contact', to: 'contact', route: false },
 ];
 
 const CodeLogo = () => (
@@ -31,6 +32,7 @@ const CodeLogo = () => (
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [indicatorX, setIndicatorX] = useState(50);
   const activeSection = useActiveSection();
@@ -62,6 +64,8 @@ const Navbar = () => {
 
   const { user, profile, loading, openAuth, openDashboard, openAdmin } = useAuth();
   const isAdmin = user?.role === 'admin';
+
+  useSiteSearchHotkey(() => setSearchOpen(true));
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
@@ -155,6 +159,24 @@ const Navbar = () => {
         </div>
 
         <div className="csi-navbar-actions">
+          <button
+            type="button"
+            className="csi-navbar-btn-ghost csi-navbar-btn-ghost--desktop csi-navbar-search-btn"
+            onClick={() => setSearchOpen(true)}
+            aria-label="Search platform (Ctrl+K)"
+          >
+            <Search size={16} strokeWidth={1.5} aria-hidden />
+            <span className="csi-navbar-search-label">Search</span>
+          </button>
+          <button
+            type="button"
+            className="csi-navbar-btn-ghost csi-navbar-btn-ghost--desktop"
+            onClick={() => dispatchOpenNova()}
+            aria-label="Open CSI Nova"
+          >
+            <Sparkles size={16} strokeWidth={1.5} aria-hidden />
+            <span className="csi-navbar-nova-label">Nova</span>
+          </button>
           {!loading && user ? (
             <>
               {isAdmin && (
@@ -166,6 +188,14 @@ const Navbar = () => {
                   Admin
                 </button>
               )}
+              <Link
+                to="/dashboard"
+                className="csi-navbar-btn-ghost csi-navbar-btn-ghost--desktop csi-navbar-dash-link"
+                onClick={closeMenu}
+              >
+                <LayoutDashboard size={15} aria-hidden />
+                Dashboard
+              </Link>
               <button
                 type="button"
                 className="csi-navbar-user csi-navbar-user--desktop"
@@ -216,6 +246,30 @@ const Navbar = () => {
         aria-hidden={!menuOpen}
       >
         <nav className="csi-navbar-drawer__nav" aria-label="Mobile">
+          <div className="csi-navbar-drawer__quick">
+            <button
+              type="button"
+              className="csi-navbar-drawer__quick-btn"
+              onClick={() => {
+                closeMenu();
+                setSearchOpen(true);
+              }}
+            >
+              <Search size={16} aria-hidden />
+              Search
+            </button>
+            <button
+              type="button"
+              className="csi-navbar-drawer__quick-btn"
+              onClick={() => {
+                closeMenu();
+                dispatchOpenNova();
+              }}
+            >
+              <Sparkles size={16} aria-hidden />
+              CSI Nova
+            </button>
+          </div>
           {navLinks.map(({ label, to, route }) =>
             route ? (
               <Link
@@ -289,6 +343,8 @@ const Navbar = () => {
           )}
         </nav>
       </div>
+
+      <SiteSearch open={searchOpen} onClose={() => setSearchOpen(false)} />
     </header>
   );
 };

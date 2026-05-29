@@ -17,6 +17,9 @@ function App() {
       <ToastProvider>
       <BootSequence>
         <BrowserRouter>
+          <a href="#main-content" className="csi-skip-link">
+            Skip to main content
+          </a>
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/gallery" element={<Navigate to="/#gallery" replace />} />

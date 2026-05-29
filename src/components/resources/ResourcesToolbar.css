@@ -1,0 +1,54 @@
+.res-toolbar {
+  margin-bottom: 1.5rem;
+}
+
+.res-toolbar__search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 0, 255, 0.25);
+  background: rgba(8, 6, 22, 0.55);
+  color: rgba(174, 210, 255, 0.6);
+  margin-bottom: 0.65rem;
+}
+
+.res-toolbar__search input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 0.875rem;
+  color: #e4f1ff;
+  outline: none;
+}
+
+.res-toolbar__count {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  color: rgba(174, 210, 255, 0.5);
+}
+
+.res-toolbar__cats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.res-toolbar__cat {
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 0, 255, 0.22);
+  background: transparent;
+  font-size: 0.7rem;
+  color: rgba(174, 210, 255, 0.65);
+  cursor: pointer;
+  transition: all 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.res-toolbar__cat--active,
+.res-toolbar__cat:hover {
+  border-color: rgba(167, 139, 250, 0.45);
+  background: rgba(148, 0, 255, 0.14);
+  color: #e4f1ff;
+}

@@ -214,11 +214,16 @@ export default function MemberDashboard() {
       .slice(0, 2)
       .toUpperCase() || 'U';
 
+  const regCount = profile?.registeredEvents.length ?? 0;
   const stats = [
-    { label: 'Events', value: profile?.registeredEvents.length ?? 0, icon: Ticket },
+    { label: 'Events', value: regCount, icon: Ticket },
     { label: 'Bookmarks', value: profile?.bookmarkedEvents.length ?? 0, icon: Bookmark },
-    { label: 'Badges', value: profile?.achievements.length ?? 0, icon: Medal },
-    { label: 'Reminders', value: profile?.upcomingReminders.length ?? 0, icon: Bell },
+    { label: 'Saved', value: profile?.savedResources.length ?? 0, icon: BookOpen },
+    {
+      label: 'Engagement',
+      value: `${Math.min(100, regCount * 20 + (profile?.achievements.length ?? 0) * 10)}%`,
+      icon: Activity,
+    },
   ];
 
   return createPortal(

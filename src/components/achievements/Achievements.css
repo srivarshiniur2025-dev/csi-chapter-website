@@ -1,0 +1,109 @@
+.csi-achievements {
+  position: relative;
+  padding: 5rem 0;
+}
+
+.csi-achievements__inner {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 4vw, 2rem);
+}
+
+.csi-achievements__header {
+  text-align: center;
+  max-width: 40rem;
+  margin: 0 auto 2rem;
+}
+
+.csi-achievements__eyebrow {
+  margin: 0;
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(174, 210, 255, 0.55);
+}
+
+.csi-achievements__title {
+  margin: 0.5rem 0;
+  font-family: 'Orbitron', 'Inter', system-ui, sans-serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: #eef6ff;
+}
+
+.csi-achievements__accent {
+  background: linear-gradient(90deg, #c77dff, #6b8cff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.csi-achievements__desc {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: rgba(174, 210, 255, 0.55);
+}
+
+.csi-achievements__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.csi-achievements__card {
+  position: relative;
+  padding: 1.15rem 1.2rem 1.2rem 2.75rem;
+  border-radius: 0.65rem;
+  background: rgba(8, 6, 22, 0.5);
+  border: 1px solid rgba(148, 0, 255, 0.16);
+  transition:
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.35s ease,
+    box-shadow 0.45s ease;
+}
+
+.csi-achievements__card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(167, 139, 250, 0.38);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+}
+
+.csi-achievements__icon {
+  position: absolute;
+  left: 1rem;
+  top: 1.15rem;
+  color: rgba(167, 139, 250, 0.9);
+}
+
+.csi-achievements__year {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 0.65rem;
+  color: rgba(174, 210, 255, 0.45);
+}
+
+.csi-achievements__cat {
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6ee7b7;
+}
+
+.csi-achievements__card h3 {
+  margin: 0.35rem 0 0.4rem;
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: #e4f1ff;
+}
+
+.csi-achievements__card p {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: rgba(174, 210, 255, 0.62);
+}

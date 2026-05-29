@@ -4,6 +4,10 @@ import { ChevronRight } from 'lucide-react';
 import HeroAtmosphere from './HeroAtmosphere';
 import HeroGlobe from './HeroGlobe';
 import HeroAmbient from './ambient/HeroAmbient';
+import { dispatchOpenNova } from '../contexts/AuthContext';
+import { HERO_VALUE_PILLARS } from '../lib/platformContent';
+import { scrollToSectionSmooth } from '../lib/lenisScroll';
+import { getNavScrollOffset } from '../hooks/useLandingHashScroll';
 import './Hero.css';
 
 const CINEMATIC = [0.22, 1, 0.36, 1] as const;
@@ -68,9 +72,27 @@ const Hero = () => {
         </motion.h1>
 
         <motion.p className="hero-subtitle" variants={heroItem}>
-          CSI Student Chapter is a community of passionate innovators, developers, and tech
-          enthusiasts driving change through AI/ML, web development, robotics, and cybersecurity.
+          The Computer Society of India at VIT Chennai — your chapter operating system for events,
+          learning, projects, and AI-guided participation across every tech domain.
         </motion.p>
+
+        <motion.ul className="hero-pillars" variants={heroItem} aria-label="What CSI offers">
+          {HERO_VALUE_PILLARS.map((pillar) => (
+            <li key={pillar.id}>
+              <button
+                type="button"
+                className="hero-pillar"
+                onClick={() => {
+                  if (pillar.target === 'nova') dispatchOpenNova();
+                  else scrollToSectionSmooth(pillar.target, getNavScrollOffset());
+                }}
+              >
+                <strong>{pillar.label}</strong>
+                <span>{pillar.desc}</span>
+              </button>
+            </li>
+          ))}
+        </motion.ul>
 
         <motion.div className="hero-cta-row" variants={heroItem}>
           <a href="#events" className="hero-btn-primary">
