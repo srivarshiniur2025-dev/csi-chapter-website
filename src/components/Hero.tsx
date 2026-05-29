@@ -4,7 +4,6 @@ import { ChevronRight } from 'lucide-react';
 import HeroAtmosphere from './HeroAtmosphere';
 import HeroGlobe from './HeroGlobe';
 import HeroAmbient from './ambient/HeroAmbient';
-import { dispatchOpenNova } from '../contexts/AuthContext';
 import { HERO_VALUE_PILLARS } from '../lib/platformContent';
 import { scrollToSectionSmooth } from '../lib/lenisScroll';
 import { getNavScrollOffset } from '../hooks/useLandingHashScroll';
@@ -82,10 +81,7 @@ const Hero = () => {
               <button
                 type="button"
                 className="hero-pillar"
-                onClick={() => {
-                  if (pillar.target === 'nova') dispatchOpenNova();
-                  else scrollToSectionSmooth(pillar.target, getNavScrollOffset());
-                }}
+                onClick={() => scrollToSectionSmooth(pillar.target, getNavScrollOffset())}
               >
                 <strong>{pillar.label}</strong>
                 <span>{pillar.desc}</span>
@@ -99,8 +95,8 @@ const Hero = () => {
             Explore Events
             <ChevronRight size={18} aria-hidden />
           </a>
-          <a href="#platform" className="hero-btn-secondary">
-            How the platform works
+          <a href="#dashboard-access" className="hero-btn-secondary">
+            Join the member platform
           </a>
         </motion.div>
       </motion.div>

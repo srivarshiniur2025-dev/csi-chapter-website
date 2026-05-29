@@ -27,6 +27,7 @@ import { api, isApiConfigured, type ApiEvent } from '../lib/api';
 import {
   filterEventsByCategory,
   filterEventsByTime,
+  getEventStatus,
   getFeaturedEvents,
   getSpotsLeft,
   searchEvents,
@@ -41,6 +42,8 @@ import EventsToolbar from './events/EventsToolbar';
 import FeaturedEventsStrip from './events/FeaturedEventsStrip';
 import EventDetailPanel from './events/EventDetailPanel';
 import EventRegistrationModal from './EventRegistrationModal';
+import EventStatusBadge from './events/EventStatusBadge';
+import EventsArchive from './events/EventsArchive';
 import './Events.css';
 
 const TECH_ICON_MAP: Record<string, LucideIcon> = {
@@ -449,10 +452,17 @@ const Events = () => {
             <span className="events-header__line" aria-hidden />
           </div>
           <h2 className="events-title">
-            Upcoming <span className="events-title__accent">Events</span>
+            {timeFilter === 'past' ? (
+              <>Past <span className="events-title__accent">Events</span></>
+            ) : timeFilter === 'all' ? (
+              <>CSI <span className="events-title__accent">Event Calendar</span></>
+            ) : (
+              <>Upcoming <span className="events-title__accent">Events</span></>
+            )}
           </h2>
           <p className="events-subtitle">
-            Explore workshops, hackathons and competitions organized by CSI.
+            Filter by category, search by topic, and register when signed in. Live seat counts and
+            registration status update on each card.
           </p>
         </motion.header>
 
@@ -610,6 +620,7 @@ const Events = () => {
                             <div className="events-carousel__body-content">
                               <div className="events-carousel__meta-row">
                                 <span className="events-carousel__label">{event.label}</span>
+                                <EventStatusBadge status={getEventStatus(event)} compact />
                                 {registeredIds.has(event.id) ? (
                                   <span className="events-carousel__registered">Registered</span>
                                 ) : null}
@@ -710,6 +721,10 @@ const Events = () => {
         </div>
         </>
         )}
+
+        {!loading && timeFilter !== 'past' ? (
+          <EventsArchive events={events} onSelect={(ev) => setDetailEvent(ev)} />
+        ) : null}
       </SectionReveal>
 
       <EventDetailPanel

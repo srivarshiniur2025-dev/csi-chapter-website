@@ -60,3 +60,34 @@ export function getSpotsLeft(event: ChapterEvent): number {
 export function getFeaturedEvents(events: ChapterEvent[]): ChapterEvent[] {
   return events.filter((e) => e.featured);
 }
+
+export type EventStatus = 'upcoming' | 'soon' | 'past' | 'sold-out';
+
+export function getEventStatus(event: ChapterEvent): EventStatus {
+  if (getSpotsLeft(event) === 0) return 'sold-out';
+  if (!isEventUpcoming(event.startISO)) return 'past';
+  const ms = new Date(event.startISO).getTime() - Date.now();
+  if (ms >= 0 && ms <= 7 * 24 * 60 * 60 * 1000) return 'soon';
+  return 'upcoming';
+}
+
+export function getEventStatusLabel(status: EventStatus): string {
+  switch (status) {
+    case 'sold-out':
+      return 'Sold out';
+    case 'past':
+      return 'Completed';
+    case 'soon':
+      return 'Starting soon';
+    default:
+      return 'Open';
+  }
+}
+
+export function sortEventsByDate(events: ChapterEvent[], direction: 'asc' | 'desc' = 'asc'): ChapterEvent[] {
+  return [...events].sort((a, b) => {
+    const ta = new Date(a.startISO).getTime();
+    const tb = new Date(b.startISO).getTime();
+    return direction === 'asc' ? ta - tb : tb - ta;
+  });
+}

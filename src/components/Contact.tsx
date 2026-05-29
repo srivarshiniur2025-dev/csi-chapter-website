@@ -79,9 +79,30 @@ const Contact = () => {
             Get In <span className="contact-title__accent">Touch</span>
           </h2>
           <p className="contact-subtitle">
-            Connect with CSI to collaborate, innovate, and build the future together.
+            Reach chapter leadership for collaborations, sponsorships, or domain questions. Members
+            can also use CSI Nova and the dashboard for instant help.
           </p>
         </motion.header>
+
+        <motion.div
+          className="contact-testimonials"
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, ease: CINEMATIC_EASE }}
+        >
+          <p className="contact-testimonials__label">Member voices</p>
+          <div className="contact-testimonials__grid">
+            <blockquote>
+              &ldquo;CSI events gave me my first production React project and a team for SIH.&rdquo;
+              <cite>— Aditi R., Web Domain</cite>
+            </blockquote>
+            <blockquote>
+              &ldquo;Nova helped me pick workshops and prep for CodeStorm in one evening.&rdquo;
+              <cite>— Rohan K., AI/ML</cite>
+            </blockquote>
+          </div>
+        </motion.div>
 
         <div className="contact-layout">
           <motion.aside

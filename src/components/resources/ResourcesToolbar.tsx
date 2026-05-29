@@ -9,6 +9,7 @@ interface ResourcesToolbarProps {
   category: ResourceCategory;
   onCategoryChange: (cat: ResourceCategory) => void;
   resultCount: number;
+  categories?: ResourceCategory[];
 }
 
 export default function ResourcesToolbar({
@@ -17,6 +18,7 @@ export default function ResourcesToolbar({
   category,
   onCategoryChange,
   resultCount,
+  categories = [...RESOURCE_CATEGORIES],
 }: ResourcesToolbarProps) {
   return (
     <div className="res-toolbar" role="search">
@@ -34,7 +36,7 @@ export default function ResourcesToolbar({
         {resultCount} resource{resultCount === 1 ? '' : 's'}
       </p>
       <div className="res-toolbar__cats" role="tablist" aria-label="Resource categories">
-        {RESOURCE_CATEGORIES.map((cat) => (
+        {categories.map((cat) => (
           <button
             key={cat}
             type="button"

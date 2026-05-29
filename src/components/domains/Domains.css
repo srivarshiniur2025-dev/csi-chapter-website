@@ -1,0 +1,229 @@
+.csi-domains {
+  position: relative;
+  padding: 5rem 0;
+}
+
+.csi-domains__inner {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 4vw, 2rem);
+}
+
+.csi-domains__header {
+  text-align: center;
+  max-width: 40rem;
+  margin: 0 auto 2.5rem;
+}
+
+.csi-domains__eyebrow {
+  margin: 0;
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(174, 210, 255, 0.55);
+}
+
+.csi-domains__title {
+  margin: 0.5rem 0;
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  color: #eef6ff;
+}
+
+.csi-domains__accent {
+  background: linear-gradient(90deg, #c77dff, #6b8cff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.csi-domains__desc {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: rgba(174, 210, 255, 0.55);
+}
+
+.csi-domains__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.csi-domains__card {
+  padding: 1.25rem;
+  border-radius: 0.65rem;
+  border: 1px solid rgba(148, 0, 255, 0.16);
+  background: rgba(8, 6, 22, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.csi-domains__card-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: grid;
+  place-items: center;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(167, 139, 250, 0.25);
+  color: #c4b5fd;
+  margin-bottom: 0.25rem;
+}
+
+.csi-domains__card h3 {
+  margin: 0;
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-size: 0.95rem;
+  color: #e4f1ff;
+}
+
+.csi-domains__lead {
+  margin: 0;
+  font-size: 0.72rem;
+  color: rgba(167, 139, 250, 0.85);
+}
+
+.csi-domains__text {
+  margin: 0;
+  flex: 1;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: rgba(174, 210, 255, 0.62);
+}
+
+.csi-domains__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.csi-domains__tags span {
+  font-size: 0.62rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 0, 255, 0.2);
+  color: rgba(196, 181, 253, 0.9);
+}
+
+.csi-domains__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.35rem;
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #c4b5fd;
+  cursor: pointer;
+}
+
+.csi-domains__projects,
+.csi-domains__impact {
+  padding: 1.25rem 1.35rem;
+  border-radius: 0.65rem;
+  border: 1px solid rgba(148, 0, 255, 0.14);
+  background: rgba(8, 6, 22, 0.4);
+  margin-bottom: 1rem;
+}
+
+.csi-domains__subhead h3,
+.csi-domains__impact h3 {
+  margin: 0 0 0.25rem;
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: #e4f1ff;
+}
+
+.csi-domains__subhead p {
+  margin: 0 0 1rem;
+  font-size: 0.8rem;
+  color: rgba(174, 210, 255, 0.55);
+}
+
+.csi-domains__project-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+.csi-domains__project-list li {
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(148, 0, 255, 0.12);
+  background: rgba(12, 8, 28, 0.35);
+}
+
+.csi-domains__project-list strong {
+  display: block;
+  font-size: 0.82rem;
+  color: #eef6ff;
+}
+
+.csi-domains__project-list span {
+  font-size: 0.68rem;
+  color: rgba(167, 139, 250, 0.85);
+}
+
+.csi-domains__project-list p {
+  margin: 0.35rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: rgba(174, 210, 255, 0.55);
+}
+
+.csi-domains__impact ul {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.csi-domains__impact li {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.csi-domains__impact-year {
+  flex-shrink: 0;
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-size: 0.65rem;
+  color: rgba(167, 139, 250, 0.9);
+  padding-top: 0.15rem;
+}
+
+.csi-domains__impact strong {
+  display: block;
+  font-size: 0.82rem;
+  color: #eef6ff;
+}
+
+.csi-domains__impact p {
+  margin: 0.2rem 0 0;
+  font-size: 0.75rem;
+  color: rgba(174, 210, 255, 0.55);
+}
+
+@media (max-width: 640px) {
+  .csi-domains {
+    padding: 3.5rem 0;
+  }
+
+  .csi-domains__grid {
+    grid-template-columns: 1fr;
+  }
+}

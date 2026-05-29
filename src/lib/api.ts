@@ -260,6 +260,13 @@ export const api = {
     });
   },
 
+  toggleResourceSave(resourceId: string) {
+    return request<{ saved: boolean; savedResources: string[] }>('/api/dashboard/resources/save', {
+      method: 'POST',
+      body: JSON.stringify({ resourceId }),
+    });
+  },
+
   markNotificationRead(id: string) {
     return request(`/api/dashboard/notifications/${id}/read`, { method: 'PATCH' });
   },

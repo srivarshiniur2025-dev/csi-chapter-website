@@ -12,13 +12,13 @@ import './Navbar.css';
 const navLinks = [
   { label: 'Home', to: 'home', route: false },
   { label: 'About', to: 'about', route: false },
-  { label: 'Platform', to: 'platform', route: false },
+  { label: 'Domains', to: 'domains', route: false },
   { label: 'Events', to: 'events', route: false },
-  { label: 'Projects', to: 'projects', route: false },
-  { label: 'Resources', to: 'resources', route: false },
+  { label: 'Journey', to: 'journey', route: false },
   { label: 'Gallery', to: 'gallery', route: false },
-  { label: 'Achievements', to: 'achievements', route: false },
   { label: 'Team', to: 'team', route: false },
+  { label: 'Resources', to: 'resources', route: false },
+  { label: 'Join', to: 'dashboard-access', route: false },
   { label: 'Contact', to: 'contact', route: false },
 ];
 

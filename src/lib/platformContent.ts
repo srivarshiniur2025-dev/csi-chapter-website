@@ -17,9 +17,59 @@ export const MEMBER_BENEFITS = [
 
 export const HERO_VALUE_PILLARS = [
   { id: 'events', label: 'Events', desc: 'Workshops & hackathons', target: 'events' },
+  { id: 'domains', label: 'Domains', desc: 'AI · Web · Robotics · CP', target: 'domains' },
   { id: 'learn', label: 'Resources', desc: 'Domain roadmaps', target: 'resources' },
-  { id: 'nova', label: 'CSI Nova', desc: 'AI chapter guide', target: 'nova' },
-  { id: 'join', label: 'Join', desc: 'Member platform', target: 'platform' },
+  { id: 'join', label: 'Join', desc: 'Member platform', target: 'dashboard-access' },
+] as const;
+
+export const CSI_DOMAIN_TRACKS = [
+  {
+    id: 'aiml',
+    title: 'AI / Machine Learning',
+    lead: 'Dr. Priya Nair · AI Research Mentor',
+    description:
+      'Hands-on ML pipelines, intelligent agents, and deployment workshops — from AI Nexus labs to national paper submissions.',
+    events: ['AI Nexus Workshop', 'Nova ML Study Circle'],
+    resources: ['AI / ML Starter Path', 'CSI Nova AI Guide'],
+    icon: 'brain' as const,
+  },
+  {
+    id: 'web',
+    title: 'Web Development',
+    lead: 'Sarah Williams · Technical Lead',
+    description:
+      'Modern React, motion design, and production UI — chapter sites, event platforms, and open-source design systems.',
+    events: ['WebVerse Bootcamp', 'CodeStorm Hackathon'],
+    resources: ['Web Development Roadmap', 'WebVerse Design System'],
+    icon: 'globe' as const,
+  },
+  {
+    id: 'robotics',
+    title: 'Robotics & IoT',
+    lead: 'Michael Brown · Robotics Coordinator',
+    description:
+      'Sensor integration, autonomous control, and competition-grade builds in VIT Chennai robotics labs.',
+    events: ['RoboFusion Challenge', 'Smart Campus IoT Sprint'],
+    resources: ['Smart Campus IoT Project', 'Hackathon Prep Checklist'],
+    icon: 'bot' as const,
+  },
+  {
+    id: 'cp',
+    title: 'Competitive Programming',
+    lead: 'Jane Smith · Chapter Chairperson',
+    description:
+      'Rated contests, editorial walkthroughs, and interview prep aligned with AlgoX Arena and industry hiring seasons.',
+    events: ['AlgoX Arena', 'Weekly CP Practice'],
+    resources: ['Competitive Programming', 'Interview Preparation'],
+    icon: 'terminal' as const,
+  },
+] as const;
+
+export const DASHBOARD_QUICK_ACTIONS = [
+  { id: 'events', label: 'Browse events', desc: 'Register for workshops and hackathons', target: 'events' },
+  { id: 'resources', label: 'Resource hub', desc: 'Roadmaps and chapter materials', target: 'resources' },
+  { id: 'nova', label: 'Ask CSI Nova', desc: 'Instant answers and navigation', target: 'nova' },
+  { id: 'team', label: 'Meet the team', desc: 'Domain leads and core members', target: 'team' },
 ] as const;
 
 export const RESOURCE_CATEGORIES = [
@@ -33,6 +83,7 @@ export const RESOURCE_CATEGORIES = [
   'CP',
   'Interview',
   'Events',
+  'Chapter',
 ] as const;
 
 export type ResourceCategory = (typeof RESOURCE_CATEGORIES)[number];
@@ -244,7 +295,7 @@ export const PLATFORM_JOURNEY: JourneyCard[] = [
     answer:
       'Build real skills through hands-on events, meet domain leads, earn badges, and grow with 500+ members working on national-level projects and hackathons.',
     actionLabel: 'See benefits',
-    actionTarget: 'platform',
+    actionTarget: 'dashboard-access',
   },
   {
     id: 'events',
@@ -284,7 +335,7 @@ export const PLATFORM_JOURNEY: JourneyCard[] = [
     answer:
       'Dashboard access, event history, digital passes, bookmarks, notifications, achievements, and personalized recommendations from CSI Nova.',
     actionLabel: 'Open dashboard',
-    actionTarget: 'dashboard',
+    actionTarget: 'dashboard-access',
   },
 ];
 

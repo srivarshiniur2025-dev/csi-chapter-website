@@ -3,15 +3,13 @@ import { useEffect, useState } from 'react';
 const DEFAULT_IDS = [
   'home',
   'about',
-  'platform',
+  'domains',
   'events',
-  'projects',
-  'gallery',
-  'resources',
-  'achievements',
-  'community',
   'journey',
+  'gallery',
   'team',
+  'resources',
+  'dashboard-access',
   'contact',
 ];
 

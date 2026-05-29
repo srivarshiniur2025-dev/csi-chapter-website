@@ -76,6 +76,14 @@
   padding: 1.1rem 1.25rem 1.35rem;
 }
 
+.evt-detail__status-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.15rem;
+}
+
 .evt-detail__label {
   font-size: 0.65rem;
   letter-spacing: 0.12em;

@@ -101,10 +101,75 @@
 
 .contact-cta-subtitle {
   max-width: 32rem;
-  margin: 0 auto 1.75rem;
+  margin: 0 auto 1.25rem;
   font-size: 0.9375rem;
   line-height: 1.65;
   color: rgba(174, 210, 255, 0.62);
+}
+
+.contact-cta-eyebrow {
+  margin: 0 0 0.5rem;
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(167, 139, 250, 0.85);
+}
+
+.contact-cta-benefits {
+  list-style: none;
+  margin: 0 auto 1.25rem;
+  padding: 0;
+  max-width: 28rem;
+  display: grid;
+  gap: 0.35rem;
+  text-align: left;
+  font-size: 0.8125rem;
+  color: rgba(174, 210, 255, 0.65);
+}
+
+.contact-cta-benefits li::before {
+  content: '▸ ';
+  color: #c4b5fd;
+}
+
+.contact-cta-quick {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  max-width: 36rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.contact-cta-quick__btn {
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.55rem;
+  border: 1px solid rgba(148, 0, 255, 0.22);
+  background: rgba(8, 6, 22, 0.45);
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  transition: border-color 0.28s ease, background 0.28s ease;
+}
+
+.contact-cta-quick__btn:hover {
+  border-color: rgba(167, 139, 250, 0.4);
+  background: rgba(148, 0, 255, 0.12);
+}
+
+.contact-cta-quick__btn strong {
+  display: block;
+  font-size: 0.72rem;
+  color: #e4f1ff;
+  margin-bottom: 0.15rem;
+}
+
+.contact-cta-quick__btn span {
+  font-size: 0.68rem;
+  color: rgba(174, 210, 255, 0.55);
+  line-height: 1.35;
 }
 
 .contact-cta-actions {

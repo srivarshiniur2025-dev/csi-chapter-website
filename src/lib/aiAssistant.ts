@@ -52,38 +52,38 @@ const KNOWLEDGE: ResponseMatch[] = [
   {
     keywords: ['platform', 'how it works', 'get started', 'guide', 'navigate'],
     response:
-      'The Platform section explains CSI, joining, events, resources, registration, login, and member benefits — each card has a direct action.',
-    scrollTo: 'platform',
+      'Start at About CSI, pick a domain track, browse Events, and create a member account in Join to open your dashboard.',
+    scrollTo: 'dashboard-access',
   },
   {
     keywords: ['benefit', 'benefits', 'perks', 'why join', 'member get'],
     response:
-      'Members get event registration, digital passes, bookmarks, reminders, achievements, personalized recommendations, and CSI Nova guidance. See the Platform section for the full list.',
-    scrollTo: 'platform',
+      'Members get event registration, digital passes, bookmarks, reminders, achievements, personalized recommendations, and CSI Nova guidance. See the Join section for the full list.',
+    scrollTo: 'dashboard-access',
   },
   {
     keywords: ['dashboard', 'my account', 'profile', 'certificate', 'pass'],
     response:
       'Open your dashboard from the navbar avatar: registered events, passes, resources, notifications, achievements, and activity.',
-    scrollTo: 'platform',
+    scrollTo: 'dashboard-access',
   },
   {
     keywords: ['login', 'log in', 'sign in', 'account'],
     response:
       'Use Login or Sign Up in the navbar. After signing in, register for events and access your member dashboard.',
-    scrollTo: 'platform',
+    scrollTo: 'dashboard-access',
   },
   {
     keywords: ['join', 'member', 'membership', 'sign up', 'signup', 'recruit'],
     response:
-      'Tap Sign Up in the navbar or the Platform section. Members can register for events, save resources, and use CSI Nova. Reach us via Contact for orientation questions.',
-    scrollTo: 'platform',
+      'Create a free member account in the Join section. Members register for events, save resources, and use CSI Nova for guidance.',
+    scrollTo: 'dashboard-access',
   },
   {
     keywords: ['domain', 'domains', 'team', 'teams', 'lead', 'chapter'],
     response:
-      'Four domains: AI/ML, Web Dev, Robotics, and CP. Meet leads and core members in the Team section.',
-    scrollTo: 'team',
+      'Four domain tracks: AI/ML, Web Development, Robotics, and Competitive Programming. Explore each track in Domains, then meet leads in Team.',
+    scrollTo: 'domains',
   },
   {
     keywords: ['workshop', 'bootcamp', 'session', 'lab', 'training'],

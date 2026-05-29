@@ -237,6 +237,19 @@
   line-height: 1.45;
 }
 
+.pdash-resource-list__actions {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+@media (max-width: 540px) {
+  .pdash-resource-list li {
+    flex-direction: column;
+  }
+}
+
 .pdash-timeline--activity .pdash-timeline__dot--badge {
   background: rgba(52, 211, 153, 0.85);
   box-shadow: 0 0 8px rgba(52, 211, 153, 0.4);
@@ -398,6 +411,29 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: rgba(196, 181, 253, 0.55);
+}
+
+.pdash-quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pdash-quick__btn {
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 0, 255, 0.25);
+  background: rgba(148, 0, 255, 0.08);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #c4b5fd;
+  cursor: pointer;
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+
+.pdash-quick__btn:hover {
+  background: rgba(148, 0, 255, 0.16);
+  border-color: rgba(167, 139, 250, 0.4);
 }
 
 .pdash-card {

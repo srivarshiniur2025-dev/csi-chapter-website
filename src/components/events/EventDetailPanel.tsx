@@ -2,7 +2,8 @@ import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Calendar, MapPin, Ticket, User, Users, X } from 'lucide-react';
 import type { ChapterEvent } from '../Events';
-import { getSpotsLeft } from '../../lib/eventFilters';
+import { getEventStatus, getSpotsLeft } from '../../lib/eventFilters';
+import EventStatusBadge from './EventStatusBadge';
 import './EventDetailPanel.css';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -52,7 +53,10 @@ export default function EventDetailPanel({
               {event.featured ? <span className="evt-detail__featured">Featured</span> : null}
             </div>
             <div className="evt-detail__body">
-              <span className="evt-detail__label">{event.label}</span>
+              <div className="evt-detail__status-row">
+                <span className="evt-detail__label">{event.label}</span>
+                <EventStatusBadge status={getEventStatus(event)} />
+              </div>
               <h2 id="evt-detail-title">{event.title}</h2>
               <p className="evt-detail__meta">
                 <Calendar size={14} aria-hidden /> {event.date}

@@ -21,10 +21,12 @@ import { downloadEventCertificate } from '../../lib/certificates';
 import SectionAmbient from '../ambient/SectionAmbient';
 import { CHAPTER_EVENTS_CATALOG, type EventCatalogItem } from '../../data/chapterEvents';
 import { dispatchOpenNova, useAuth } from '../../contexts/AuthContext';
-import { api, isApiConfigured, type ApiCertificate } from '../../lib/api';
+import { api, hasApiSession, isApiConfigured, type ApiCertificate } from '../../lib/api';
 import { useToast } from '../../contexts/ToastContext';
 import EmptyState from '../ui/EmptyState';
 import { DashboardSkeleton } from '../ui/Skeleton';
+import { useResourceCatalog } from '../../hooks/useResourceCatalog';
+import { openResource } from '../../lib/resourceCatalog';
 import {
   DEPARTMENT_OPTIONS,
   DOMAIN_INTEREST_OPTIONS,
@@ -32,7 +34,6 @@ import {
   toggleSavedResource,
   type DomainInterest,
 } from '../../lib/userDashboard';
-import { PUBLIC_RESOURCES } from '../../lib/platformContent';
 import {
   formatEventCountdown,
   getMemberTier,
@@ -79,6 +80,7 @@ export default function MemberDashboard() {
   >([]);
   const [apiCertificates, setApiCertificates] = useState<ApiCertificate[]>([]);
   const toast = useToast();
+  const { resources: chapterResources } = useResourceCatalog();
 
   useEffect(() => {
     if (!dashboardOpen) return;
@@ -197,12 +199,23 @@ export default function MemberDashboard() {
     setEditDomains((prev) => (prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d]));
   };
 
-  const toggleResource = (title: string) => {
+  const toggleResource = async (saveKey: string) => {
     if (!user) return;
-    const next = toggleSavedResource(user.uid, title);
+    if (apiReady && (await hasApiSession())) {
+      try {
+        const { saved, savedResources } = await api.toggleResourceSave(saveKey);
+        updateUserProfile({ savedResources });
+        toast.success(saved ? 'Resource saved' : 'Resource removed');
+        return;
+      } catch {
+        toast.error('Could not update saved resources.');
+        return;
+      }
+    }
+    const next = toggleSavedResource(user.uid, saveKey);
     updateUserProfile({ savedResources: next.savedResources });
     toast.success(
-      next.savedResources.includes(title) ? 'Resource saved' : 'Resource removed'
+      next.savedResources.includes(saveKey) ? 'Resource saved' : 'Resource removed'
     );
   };
 
@@ -354,6 +367,24 @@ export default function MemberDashboard() {
                           </motion.div>
                         ))}
                       </div>
+
+                      <section className="pdash-card pdash-card--wide">
+                        <h3>Quick actions</h3>
+                        <div className="pdash-quick">
+                          <button type="button" className="pdash-quick__btn" onClick={() => { closeDashboard(); scrollToSectionSmooth('events'); }}>
+                            Browse events
+                          </button>
+                          <button type="button" className="pdash-quick__btn" onClick={() => setTab('certificates')}>
+                            View passes
+                          </button>
+                          <button type="button" className="pdash-quick__btn" onClick={() => setTab('resources')}>
+                            Saved resources
+                          </button>
+                          <button type="button" className="pdash-quick__btn" onClick={() => { dispatchOpenNova(); closeDashboard(); }}>
+                            Ask CSI Nova
+                          </button>
+                        </div>
+                      </section>
 
                       <section className="pdash-card pdash-card--wide">
                         <h3>Recommended for you</h3>
@@ -635,21 +666,30 @@ export default function MemberDashboard() {
                       <section className="pdash-card">
                         <h3>Chapter library</h3>
                         <ul className="pdash-resource-list">
-                          {PUBLIC_RESOURCES.map((r) => {
-                            const saved = profile?.savedResources.includes(r.title);
+                          {chapterResources.map((r) => {
+                            const saved = profile?.savedResources.includes(r.saveKey);
                             return (
                               <li key={r.id}>
                                 <div>
                                   <strong>{r.title}</strong>
                                   <span>{r.description}</span>
                                 </div>
-                                <button
-                                  type="button"
-                                  className={`pdash-chip pdash-chip--btn${saved ? ' is-on' : ''}`}
-                                  onClick={() => toggleResource(r.title)}
-                                >
-                                  {saved ? 'Saved' : 'Save'}
-                                </button>
+                                <div className="pdash-resource-list__actions">
+                                  <button
+                                    type="button"
+                                    className="pdash-chip pdash-chip--btn"
+                                    onClick={() => openResource(r, dispatchOpenNova)}
+                                  >
+                                    Open
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className={`pdash-chip pdash-chip--btn${saved ? ' is-on' : ''}`}
+                                    onClick={() => void toggleResource(r.saveKey)}
+                                  >
+                                    {saved ? 'Saved' : 'Save'}
+                                  </button>
+                                </div>
                               </li>
                             );
                           })}

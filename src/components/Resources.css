@@ -103,6 +103,56 @@
   color: rgba(174, 210, 255, 0.62);
 }
 
+.csi-resources__card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.csi-resources__badge {
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 0, 255, 0.25);
+  color: rgba(196, 181, 253, 0.85);
+}
+
+.csi-resources__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.csi-resources__save {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 0, 255, 0.22);
+  background: transparent;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(196, 181, 253, 0.85);
+  cursor: pointer;
+  transition: all 0.28s ease;
+}
+
+.csi-resources__save:hover,
+.csi-resources__save.is-saved {
+  border-color: rgba(167, 139, 250, 0.45);
+  background: rgba(148, 0, 255, 0.12);
+  color: #e4f1ff;
+}
+
 .csi-resources__link {
   display: inline-flex;
   align-items: center;
@@ -127,4 +177,23 @@
 .csi-resources__link:hover {
   color: #e4f1ff;
   transform: translateX(2px);
+}
+
+@media (max-width: 640px) {
+  .csi-resources {
+    padding: 3.5rem 0;
+  }
+
+  .csi-resources__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .csi-resources__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .csi-resources__save {
+    justify-content: center;
+  }
 }

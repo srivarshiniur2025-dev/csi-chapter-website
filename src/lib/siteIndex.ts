@@ -18,15 +18,13 @@ export type SiteIndexItem = {
 const SECTIONS: SiteIndexItem[] = [
   { id: 'home', title: 'Home', category: 'Section', target: 'home', keywords: ['hero', 'start', 'csi'] },
   { id: 'about', title: 'About CSI', category: 'Section', target: 'about', keywords: ['chapter', 'mission', 'vit'] },
-  { id: 'platform', title: 'Platform Guide', category: 'Section', target: 'platform', keywords: ['join', 'how', 'guide', 'faq'] },
+  { id: 'domains', title: 'Domains', category: 'Section', target: 'domains', keywords: ['aiml', 'web', 'robotics', 'cp', 'tracks'] },
   { id: 'events', title: 'Events', category: 'Section', target: 'events', keywords: ['hackathon', 'workshop', 'register'] },
-  { id: 'projects', title: 'Projects', category: 'Section', target: 'projects', keywords: ['showcase', 'github', 'build'] },
-  { id: 'achievements', title: 'Achievements', category: 'Section', target: 'achievements', keywords: ['wins', 'awards', 'milestones'] },
+  { id: 'journey', title: 'Chapter Journey', category: 'Section', target: 'journey', keywords: ['timeline', 'history', 'milestones'] },
   { id: 'gallery', title: 'Gallery', category: 'Section', target: 'gallery', keywords: ['photos', 'memories'] },
-  { id: 'resources', title: 'Resources', category: 'Section', target: 'resources', keywords: ['learn', 'roadmap', 'study'] },
-  { id: 'community', title: 'Community', category: 'Section', target: 'community', keywords: ['collaborate', 'teams'] },
-  { id: 'journey', title: 'Journey', category: 'Section', target: 'journey', keywords: ['timeline', 'history'] },
   { id: 'team', title: 'Team', category: 'Section', target: 'team', keywords: ['leads', 'domains', 'people'] },
+  { id: 'resources', title: 'Resource Hub', category: 'Section', target: 'resources', keywords: ['learn', 'roadmap', 'study'] },
+  { id: 'dashboard-access', title: 'Member Dashboard', category: 'Section', target: 'dashboard-access', keywords: ['join', 'signup', 'platform', 'account'] },
   { id: 'contact', title: 'Contact', category: 'Section', target: 'contact', keywords: ['email', 'reach'] },
 ];
 
@@ -61,7 +59,7 @@ function buildIndex(): SiteIndexItem[] {
     title: p.title,
     subtitle: p.domain,
     category: 'Project' as const,
-    target: 'projects',
+    target: 'domains',
     keywords: [p.title, p.domain, p.stack.join(' ')].map((s) => s.toLowerCase()),
   }));
 
@@ -70,7 +68,7 @@ function buildIndex(): SiteIndexItem[] {
     title: a.title,
     subtitle: a.year,
     category: 'Achievement' as const,
-    target: 'achievements',
+    target: 'domains',
     keywords: [a.title, a.category, a.description].map((s) => s.toLowerCase()),
   }));
 
@@ -79,7 +77,7 @@ function buildIndex(): SiteIndexItem[] {
     title: j.question,
     subtitle: 'Platform FAQ',
     category: 'Section' as const,
-    target: j.actionTarget.startsWith('auth') ? 'platform' : j.actionTarget,
+    target: j.actionTarget.startsWith('auth') ? 'dashboard-access' : j.actionTarget,
     keywords: [j.question, j.answer].join(' ').toLowerCase().split(/\s+/),
   }));
 

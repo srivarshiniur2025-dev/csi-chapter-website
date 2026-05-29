@@ -9,21 +9,18 @@ import Navbar from '../components/Navbar';
 import SiteBackground from '../components/SiteBackground';
 import Hero from '../components/Hero';
 import About from '../components/About';
-import PlatformGuide from '../components/platform/PlatformGuide';
+import Domains from '../components/domains/Domains';
 import Events from '../components/Events';
-import Resources from '../components/Resources';
-import Community from '../components/community/Community';
-import ProjectShowcase from '../components/projects/ProjectShowcase';
-import Achievements from '../components/achievements/Achievements';
-import Gallery from '../components/Gallery';
 import TechTimeline from '../components/TechTimeline';
+import Gallery from '../components/Gallery';
 import Team from '../components/Team';
+import Resources from '../components/Resources';
+import DashboardAccess from '../components/DashboardAccess';
 import Contact from '../components/Contact';
-import ContactCTA from '../components/ContactCTA';
 import Footer from '../components/Footer';
 import SectionDivider from '../components/premium/SectionDivider';
 
-/** Main marketing site — cinematic section flow */
+/** Main marketing site — structured chapter platform flow */
 export default function LandingPage() {
   useImmersiveMotion();
   useLandingHashScroll();
@@ -52,27 +49,22 @@ export default function LandingPage() {
         <SectionDivider variant="subtle" />
         <About />
         <SectionDivider />
-        <PlatformGuide />
+        <Domains />
         <SectionDivider />
         <Events />
         <SectionDivider />
-        <ProjectShowcase />
+        <TechTimeline />
         <SectionDivider />
         <Gallery />
         <SectionDivider />
-        <Resources />
-        <SectionDivider />
-        <Achievements />
-        <SectionDivider />
-        <Community />
-        <SectionDivider variant="strong" />
-        <TechTimeline />
-        <SectionDivider />
         <Team />
+        <SectionDivider />
+        <Resources />
+        <SectionDivider variant="strong" />
+        <DashboardAccess />
         <SectionDivider variant="subtle" />
         <Contact />
       </main>
-      <ContactCTA />
       <Footer />
     </div>
   );
