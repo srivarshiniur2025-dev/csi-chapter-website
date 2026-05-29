@@ -16,7 +16,7 @@ import {
   BOT_NAME,
   getAssistantResponseAsync,
   scrollToSection,
-  QUICK_ACTIONS,
+  getQuickActionsForUser,
   WELCOME_GREETING,
   WELCOME_MESSAGE,
   WELCOME_SUBLINE,
@@ -175,7 +175,10 @@ export default function AIAssistant() {
     };
   }, [open]);
 
-  const suggestedActions = useMemo(() => QUICK_ACTIONS as QuickAction[], []);
+  const suggestedActions = useMemo(
+    () => getQuickActionsForUser(Boolean(user)) as QuickAction[],
+    [user]
+  );
 
   const close = useCallback(() => {
     setOpen(false);

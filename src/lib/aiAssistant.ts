@@ -9,15 +9,25 @@ export interface QuickAction {
 export const BOT_NAME = 'CSI Nova';
 
 export const QUICK_ACTIONS: QuickAction[] = [
-  { id: 'events', label: 'Explore Upcoming Events', query: 'What upcoming events does CSI have?' },
-  { id: 'domains', label: 'Learn About CSI Domains', query: 'Tell me about CSI domains and teams' },
-  { id: 'workshops', label: 'Find Workshops & Hackathons', query: 'What workshops and hackathons are coming up?' },
-  { id: 'team', label: 'Team & Core Members', query: 'Who are the CSI team and core members?' },
-  { id: 'projects', label: 'Project Showcase', query: 'Show me CSI projects and achievements' },
-  { id: 'register', label: 'Registration Help', query: 'How do I register for an event?' },
+  { id: 'platform', label: 'How the platform works', query: 'How does the CSI member platform work?' },
+  { id: 'events', label: 'Upcoming events', query: 'What upcoming events does CSI have?' },
+  { id: 'register', label: 'Register for an event', query: 'How do I register for an event step by step?' },
+  { id: 'benefits', label: 'Member benefits', query: 'What benefits do CSI members get?' },
+  { id: 'resources', label: 'Learning resources', query: 'What learning resources does CSI provide?' },
+  { id: 'domains', label: 'CSI domains', query: 'Tell me about CSI domains and which I should choose' },
+  { id: 'gallery', label: 'Chapter gallery', query: 'Show me the CSI gallery' },
   { id: 'contact', label: 'Contact CSI', query: 'How can I contact CSI?' },
-  { id: 'resources', label: 'Technical Resources', query: 'What resources should beginners use to start learning?' },
 ];
+
+export const MEMBER_QUICK_ACTIONS: QuickAction[] = [
+  { id: 'dashboard', label: 'My dashboard', query: 'What can I do in my member dashboard?' },
+  { id: 'my-events', label: 'My registrations', query: 'Where do I see my registered events?' },
+  { id: 'pass', label: 'Event pass help', query: 'How do I get my event pass after registering?' },
+];
+
+export function getQuickActionsForUser(isLoggedIn: boolean): QuickAction[] {
+  return isLoggedIn ? [...QUICK_ACTIONS.slice(0, 4), ...MEMBER_QUICK_ACTIONS, ...QUICK_ACTIONS.slice(4)] : QUICK_ACTIONS;
+}
 
 const FALLBACK =
   'Ask about events, domains, teams, registration, or learning paths — or tap a quick action below.';
@@ -36,10 +46,34 @@ const KNOWLEDGE: ResponseMatch[] = [
     scrollTo: 'events',
   },
   {
+    keywords: ['platform', 'how it works', 'get started', 'guide', 'navigate'],
+    response:
+      'The Platform section explains CSI, joining, events, resources, registration, login, and member benefits — each card has a direct action.',
+    scrollTo: 'platform',
+  },
+  {
+    keywords: ['benefit', 'benefits', 'perks', 'why join', 'member get'],
+    response:
+      'Members get event registration, digital passes, bookmarks, reminders, achievements, personalized recommendations, and CSI Nova guidance. See the Platform section for the full list.',
+    scrollTo: 'platform',
+  },
+  {
+    keywords: ['dashboard', 'my account', 'profile', 'certificate', 'pass'],
+    response:
+      'Open your dashboard from the navbar avatar: registered events, passes, resources, notifications, achievements, and activity.',
+    scrollTo: 'platform',
+  },
+  {
+    keywords: ['login', 'log in', 'sign in', 'account'],
+    response:
+      'Use Login or Sign Up in the navbar. After signing in, register for events and access your member dashboard.',
+    scrollTo: 'platform',
+  },
+  {
     keywords: ['join', 'member', 'membership', 'sign up', 'signup', 'recruit'],
     response:
-      'Attend orientation or reach out via Contact. We welcome AI/ML, web, robotics, and CP enthusiasts. Instagram: @csi.vitc.',
-    scrollTo: 'contact',
+      'Tap Sign Up in the navbar or the Platform section. Members can register for events, save resources, and use CSI Nova. Reach us via Contact for orientation questions.',
+    scrollTo: 'platform',
   },
   {
     keywords: ['domain', 'domains', 'team', 'teams', 'lead', 'chapter'],
@@ -56,7 +90,7 @@ const KNOWLEDGE: ResponseMatch[] = [
   {
     keywords: ['register', 'registration', 'sign up for', 'ticket', 'seat', 'spots'],
     response:
-      'Go to Events → select a card → Register. Fill your details for a digital pass. Seats are limited.',
+      '1) Sign up · 2) Events section · 3) Select an event · 4) Register and receive your digital pass with QR. Check live seat counts on each card.',
     scrollTo: 'events',
   },
   {
@@ -72,7 +106,13 @@ const KNOWLEDGE: ResponseMatch[] = [
     scrollTo: 'gallery',
   },
   {
-    keywords: ['project', 'resources', 'showcase', 'journey', 'achievement', 'portfolio'],
+    keywords: ['resource', 'resources', 'learn', 'study', 'roadmap', 'material'],
+    response:
+      'Browse the Resources section for curated learning paths. Members can save favorites in their dashboard.',
+    scrollTo: 'resources',
+  },
+  {
+    keywords: ['project', 'showcase', 'journey', 'achievement', 'portfolio'],
     response:
       'Explore milestones in Journey — workshops, hackathons, and national wins. About covers 500+ members and 50+ projects.',
     scrollTo: 'journey',

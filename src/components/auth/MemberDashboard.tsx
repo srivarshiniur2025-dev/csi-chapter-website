@@ -7,10 +7,13 @@ import {
   CalendarClock,
   ChevronRight,
   LayoutGrid,
+  Award,
+  BookOpen,
   Medal,
   Sparkles,
   Ticket,
   UserRound,
+  Activity,
   X,
 } from 'lucide-react';
 import SectionAmbient from '../ambient/SectionAmbient';
@@ -24,8 +27,10 @@ import {
   DEPARTMENT_OPTIONS,
   DOMAIN_INTEREST_OPTIONS,
   PLATFORM_RESOURCE_SUGGESTIONS,
+  toggleSavedResource,
   type DomainInterest,
 } from '../../lib/userDashboard';
+import { PUBLIC_RESOURCES } from '../../lib/platformContent';
 import {
   formatEventCountdown,
   getMemberTier,
@@ -33,11 +38,17 @@ import {
   getTimeGreeting,
 } from '../../lib/personalization';
 import { scrollToSectionSmooth } from '../../lib/lenisScroll';
-import FuturisticSparkline from '../ecosystem/FuturisticSparkline';
 import './MemberDashboard.css';
 
 const CINEMATIC_EASE = [0.22, 1, 0.36, 1] as const;
-type DashTab = 'overview' | 'events' | 'notifications' | 'profile';
+type DashTab =
+  | 'overview'
+  | 'events'
+  | 'certificates'
+  | 'resources'
+  | 'activity'
+  | 'notifications'
+  | 'profile';
 
 export default function MemberDashboard() {
   const {
@@ -182,6 +193,15 @@ export default function MemberDashboard() {
     setEditDomains((prev) => (prev.includes(d) ? prev.filter((x) => x !== d) : [...prev, d]));
   };
 
+  const toggleResource = (title: string) => {
+    if (!user) return;
+    const next = toggleSavedResource(user.uid, title);
+    updateUserProfile({ savedResources: next.savedResources });
+    toast.success(
+      next.savedResources.includes(title) ? 'Resource saved' : 'Resource removed'
+    );
+  };
+
   if (!user || typeof document === 'undefined') return null;
 
   const initials =
@@ -252,6 +272,9 @@ export default function MemberDashboard() {
                     [
                       { id: 'overview', label: 'Overview', icon: LayoutGrid },
                       { id: 'events', label: 'My Events', icon: CalendarClock },
+                      { id: 'certificates', label: 'Passes', icon: Award },
+                      { id: 'resources', label: 'Resources', icon: BookOpen },
+                      { id: 'activity', label: 'Activity', icon: Activity },
                       { id: 'notifications', label: 'Alerts', icon: Bell },
                       { id: 'profile', label: 'Profile', icon: UserRound },
                     ] as const
@@ -322,14 +345,6 @@ export default function MemberDashboard() {
                           </motion.div>
                         ))}
                       </div>
-
-                      <section className="pdash-card pdash-card--os pdash-card--wide">
-                        <h3>Platform activity</h3>
-                        <FuturisticSparkline
-                          values={[8, 14, 11, 19, 16, 24, 28, 22]}
-                          label="Engagement"
-                        />
-                      </section>
 
                       <section className="pdash-card pdash-card--wide">
                         <h3>Recommended for you</h3>
@@ -487,6 +502,131 @@ export default function MemberDashboard() {
                           </ul>
                         ) : (
                           <p className="pdash-empty">Your registration history will appear here.</p>
+                        )}
+                      </section>
+                    </motion.div>
+                  )}
+
+                  {!dashLoading && tab === 'certificates' && (
+                    <motion.div
+                      key="certificates"
+                      className="pdash-stack"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -6 }}
+                    >
+                      <section className="pdash-card">
+                        <h3>Event passes</h3>
+                        <p className="pdash-card__hint">
+                          Digital passes are issued at registration. Present your pass ID at check-in.
+                        </p>
+                        {profile?.registeredEvents.length ? (
+                          <ul className="pdash-list">
+                            {(profile?.registeredEvents ?? []).map((ev) => (
+                              <li key={`pass-${ev.registrationId}`}>
+                                <div>
+                                  <strong>{ev.eventTitle}</strong>
+                                  <span className="pdash-pass-id">Pass {ev.registrationId}</span>
+                                  {ev.eventDate ? (
+                                    <span>{new Date(ev.eventDate).toLocaleString()}</span>
+                                  ) : null}
+                                </div>
+                                <Award size={16} className="pdash-list__icon" />
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <EmptyState
+                            title="No passes yet"
+                            description="Register for an event to receive your CSI digital pass with QR check-in."
+                          />
+                        )}
+                      </section>
+                    </motion.div>
+                  )}
+
+                  {!dashLoading && tab === 'resources' && (
+                    <motion.div
+                      key="resources"
+                      className="pdash-stack"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -6 }}
+                    >
+                      <section className="pdash-card">
+                        <h3>Saved resources</h3>
+                        {(profile?.savedResources ?? []).length ? (
+                          <ul className="pdash-list pdash-list--compact">
+                            {(profile?.savedResources ?? []).map((r) => (
+                              <li key={r}>{r}</li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="pdash-empty">Save resources from the list below.</p>
+                        )}
+                      </section>
+                      <section className="pdash-card">
+                        <h3>Chapter library</h3>
+                        <ul className="pdash-resource-list">
+                          {PUBLIC_RESOURCES.map((r) => {
+                            const saved = profile?.savedResources.includes(r.title);
+                            return (
+                              <li key={r.id}>
+                                <div>
+                                  <strong>{r.title}</strong>
+                                  <span>{r.description}</span>
+                                </div>
+                                <button
+                                  type="button"
+                                  className={`pdash-chip pdash-chip--btn${saved ? ' is-on' : ''}`}
+                                  onClick={() => toggleResource(r.title)}
+                                >
+                                  {saved ? 'Saved' : 'Save'}
+                                </button>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </section>
+                    </motion.div>
+                  )}
+
+                  {!dashLoading && tab === 'activity' && (
+                    <motion.div
+                      key="activity"
+                      className="pdash-stack"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -6 }}
+                    >
+                      <section className="pdash-card">
+                        <h3>Activity timeline</h3>
+                        {profile?.registrationHistory.length || (profile?.achievements ?? []).length ? (
+                          <ul className="pdash-timeline pdash-timeline--activity">
+                            {(profile?.registrationHistory ?? []).map((ev) => (
+                              <li key={`act-${ev.registrationId}`}>
+                                <span className="pdash-timeline__dot" />
+                                <div>
+                                  <strong>Registered for {ev.eventTitle}</strong>
+                                  <span>{new Date(ev.registeredAt).toLocaleString()}</span>
+                                </div>
+                              </li>
+                            ))}
+                            {(profile?.achievements ?? []).map((a) => (
+                              <li key={`badge-${a}`}>
+                                <span className="pdash-timeline__dot pdash-timeline__dot--badge" />
+                                <div>
+                                  <strong>Badge earned: {a}</strong>
+                                  <span>CSI member achievement</span>
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <EmptyState
+                            title="No activity yet"
+                            description="Register for events and engage with CSI to build your timeline."
+                          />
                         )}
                       </section>
                     </motion.div>

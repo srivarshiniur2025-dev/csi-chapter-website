@@ -1,0 +1,99 @@
+.csi-resources {
+  position: relative;
+  padding: 5rem 0;
+}
+
+.csi-resources__inner {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 4vw, 2rem);
+}
+
+.csi-resources__header {
+  text-align: center;
+  max-width: 36rem;
+  margin: 0 auto 2.25rem;
+}
+
+.csi-resources__eyebrow {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(167, 139, 250, 0.85);
+}
+
+.csi-resources__title {
+  margin: 0.5rem 0;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+}
+
+.csi-resources__accent {
+  background: linear-gradient(90deg, #c77dff, #aed2ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.csi-resources__desc {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: rgba(174, 210, 255, 0.68);
+}
+
+.csi-resources__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.csi-resources__card {
+  padding: 1.15rem 1.2rem;
+  border-radius: 0.65rem;
+  background: rgba(8, 6, 22, 0.5);
+  border: 1px solid rgba(148, 0, 255, 0.16);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.csi-resources__cat {
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(167, 139, 250, 0.85);
+}
+
+.csi-resources__card-title {
+  margin: 0;
+  font-size: 1rem;
+  color: #e4f1ff;
+}
+
+.csi-resources__card-desc {
+  margin: 0;
+  flex: 1;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: rgba(174, 210, 255, 0.62);
+}
+
+.csi-resources__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #c4b5fd;
+  cursor: pointer;
+}
+
+.csi-resources__link:hover {
+  color: #e4f1ff;
+}

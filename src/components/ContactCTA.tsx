@@ -1,10 +1,15 @@
 import { motion } from 'framer-motion';
-import { ChevronRight, Users } from 'lucide-react';
+import { ChevronRight, UserPlus } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { scrollToSectionSmooth } from '../lib/lenisScroll';
+import { getNavScrollOffset } from '../hooks/useLandingHashScroll';
 import './ContactCTA.css';
 
 const CINEMATIC_EASE = [0.22, 1, 0.36, 1] as const;
 
 const ContactCTA = () => {
+  const { user, openAuth, openDashboard } = useAuth();
+
   return (
     <section className="contact-cta-section" aria-labelledby="contact-cta-heading">
       <div className="contact-cta-container">
@@ -25,29 +30,31 @@ const ContactCTA = () => {
               <span className="contact-cta-title__accent">With CSI?</span>
             </h2>
             <p className="contact-cta-subtitle">
-              Join a community of builders, innovators, and leaders — collaborate on events,
-              projects, and the next wave of campus tech.
+              Create your member account to register for events, save resources, and use CSI Nova.
+              Already a member? Open your dashboard anytime.
             </p>
             <div className="contact-cta-actions">
-              <motion.a
-                href="#contact"
+              <motion.button
+                type="button"
                 className="contact-cta-btn contact-cta-btn--primary"
                 whileHover={{ scale: 1.03, y: -2 }}
                 whileTap={{ scale: 0.98 }}
+                onClick={() => (user ? openDashboard() : openAuth('signup'))}
               >
                 <span className="contact-cta-btn__glow" aria-hidden />
-                Contact Us
-                <ChevronRight size={18} strokeWidth={2} />
-              </motion.a>
-              <motion.a
-                href="#team"
+                <UserPlus size={18} strokeWidth={2} />
+                {user ? 'Member dashboard' : 'Join CSI — Sign up'}
+              </motion.button>
+              <motion.button
+                type="button"
                 className="contact-cta-btn contact-cta-btn--secondary"
                 whileHover={{ scale: 1.03, y: -2 }}
                 whileTap={{ scale: 0.98 }}
+                onClick={() => scrollToSectionSmooth('events', getNavScrollOffset())}
               >
-                <Users size={18} strokeWidth={2} />
-                Join Community
-              </motion.a>
+                Browse events
+                <ChevronRight size={18} strokeWidth={2} />
+              </motion.button>
             </div>
           </div>
         </motion.div>

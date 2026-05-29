@@ -11,8 +11,10 @@ import './Navbar.css';
 const navLinks = [
   { label: 'Home', to: 'home', route: false },
   { label: 'About', to: 'about', route: false },
+  { label: 'Platform', to: 'platform', route: false },
   { label: 'Events', to: 'events', route: false },
   { label: 'Gallery', to: 'gallery', route: false },
+  { label: 'Resources', to: 'resources', route: false },
   { label: 'Journey', to: 'journey', route: false },
   { label: 'Team', to: 'team', route: false },
   { label: 'Contact Us', to: 'contact', route: false },

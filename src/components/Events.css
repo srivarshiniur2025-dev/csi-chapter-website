@@ -870,6 +870,19 @@
   flex-shrink: 0;
 }
 
+.events-carousel__registered {
+  display: inline-block;
+  padding: 0.28rem 0.55rem;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6ee7b7;
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  border-radius: 999px;
+  background: rgba(52, 211, 153, 0.1);
+}
+
 .events-carousel__label {
   display: inline-block;
   padding: 0.38rem 0.85rem;

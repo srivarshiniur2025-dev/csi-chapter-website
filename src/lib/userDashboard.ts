@@ -121,6 +121,17 @@ export function addRegisteredEvent(uid: string, record: RegisteredEventRecord): 
   return profile;
 }
 
+export function toggleSavedResource(uid: string, resourceTitle: string): UserProfile {
+  const profile = loadUserProfile(uid, '');
+  if (profile.savedResources.includes(resourceTitle)) {
+    profile.savedResources = profile.savedResources.filter((r) => r !== resourceTitle);
+  } else {
+    profile.savedResources.unshift(resourceTitle);
+  }
+  saveUserProfile(uid, profile);
+  return profile;
+}
+
 export function toggleBookmarkedEvent(uid: string, eventTitle: string): UserProfile {
   const profile = loadUserProfile(uid, '');
   if (profile.bookmarkedEvents.includes(eventTitle)) {

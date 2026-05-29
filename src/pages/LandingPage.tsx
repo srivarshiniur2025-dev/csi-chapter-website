@@ -6,7 +6,9 @@ import Navbar from '../components/Navbar';
 import SiteBackground from '../components/SiteBackground';
 import Hero from '../components/Hero';
 import About from '../components/About';
+import PlatformGuide from '../components/platform/PlatformGuide';
 import Events from '../components/Events';
+import Resources from '../components/Resources';
 import Gallery from '../components/Gallery';
 import TechTimeline from '../components/TechTimeline';
 import Team from '../components/Team';
@@ -33,9 +35,13 @@ export default function LandingPage() {
         <SectionDivider variant="subtle" />
         <About />
         <SectionDivider />
+        <PlatformGuide />
+        <SectionDivider />
         <Events />
         <SectionDivider />
         <Gallery />
+        <SectionDivider />
+        <Resources />
         <SectionDivider variant="strong" />
         <TechTimeline />
         <SectionDivider />

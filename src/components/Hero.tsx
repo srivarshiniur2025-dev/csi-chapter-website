@@ -77,8 +77,8 @@ const Hero = () => {
             Explore Events
             <ChevronRight size={18} aria-hidden />
           </a>
-          <a href="#about" className="hero-btn-secondary">
-            Our Projects
+          <a href="#platform" className="hero-btn-secondary">
+            How the platform works
           </a>
         </motion.div>
       </motion.div>

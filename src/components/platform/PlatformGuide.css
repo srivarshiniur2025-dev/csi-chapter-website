@@ -1,0 +1,156 @@
+.platform-guide {
+  position: relative;
+  padding: 5rem 0;
+}
+
+.platform-guide__inner {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 4vw, 2rem);
+}
+
+.platform-guide__header {
+  text-align: center;
+  max-width: 40rem;
+  margin: 0 auto 2.5rem;
+}
+
+.platform-guide__eyebrow {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(167, 139, 250, 0.85);
+}
+
+.platform-guide__title {
+  margin: 0.5rem 0;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+}
+
+.platform-guide__accent {
+  background: linear-gradient(90deg, #c77dff, #aed2ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.platform-guide__desc {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: rgba(174, 210, 255, 0.72);
+}
+
+.platform-guide__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.platform-guide__card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 1.1rem 1.15rem;
+  border-radius: 0.65rem;
+  background: rgba(8, 6, 22, 0.55);
+  border: 1px solid rgba(148, 0, 255, 0.18);
+  transition: border-color 0.25s ease;
+}
+
+.platform-guide__card:hover {
+  border-color: rgba(167, 139, 250, 0.35);
+}
+
+.platform-guide__card-q {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #e4f1ff;
+}
+
+.platform-guide__card-a {
+  margin: 0;
+  flex: 1;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: rgba(174, 210, 255, 0.65);
+}
+
+.platform-guide__card-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: auto;
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #c4b5fd;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.platform-guide__card-btn:hover {
+  color: #e4f1ff;
+}
+
+.platform-guide__benefits {
+  padding: 1.35rem 1.5rem;
+  border-radius: 0.75rem;
+  background: rgba(10, 6, 28, 0.5);
+  border: 1px solid rgba(148, 0, 255, 0.22);
+}
+
+.platform-guide__benefits-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+  color: #c4b5fd;
+}
+
+.platform-guide__benefits-head h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.platform-guide__benefits-list {
+  margin: 0 0 1.1rem;
+  padding-left: 1.15rem;
+  display: grid;
+  gap: 0.45rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: rgba(174, 210, 255, 0.78);
+}
+
+.platform-guide__benefits-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.55rem 1rem;
+  border-radius: 0.45rem;
+  border: 1px solid rgba(167, 139, 250, 0.45);
+  background: rgba(148, 0, 255, 0.15);
+  color: #e4f1ff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+
+.platform-guide__benefits-cta:hover {
+  background: rgba(148, 0, 255, 0.28);
+  border-color: rgba(167, 139, 250, 0.6);
+}
+
+@media (max-width: 640px) {
+  .platform-guide__grid {
+    grid-template-columns: 1fr;
+  }
+}

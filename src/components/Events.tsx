@@ -25,9 +25,11 @@ import {
 import { useMediaQuery } from '../lib/useMediaQuery';
 import { api, isApiConfigured, type ApiEvent } from '../lib/api';
 import {
+  filterEventsByCategory,
   filterEventsByTime,
   getSpotsLeft,
   searchEvents,
+  type EventCategoryFilter,
   type EventTimeFilter,
 } from '../lib/eventFilters';
 import { useAuth } from '../contexts/AuthContext';
@@ -250,6 +252,7 @@ const Events = () => {
   const [events, setEvents] = useState<ChapterEvent[]>(eventsData);
   const [loading, setLoading] = useState(isApiConfigured());
   const [timeFilter, setTimeFilter] = useState<EventTimeFilter>('upcoming');
+  const [categoryFilter, setCategoryFilter] = useState<EventCategoryFilter>('All');
   const [search, setSearch] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
   const [switchFlash, setSwitchFlash] = useState(0);
@@ -263,10 +266,16 @@ const Events = () => {
   const bannerMediaRef = useRef<HTMLDivElement>(null);
   const parallaxRaf = useRef(0);
 
+  const registeredIds = useMemo(
+    () => new Set((profile?.registeredEvents ?? []).map((e) => e.eventId)),
+    [profile?.registeredEvents]
+  );
+
   const filteredEvents = useMemo(() => {
     const byTime = filterEventsByTime(events, timeFilter);
-    return searchEvents(byTime, search);
-  }, [events, timeFilter, search]);
+    const byCategory = filterEventsByCategory(byTime, categoryFilter);
+    return searchEvents(byCategory, search);
+  }, [events, timeFilter, categoryFilter, search]);
 
   const total = filteredEvents.length;
   const activeEvent = filteredEvents[activeIndex];
@@ -282,7 +291,7 @@ const Events = () => {
 
   useEffect(() => {
     setActiveIndex(0);
-  }, [timeFilter, search]);
+  }, [timeFilter, categoryFilter, search]);
 
   useEffect(() => {
     if (activeIndex >= total && total > 0) setActiveIndex(0);
@@ -432,6 +441,8 @@ const Events = () => {
           onSearchChange={setSearch}
           timeFilter={timeFilter}
           onTimeFilterChange={setTimeFilter}
+          categoryFilter={categoryFilter}
+          onCategoryFilterChange={setCategoryFilter}
           resultCount={total}
         />
 
@@ -448,6 +459,7 @@ const Events = () => {
                 onClick={() => {
                   setSearch('');
                   setTimeFilter('all');
+                  setCategoryFilter('All');
                 }}
               >
                 Show all events
@@ -570,6 +582,9 @@ const Events = () => {
                             <div className="events-carousel__body-content">
                               <div className="events-carousel__meta-row">
                                 <span className="events-carousel__label">{event.label}</span>
+                                {registeredIds.has(event.id) ? (
+                                  <span className="events-carousel__registered">Registered</span>
+                                ) : null}
                                 <span className="events-carousel__index">
                                   {String(index + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
                                 </span>
